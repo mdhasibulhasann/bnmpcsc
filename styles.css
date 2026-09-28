@@ -92,17 +92,19 @@ img { display: block; max-width: 100%; }
 
 .hero-content { position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; flex-direction: column; min-height: 0; padding: 1.5vh 0 0; text-align: center; }
 .eyebrow { margin: 0; color: rgba(255,255,255,.64); font-size: clamp(.66rem, .75vw, .82rem); font-weight: 800; letter-spacing: .19em; text-transform: uppercase; }
+
 .event-logo-stage {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(880px, 90vw);
-  height: min(56vh, 590px);
+
+  width: min(850px, 78vw);
+  height: min(54vh, 550px);
+
   margin: 0 auto;
   perspective: 1200px;
   animation: logoFloat 5.5s ease-in-out 2.1s infinite;
 }
-
 .home-logo-slot { position: relative; z-index: 2; display: grid; place-items: center; align-content: center; width: min(760px, 94%); height: min(390px, 72%); border: 1px dashed rgba(255,255,255,.23); border-radius: 42px; background: rgba(0,0,0,.24); box-shadow: inset 0 0 50px rgba(255,255,255,.025), 0 0 70px rgba(255,20,30,.08); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .home-logo-slot span { font-size: clamp(1.35rem, 3.2vw, 2.6rem); font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .home-logo-slot small { margin-top: 9px; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
@@ -110,12 +112,18 @@ img { display: block; max-width: 100%; }
   position: relative;
   z-index: 2;
   display: block;
-  width: min(760px, 94%);
+
+  width: min(720px, 88%);
   height: auto;
-  max-height: 52vh;
+  max-height: 48vh;
+
   margin: 0 auto;
   object-fit: contain;
   object-position: center;
+
+  /* Logo-কে উপরে তুলে সামান্য ছোট করবে */
+  transform: translateY(-90px) scale(.92);
+  transform-origin: center;
 }
 
 .logo-orbit { position: absolute; width: 65%; aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(255,255,255,.07); box-shadow: 0 0 90px rgba(238,22,31,.09), inset 0 0 75px rgba(48,74,255,.07); opacity: .8; animation: orbitPulse 4s ease-in-out infinite alternate; }
@@ -394,4 +402,17 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
   .cinematic-intro { display: none; }
+}
+
+@media (max-width: 720px) {
+  .event-logo-stage {
+    width: 98vw;
+    height: 46vh;
+  }
+
+  .event-logo {
+    width: 92vw;
+    max-height: 42vh;
+    transform: translateY(-35px) scale(.94);
+  }
 }
