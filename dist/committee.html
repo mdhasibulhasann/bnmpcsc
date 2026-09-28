@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050407">
+  <meta name="description" content="Organizing committee of the 3rd BNMPC National Science Carnival 2026.">
+  <title>Organizing Committee · 3rd BNMPC National Science Carnival 2026</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307060a'/%3E%3Cpath d='M32 7 46 18v18c0 10-6 17-14 21-8-4-14-11-14-21V18L32 7Z' fill='none' stroke='%23ff342f' stroke-width='4'/%3E%3Ccircle cx='32' cy='31' r='5' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="inner-page committee-page">
+  <!-- =========================================================
+       01. SHARED BACKGROUND AND NAVIGATION
+       ========================================================= -->
+  <div class="page-backdrop" aria-hidden="true"><div class="streaks"></div></div>
+  <header class="site-header glass-panel inner-header">
+    <a class="brand" href="index.html" aria-label="BNMPC Science Club home">
+      <span class="club-logo-wrap"><img src="assets/club-logo.jpg" alt="BNMPC Science Club logo"></span>
+      <span class="brand-copy"><strong class="brand-full">BNMPC Science Club</strong><strong class="brand-short">BNMPC SC</strong></span>
+    </a>
+    <div class="header-actions">
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="events.html">Events</a>
+        <a href="schedule.html">Schedule</a>
+        <a class="active" href="committee.html" aria-current="page">Team</a>
+      </nav>
+      <button class="register-trigger primary-button header-register" type="button" data-register-trigger>Register</button>
+    </div>
+  </header>
+
+  <main class="page-content committee-content">
+    <!-- =======================================================
+         02. PAGE HEADING
+         ======================================================= -->
+    <section class="page-heading committee-heading">
+      <p class="eyebrow">The people behind the carnival</p>
+      <h1>Organizing <span>Committee</span></h1>
+      <p>Student leaders and teacher mentors working together to deliver the 3rd BNMPC National Science Carnival 2026.</p>
+    </section>
+
+    <!-- =======================================================
+         03. STUDENT / TEACHER SWITCH
+         Student is selected by default.
+         ======================================================= -->
+    <div class="committee-tabs glass-panel" role="tablist" aria-label="Committee group">
+      <button class="committee-tab active" id="student-tab" type="button" role="tab" aria-selected="true" aria-controls="student-committee" data-committee="student">Student Committee</button>
+      <button class="committee-tab" id="teacher-tab" type="button" role="tab" aria-selected="false" aria-controls="teacher-committee" data-committee="teacher">Teacher Committee</button>
+    </div>
+
+    <!-- =======================================================
+         04A. STUDENT COMMITTEE
+         Replace every photo placeholder and temporary name later.
+         ======================================================= -->
+    <section class="committee-panel active" id="student-committee" role="tabpanel" aria-labelledby="student-tab">
+      <div class="member-grid">
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>President</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Vice President</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>General Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Joint Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Organising Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Treasurer</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Office Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Publication Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Science &amp; Technology Secretary</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Event Coordinator</p></div></article>
+        <article class="member-card glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Executive Member</p></div></article>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         04B. TEACHER COMMITTEE
+         Two teacher positions are reserved below.
+         ======================================================= -->
+    <section class="committee-panel" id="teacher-committee" role="tabpanel" aria-labelledby="teacher-tab" hidden>
+      <div class="member-grid teacher-grid">
+        <article class="member-card featured glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Moderator</p></div></article>
+        <article class="member-card featured glass-panel"><div class="member-photo"><span>Photo</span></div><div><h2>Name to be updated</h2><p>Co-Moderator</p></div></article>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       05. FOOTER AND SHARED POPUP MOUNT
+       ========================================================= -->
+  <footer class="site-footer"><span>3rd BNMPC National Science Carnival 2026</span><span>Organizing Committee</span></footer>
+  <div id="modal-root"></div>
+  <script src="script.js"></script>
+</body>
+</html>
