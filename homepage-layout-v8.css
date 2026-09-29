@@ -1,0 +1,112 @@
+/* =============================================================
+   HOMEPAGE LAYOUT V8 — FULL EVENT LOGO, NO CROPPING
+   Loads after styles.css and controls only the homepage hero.
+   ============================================================= */
+
+.home-page .hero-shell {
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  grid-template-rows: var(--header-h) minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+.home-page .hero-content {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.home-page .hero-content > .eyebrow,
+.home-page .event-logo-stage > .logo-orbit {
+  display: none !important;
+}
+
+/* A stable central stage. It does not crop the transparent PNG canvas. */
+.home-page .event-logo-stage {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  justify-self: center !important;
+  flex: none !important;
+  width: min(580px, 50vw) !important;
+  height: clamp(270px, 39dvh, 380px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: -1.5vh auto 0 !important;
+  overflow: visible !important;
+}
+
+.home-page .event-logo-stage .event-logo-slot {
+  position: relative !important;
+  inset: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.home-page .event-logo-stage .event-logo-slot > * {
+  grid-area: 1 / 1 !important;
+}
+
+/* Critical fix: use the PNG's natural aspect ratio. Do not force height:100%,
+   do not scale it, and do not apply a max-height that can cut the artwork. */
+.home-page .event-logo-stage .event-logo-slot img.event-logo {
+  position: static !important;
+  display: block !important;
+  width: min(580px, 50vw) !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
+  transform-origin: center !important;
+}
+
+.home-page .hero-footer {
+  min-width: 0 !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 720px) {
+  .home-page .event-logo-stage {
+    width: min(92vw, 520px) !important;
+    height: clamp(190px, 30dvh, 285px) !important;
+    margin-top: -1vh !important;
+  }
+
+  .home-page .event-logo-stage .event-logo-slot img.event-logo {
+    width: min(92vw, 520px) !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .home-page .event-logo-stage {
+    width: 92vw !important;
+    height: clamp(175px, 28dvh, 250px) !important;
+  }
+
+  .home-page .event-logo-stage .event-logo-slot img.event-logo {
+    width: 92vw !important;
+  }
+}
+
+@media (max-height: 690px) and (min-width: 721px) {
+  .home-page .event-logo-stage,
+  .home-page .event-logo-stage .event-logo-slot img.event-logo {
+    width: min(520px, 46vw) !important;
+  }
+
+  .home-page .event-logo-stage {
+    height: 35dvh !important;
+  }
+}
