@@ -615,10 +615,10 @@ img { display: block; max-width: 100%; }
 .hero-content { overflow: visible; }
 .logo-orbit { display: none; }
 .event-logo-stage {
-  width: min(820px, 74vw);
-  height: min(44vh, 440px);
+  width: min(860px, 82vw);
+  height: min(50vh, 500px);
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
 }
 .event-logo-slot {
   display: grid;
@@ -630,8 +630,8 @@ img { display: block; max-width: 100%; }
 .event-logo-slot .event-logo {
   width: 100%;
   height: 100%;
-  max-width: 820px;
-  max-height: min(44vh, 440px);
+  max-width: 860px;
+  max-height: min(50vh, 500px);
   object-fit: contain;
   object-position: center;
   transform: none;
@@ -645,20 +645,57 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 720px) {
   .event-logo-stage {
-    width: min(92vw, 620px);
-    height: min(37vh, 340px);
+    width: min(94vw, 660px);
+    height: min(42vh, 380px);
     margin: 0 auto;
   }
   .event-logo-slot .event-logo {
     width: 100%;
     height: 100%;
-    max-width: 620px;
-    max-height: min(37vh, 340px);
+    max-width: 660px;
+    max-height: min(42vh, 380px);
     transform: none;
   }
 }
 
 @media (max-width: 450px) {
-  .event-logo-stage { width: 92vw; height: min(34vh, 300px); }
-  .event-logo-slot .event-logo { max-width: 92vw; max-height: min(34vh, 300px); }
+  .event-logo-stage { width: 94vw; height: min(39vh, 340px); }
+  .event-logo-slot .event-logo { max-width: 94vw; max-height: min(39vh, 340px); }
+}
+
+/* =============================================================
+   21. COMPACT ONE-SCREEN REGISTRATION SUCCESS PASS
+   Keeps the QR and buttons visible without modal scrolling.
+   ============================================================= */
+.modal.success-modal {
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 20px);
+  padding: 18px;
+  overflow: hidden;
+}
+.success-state { min-height: 0; align-content: center; }
+.success-state .success-mark { width: 48px; height: 48px; margin-bottom: 8px; font-size: 1.3rem; }
+.success-state .modal-kicker { font-size: .58rem; }
+.success-state h2 { margin: 6px 0; font-size: clamp(1.45rem, 5vw, 2rem); }
+.success-state .modal-lead { margin: 0 0 9px; font-size: .78rem; line-height: 1.4; }
+.success-state .registration-pass-preview { grid-template-columns: 116px minmax(0, 1fr); gap: 13px; margin: 0 0 9px; padding: 10px; border-radius: 18px; }
+.success-state .registration-qr { width: 116px; height: 116px; padding: 7px; border-radius: 13px; }
+.success-state .registration-qr canvas,
+.success-state .registration-qr img { width: 102px !important; height: 102px !important; }
+.success-state .registration-pass-copy .registration-id { margin-bottom: 7px; }
+.success-state .registration-pass-copy .registration-id strong { margin-top: 3px; font-size: .82rem; }
+.success-state .registration-pass-copy p { margin-bottom: 3px; font-size: .76rem; }
+.success-state .registration-pass-copy small { font-size: .61rem; }
+.success-state .connection-notice { margin: 0 0 9px; font-size: .65rem; line-height: 1.35; }
+.success-state .pass-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.success-state .pass-actions button { width: auto; min-height: 42px; padding: 0 14px; font-size: .72rem; }
+
+@media (max-width: 450px) {
+  .modal.success-modal { padding: 14px; border-radius: 22px; }
+  .success-state .registration-pass-preview { grid-template-columns: 104px minmax(0, 1fr); justify-items: stretch; text-align: left; }
+  .success-state .registration-qr { width: 104px; height: 104px; }
+  .success-state .registration-qr canvas,
+  .success-state .registration-qr img { width: 90px !important; height: 90px !important; }
+  .success-state .pass-actions { grid-template-columns: 1fr auto; }
+  .success-state .pass-actions button { width: auto; }
 }

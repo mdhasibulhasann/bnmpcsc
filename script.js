@@ -311,6 +311,7 @@
         if (!payload) return;
         const result = await submitRegistration(payload);
         const modal = modalRoot.querySelector(".modal");
+        modal.classList.add("success-modal");
         modal.innerHTML = successContent(successTitle, successMessage, payload, result.demo);
         modal.querySelector("[data-finish]")?.addEventListener("click", closeModal);
         prepareRegistrationPass(modal, payload);
