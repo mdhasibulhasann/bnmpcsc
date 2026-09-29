@@ -78,16 +78,16 @@
       <h2>${escapeHtml(title)}</h2>
       <p class="modal-lead">${escapeHtml(message)}</p>
       <div class="registration-pass-preview">
-        <div class="registration-qr" data-registration-qr aria-label="Registration verification QR code"><span>Creating QR…</span></div>
+        <div class="registration-qr" data-registration-qr aria-label="Entry pass QR code"><span>Creating QR…</span></div>
         <div class="registration-pass-copy">
           <div class="registration-id"><span>Registration ID</span><strong>${escapeHtml(payload.registrationId)}</strong></div>
           <p><strong>${escapeHtml(payload.segment || "Visitor Registration")}</strong></p>
-          <small>Scan to open the verification page</small>
+          <small>Present this QR pass at the entry desk</small>
         </div>
       </div>
-      ${demo ? '<p class="connection-notice">Google Sheets is not connected yet. The pass works as a preview on this device; online verification will activate after the Sheet is connected.</p>' : '<p class="connection-notice success">Your registration pass is ready. Keep the QR code or downloaded image for verification.</p>'}
+      ${demo ? '<p class="connection-notice">Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.</p>' : '<p class="connection-notice success">Your entry pass is ready. Download it and present it to the organisers at the entry desk.</p>'}
       <p class="qr-error" data-qr-error hidden></p>
-      <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><a class="ghost-button" data-open-verification target="_blank" rel="noreferrer">Open Verification</a><button class="ghost-button" type="button" data-finish>Done</button></div>
+      <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><button class="ghost-button" type="button" data-finish>Done</button></div>
     </div>`;
 
   const createRegistrationId = () => `BNMPC26-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -228,10 +228,10 @@
     context.font = "700 20px Arial, sans-serif";
     context.fillText("29–31 OCTOBER 2026  ·  BNMPC, PEELKHANA, DHAKA", 540, 1192);
     context.font = "500 16px Arial, sans-serif";
-    context.fillText("Scan the QR code to verify this registration", 540, 1230);
+    context.fillText("PRESENT THIS QR PASS AT THE ENTRY DESK", 540, 1230);
     context.font = "500 13px Arial, sans-serif";
     context.fillStyle = "rgba(255,255,255,.42)";
-    context.fillText(verificationUrl.replace(/^https?:\/\//, ""), 540, 1260);
+    context.fillText("FOR ORGANISER SCAN · NOT TRANSFERABLE", 540, 1260);
     context.textAlign = "left";
     return canvas;
   };
@@ -239,10 +239,8 @@
   const prepareRegistrationPass = async (modal, payload) => {
     const qrMount = modal.querySelector("[data-registration-qr]");
     const downloadButton = modal.querySelector("[data-download-pass]");
-    const verificationLink = modal.querySelector("[data-open-verification]");
     const errorBox = modal.querySelector("[data-qr-error]");
     const verificationUrl = verificationUrlFor(payload.registrationId);
-    verificationLink.href = verificationUrl;
     try {
       const QRCodeConstructor = await loadQrLibrary();
       qrMount.innerHTML = "";
