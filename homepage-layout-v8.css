@@ -81,7 +81,7 @@
   .home-page .event-logo-stage {
     width: min(92vw, 520px) !important;
     height: clamp(190px, 30dvh, 285px) !important;
-    margin-top: -1vh !important;
+    margin-top: -2.5vh !important;
   }
 
   .home-page .event-logo-stage .event-logo-slot img.event-logo {
