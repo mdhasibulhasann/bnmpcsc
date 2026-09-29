@@ -143,6 +143,6 @@
 /* শুধু PC-তে event logo আরেকটু উপরে */
 @media (min-width: 721px) {
   .home-page .event-logo-stage {
-    margin-top: -6.5vh !important;
+    margin-top: -8.5vh !important;
   }
 }
