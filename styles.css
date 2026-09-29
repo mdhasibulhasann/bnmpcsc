@@ -609,34 +609,36 @@ img { display: block; max-width: 100%; }
 }
 
 /* =============================================================
-   20. FINAL HOMEPAGE LOGO FIT
-   Keeps every uploaded logo centred and fully visible.
+   20. RESTORED ONE-SCREEN HOMEPAGE LOGO LAYOUT
+   Matches the original approved homepage composition.
    ============================================================= */
-.hero-content {
-  min-height: 0;
-  overflow: hidden;
-  padding-top: 0;
-}
+.hero-content { min-height: 0; padding: 1.5vh 0 0; overflow: visible; }
 .logo-orbit { display: none; }
 .event-logo-stage {
-  flex: 1 1 auto;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0;
-  margin: 0 !important;
-  overflow: hidden;
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: min(620px, 52vw) !important;
+  height: min(46vh, 460px) !important;
+  min-height: 260px;
+  margin: -1vh auto -2vh !important;
+  overflow: visible;
 }
 .event-logo-slot {
   display: grid;
   place-items: center;
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 .event-logo-slot .event-logo {
-  width: auto !important;
-  height: auto !important;
-  max-width: min(760px, 72vw) !important;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
   max-height: 100% !important;
   object-fit: contain !important;
   object-position: center !important;
@@ -650,14 +652,33 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 720px) {
+  .hero-content { padding-top: 1vh; }
+  .event-logo-stage {
+    width: min(92vw, 560px) !important;
+    height: min(38vh, 340px) !important;
+    min-height: 220px;
+    margin: -1vh auto -1vh !important;
+  }
   .event-logo-slot .event-logo {
-    max-width: 92vw !important;
+    max-width: 100% !important;
     max-height: 100% !important;
   }
 }
 
 @media (max-width: 450px) {
-  .event-logo-slot .event-logo { max-width: 94vw !important; }
+  .event-logo-stage {
+    width: 94vw !important;
+    height: min(34vh, 300px) !important;
+    min-height: 195px;
+  }
+}
+
+@media (max-height: 690px) and (min-width: 721px) {
+  .event-logo-stage {
+    width: min(560px, 48vw) !important;
+    height: 38vh !important;
+    min-height: 220px;
+  }
 }
 
 /* =============================================================
