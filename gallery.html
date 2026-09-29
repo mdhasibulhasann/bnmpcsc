@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050407">
+  <meta name="description" content="Photo gallery of the 3rd BNMPC National Science Carnival 2026.">
+  <title>Gallery · 3rd BNMPC National Science Carnival 2026</title>
+  <link rel="icon" type="image/jpeg" href="assets/club-logo.jpg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="inner-page gallery-page">
+  <!-- 01. Shared background and navigation -->
+  <div class="page-backdrop" aria-hidden="true"><div class="streaks"></div></div>
+  <header class="site-header glass-panel inner-header">
+    <a class="brand" href="index.html" aria-label="BNMPC Science Club home"><span class="club-logo-wrap upload-image-slot" data-image-slot><img src="assets/header-logo.png" alt="BNMPC Science Club logo" data-upload-image><span class="asset-placeholder" aria-hidden="true">SC</span></span><span class="brand-copy"><strong class="brand-full">BNMPC Science Club</strong><strong class="brand-short">BNMPC SC</strong></span></a>
+    <div class="header-actions">
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-menu-toggle><span></span><span></span><span></span><b class="sr-only">Menu</b></button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation"><a href="events.html">Events</a><a href="schedule.html">Schedule</a><a class="active" href="gallery.html" aria-current="page">Gallery</a><a href="contact.html">Contact</a></nav>
+      <button class="register-trigger primary-button header-register" type="button" data-register-trigger>Register</button>
+    </div>
+  </header>
+
+  <!-- 02. Gallery heading -->
+  <main class="page-content gallery-content">
+    <section class="page-heading gallery-heading">
+      <p class="eyebrow">Moments from the carnival</p>
+      <h1>Event <span>gallery</span></h1>
+      <p>Official photographs from all three days will be organised here as the carnival unfolds.</p>
+      <div class="event-count-chip">22 Competition Segments · Gaming Included</div>
+    </section>
+
+    <!-- 03. Gallery filters and photo grid -->
+    <div class="gallery-tabs glass-panel" aria-label="Filter gallery by day">
+      <button class="gallery-tab active" type="button" data-gallery-day="all">All</button>
+      <button class="gallery-tab" type="button" data-gallery-day="1">Day 01</button>
+      <button class="gallery-tab" type="button" data-gallery-day="2">Day 02</button>
+      <button class="gallery-tab" type="button" data-gallery-day="3">Day 03</button>
+    </div>
+    <section class="gallery-grid" id="gallery-grid" aria-live="polite">
+      <div class="gallery-empty glass-panel">
+        <div class="gallery-empty-mark" aria-hidden="true"><span></span></div>
+        <p class="eyebrow">Gallery ready</p>
+        <h2>Event photos will appear here</h2>
+        <p>Photos can be added later from <strong>gallery-data.js</strong> after uploading them to the gallery assets folder.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>3rd BNMPC National Science Carnival 2026</span><span>Official gallery</span></footer>
+  <div id="modal-root"></div>
+  <script src="config.js"></script>
+  <script src="gallery-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
