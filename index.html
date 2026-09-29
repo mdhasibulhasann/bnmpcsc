@@ -6,9 +6,11 @@
   <meta name="theme-color" content="#050407">
   <meta name="description" content="Official website of the 3rd BNMPC National Science Carnival 2026, hosted by BNMPC Science Club.">
   <title>3rd BNMPC National Science Carnival 2026</title>
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon.png?v=2">
-<link rel="apple-touch-icon" href="assets/favicon.png?v=2">
+  <link rel="icon" type="image/jpeg" href="assets/club-logo.jpg">
+  <link rel="apple-touch-icon" href="assets/club-logo.jpg">
   <link rel="stylesheet" href="styles.css">
+  <!-- Homepage-only correction loaded last with a unique filename to avoid old GitHub Pages CSS cache. -->
+  <link rel="stylesheet" href="homepage-layout-v7.css">
 </head>
 <body class="home-page">
   <!-- =========================================================
@@ -16,7 +18,7 @@
        Upload as assets/loading-logo.png.
        ========================================================= -->
   <div class="cinematic-intro" aria-hidden="true">
-    <div class="intro-mark intro-logo-slot upload-image-slot" data-image-slot><img class="loading-logo" src="assets/loading-logo.png" alt="" data-upload-image><span class="asset-placeholder">Loading Logo<small>Upload ready</small></span></div>
+    <div class="intro-mark intro-logo-slot upload-image-slot" data-image-slot><img class="loading-logo" src="assets/loading-logo.png" data-fallback-src="assets/club-logo.jpg" alt="" data-upload-image><span class="asset-placeholder">Loading Logo<small>Upload ready</small></span></div>
     <div class="intro-scan"></div>
   </div>
 
@@ -28,14 +30,14 @@
        Event logo: assets/event-logo.png
        ========================================================= -->
   <main class="hero-shell">
-    <div class="hero-bg-slot upload-image-slot" data-image-slot aria-hidden="true"><img class="hero-bg-image" src="assets/homepage-background.jpg" alt="" data-upload-image><span class="background-upload-note">Homepage Background<small>Upload ready</small></span></div>
+    <div class="hero-bg-slot upload-image-slot" data-image-slot aria-hidden="true"><img class="hero-bg-image" src="assets/homepage-background.jpg" data-fallback-src="assets/home-background.jpg" alt="" data-upload-image><span class="background-upload-note">Homepage Background<small>Upload ready</small></span></div>
     <div class="streaks" aria-hidden="true"></div>
     <div class="noise" aria-hidden="true"></div>
 
     <!-- 02A. Top navigation -->
     <header class="site-header glass-panel">
       <a class="brand" href="index.html" aria-label="BNMPC Science Club home">
-        <span class="club-logo-wrap upload-image-slot" data-image-slot><img src="assets/header-logo.png" alt="BNMPC Science Club logo" data-upload-image><span class="asset-placeholder" aria-hidden="true">SC</span></span>
+        <span class="club-logo-wrap upload-image-slot" data-image-slot><img src="assets/header-logo.png" data-fallback-src="assets/club-logo.jpg" alt="BNMPC Science Club logo" data-upload-image><span class="asset-placeholder" aria-hidden="true">SC</span></span>
         <span class="brand-copy"><strong class="brand-full">BNMPC Science Club</strong><strong class="brand-short">BNMPC SC</strong></span>
       </a>
       <div class="header-actions">
@@ -55,14 +57,9 @@
       <p class="eyebrow">Birshreshtha Noor Mohammad Public College presents</p>
       <h1 id="event-title" class="sr-only">3rd BNMPC National Science Carnival 2026</h1>
       <div class="event-logo-stage" data-parallax>
-
-
-  <img
-    class="event-logo"
-    src="assets/event-logo.png"
-    alt="3rd BNMPC National Science Carnival 2026"
-  >
-</div>
+        <div class="logo-orbit" aria-hidden="true"></div>
+        <div class="event-logo-slot upload-image-slot" data-image-slot><img class="event-logo" src="assets/event-logo.png" data-fallback-src="assets/event-logo-fallback.png" alt="3rd BNMPC National Science Carnival 2026" data-upload-image><span class="asset-placeholder event-logo-placeholder">Event Logo<small>Upload ready</small></span></div>
+      </div>
     </section>
 
     <!-- 02C. Date, venue, countdown and social links -->
