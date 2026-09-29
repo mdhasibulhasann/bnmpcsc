@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050508">
+  <meta name="description" content="Verify a 3rd BNMPC National Science Carnival 2026 registration pass.">
+  <title>Verify Registration · 3rd BNMPC National Science Carnival 2026</title>
+  <link rel="icon" type="image/jpeg" href="assets/club-logo.jpg">
+  <link rel="apple-touch-icon" href="assets/club-logo.jpg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="verification-page">
+  <!-- =========================================================
+       REGISTRATION QR VERIFICATION RESULT
+       Private fields such as email and phone are never displayed.
+       ========================================================= -->
+  <main class="verification-shell">
+    <section class="verification-card" id="verification-card" data-state="loading" aria-live="polite">
+      <div class="verification-brand">
+        <img src="assets/header-logo.png" onerror="this.src='assets/club-logo.jpg'" alt="BNMPC Science Club logo">
+        <strong>BNMPC Science Club</strong>
+      </div>
+      <div class="verification-status-mark" id="verification-mark" aria-hidden="true">···</div>
+      <span class="modal-kicker">Registration verification</span>
+      <h1 id="verification-title">Checking pass…</h1>
+      <p id="verification-message">Please wait while the registration code is checked.</p>
+      <div class="verification-details" id="verification-details" hidden>
+        <div><span>Registration ID</span><strong id="verify-id"></strong></div>
+        <div><span>Registration</span><strong id="verify-segment"></strong></div>
+        <div><span>Name / Team Leader</span><strong id="verify-name"></strong></div>
+        <div><span>Group</span><strong id="verify-group"></strong></div>
+        <div><span>Members</span><strong id="verify-members"></strong></div>
+        <div><span>Status</span><strong id="verify-status"></strong></div>
+      </div>
+      <a class="verification-home primary-button" href="index.html">Back to Website</a>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="verification.js"></script>
+</body>
+</html>

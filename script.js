@@ -28,7 +28,14 @@
     if (!image) return;
     const markReady = () => slot.classList.toggle("asset-ready", image.naturalWidth > 0);
     image.addEventListener("load", markReady);
-    image.addEventListener("error", markReady);
+    image.addEventListener("error", () => {
+      const fallback = image.dataset.fallbackSrc;
+      if (fallback && image.src !== new URL(fallback, document.baseURI).href) {
+        image.src = fallback;
+        return;
+      }
+      markReady();
+    });
     if (image.complete) markReady();
   });
 
@@ -64,18 +71,215 @@
     modalRoot.querySelector("button, a, input, select, textarea")?.focus();
   };
 
-  const successContent = (title, message, registrationId, demo) => `
+  const successContent = (title, message, payload, demo) => `
     <div class="success-state">
       <div class="success-mark" aria-hidden="true">✓</div>
       <span class="modal-kicker">${demo ? "Form preview complete" : "Registration received"}</span>
       <h2>${escapeHtml(title)}</h2>
       <p class="modal-lead">${escapeHtml(message)}</p>
-      <div class="registration-id"><span>Registration ID</span><strong>${escapeHtml(registrationId)}</strong></div>
-      ${demo ? '<p class="connection-notice">Google Sheets is not connected yet. This test entry was saved only on this device.</p>' : '<p class="connection-notice success">A confirmation email will be sent to the registered email address.</p>'}
-      <div class="modal-actions"><button class="primary-button" type="button" data-finish>Done</button></div>
+      <div class="registration-pass-preview">
+        <div class="registration-qr" data-registration-qr aria-label="Registration verification QR code"><span>Creating QR…</span></div>
+        <div class="registration-pass-copy">
+          <div class="registration-id"><span>Registration ID</span><strong>${escapeHtml(payload.registrationId)}</strong></div>
+          <p><strong>${escapeHtml(payload.segment || "Visitor Registration")}</strong></p>
+          <small>Scan to open the verification page</small>
+        </div>
+      </div>
+      ${demo ? '<p class="connection-notice">Google Sheets is not connected yet. The pass works as a preview on this device; online verification will activate after the Sheet is connected.</p>' : '<p class="connection-notice success">Your registration pass is ready. Keep the QR code or downloaded image for verification.</p>'}
+      <p class="qr-error" data-qr-error hidden></p>
+      <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><a class="ghost-button" data-open-verification target="_blank" rel="noreferrer">Open Verification</a><button class="ghost-button" type="button" data-finish>Done</button></div>
     </div>`;
 
   const createRegistrationId = () => `BNMPC26-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+
+  /* ===========================================================
+     02A. QR REGISTRATION PASS AND PNG DOWNLOAD
+     =========================================================== */
+  const verificationUrlFor = (registrationId) => {
+    const configured = String(config.verificationPageUrl || "").trim();
+    const pageUrl = configured || new URL("verify.html", document.baseURI).href;
+    const url = new URL(pageUrl, document.baseURI);
+    url.searchParams.set("id", registrationId);
+    return url.href;
+  };
+
+  let qrLibraryPromise;
+  const loadQrLibrary = () => {
+    if (window.QRCode) return Promise.resolve(window.QRCode);
+    if (qrLibraryPromise) return qrLibraryPromise;
+    qrLibraryPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = String(config.qrLibraryUrl || "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js");
+      script.async = true;
+      script.onload = () => window.QRCode ? resolve(window.QRCode) : reject(new Error("QR library did not load."));
+      script.onerror = () => reject(new Error("QR library could not be downloaded."));
+      document.head.appendChild(script);
+    });
+    return qrLibraryPromise;
+  };
+
+  const imageFrom = (src) => new Promise(resolve => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+
+  const roundedRect = (context, x, y, width, height, radius) => {
+    const safeRadius = Math.min(radius, width / 2, height / 2);
+    context.beginPath();
+    context.roundRect(x, y, width, height, safeRadius);
+  };
+
+  const fitImage = (context, image, x, y, maxWidth, maxHeight) => {
+    if (!image) return;
+    const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+    const width = image.naturalWidth * ratio;
+    const height = image.naturalHeight * ratio;
+    context.drawImage(image, x + (maxWidth - width) / 2, y + (maxHeight - height) / 2, width, height);
+  };
+
+  const createPassCanvas = async (payload, qrCanvas, verificationUrl) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const context = canvas.getContext("2d");
+    const leaderName = payload.registrationType === "Visitor" ? payload.name : payload.members?.[0]?.name;
+    const registrationFor = payload.segment || "Visitor Registration";
+    const teamLine = payload.teamName ? `Team: ${payload.teamName}` : "";
+    const [eventLogo, clubLogo] = await Promise.all([
+      imageFrom("assets/event-logo.png").then(image => image || imageFrom("assets/event-logo.jpg")),
+      imageFrom("assets/header-logo.png").then(image => image || imageFrom("assets/club-logo.jpg"))
+    ]);
+
+    const background = context.createLinearGradient(0, 0, 1080, 1350);
+    background.addColorStop(0, "#07070c");
+    background.addColorStop(.48, "#030307");
+    background.addColorStop(1, "#100307");
+    context.fillStyle = background;
+    context.fillRect(0, 0, 1080, 1350);
+
+    const redGlow = context.createRadialGradient(1010, 180, 20, 1010, 180, 460);
+    redGlow.addColorStop(0, "rgba(255,36,40,.52)");
+    redGlow.addColorStop(1, "rgba(255,36,40,0)");
+    context.fillStyle = redGlow;
+    context.fillRect(0, 0, 1080, 720);
+    const blueGlow = context.createRadialGradient(40, 1030, 20, 40, 1030, 420);
+    blueGlow.addColorStop(0, "rgba(44,76,255,.42)");
+    blueGlow.addColorStop(1, "rgba(44,76,255,0)");
+    context.fillStyle = blueGlow;
+    context.fillRect(0, 650, 850, 700);
+
+    context.strokeStyle = "rgba(255,255,255,.16)";
+    context.lineWidth = 2;
+    roundedRect(context, 45, 45, 990, 1260, 44);
+    context.stroke();
+
+    if (clubLogo) {
+      context.save();
+      roundedRect(context, 82, 78, 88, 88, 44);
+      context.clip();
+      context.fillStyle = "#ffffff";
+      context.fillRect(82, 78, 88, 88);
+      fitImage(context, clubLogo, 82, 78, 88, 88);
+      context.restore();
+    }
+    context.fillStyle = "#ffffff";
+    context.font = "800 31px Arial, sans-serif";
+    context.fillText("BNMPC SCIENCE CLUB", 190, 118);
+    context.fillStyle = "rgba(255,255,255,.62)";
+    context.font = "700 18px Arial, sans-serif";
+    context.fillText("OFFICIAL REGISTRATION PASS · 2026", 190, 149);
+
+    if (eventLogo) fitImage(context, eventLogo, 110, 190, 860, 255);
+    else {
+      context.textAlign = "center";
+      context.fillStyle = "#ffffff";
+      context.font = "900 42px Arial, sans-serif";
+      context.fillText("3RD BNMPC NATIONAL SCIENCE CARNIVAL 2026", 540, 320);
+      context.textAlign = "left";
+    }
+
+    context.fillStyle = "rgba(8,8,13,.88)";
+    roundedRect(context, 80, 470, 920, 655, 42);
+    context.fill();
+    context.strokeStyle = "rgba(255,255,255,.13)";
+    context.stroke();
+
+    context.fillStyle = "#ffffff";
+    roundedRect(context, 340, 515, 400, 400, 28);
+    context.fill();
+    context.drawImage(qrCanvas, 370, 545, 340, 340);
+
+    context.textAlign = "center";
+    context.fillStyle = "#ff625c";
+    context.font = "800 18px Arial, sans-serif";
+    context.fillText("REGISTRATION ID", 540, 970);
+    context.fillStyle = "#ffffff";
+    context.font = "900 35px Arial, sans-serif";
+    context.fillText(payload.registrationId, 540, 1015);
+    context.fillStyle = "rgba(255,255,255,.78)";
+    context.font = "700 24px Arial, sans-serif";
+    context.fillText(registrationFor, 540, 1060);
+    context.font = "500 20px Arial, sans-serif";
+    context.fillText(`${leaderName || "Registered participant"}${teamLine ? ` · ${teamLine}` : ""}`, 540, 1095);
+
+    context.fillStyle = "rgba(255,255,255,.62)";
+    context.font = "700 20px Arial, sans-serif";
+    context.fillText("29–31 OCTOBER 2026  ·  BNMPC, PEELKHANA, DHAKA", 540, 1192);
+    context.font = "500 16px Arial, sans-serif";
+    context.fillText("Scan the QR code to verify this registration", 540, 1230);
+    context.font = "500 13px Arial, sans-serif";
+    context.fillStyle = "rgba(255,255,255,.42)";
+    context.fillText(verificationUrl.replace(/^https?:\/\//, ""), 540, 1260);
+    context.textAlign = "left";
+    return canvas;
+  };
+
+  const prepareRegistrationPass = async (modal, payload) => {
+    const qrMount = modal.querySelector("[data-registration-qr]");
+    const downloadButton = modal.querySelector("[data-download-pass]");
+    const verificationLink = modal.querySelector("[data-open-verification]");
+    const errorBox = modal.querySelector("[data-qr-error]");
+    const verificationUrl = verificationUrlFor(payload.registrationId);
+    verificationLink.href = verificationUrl;
+    try {
+      const QRCodeConstructor = await loadQrLibrary();
+      qrMount.innerHTML = "";
+      new QRCodeConstructor(qrMount, {
+        text: verificationUrl,
+        width: 220,
+        height: 220,
+        colorDark: "#060608",
+        colorLight: "#ffffff",
+        correctLevel: QRCodeConstructor.CorrectLevel.H
+      });
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const qrCanvas = qrMount.querySelector("canvas");
+      if (!qrCanvas) throw new Error("QR canvas was not created.");
+      downloadButton.disabled = false;
+      downloadButton.textContent = "Download QR Pass";
+      downloadButton.addEventListener("click", async () => {
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Creating image…";
+        try {
+          const passCanvas = await createPassCanvas(payload, qrCanvas, verificationUrl);
+          const link = document.createElement("a");
+          link.download = `${payload.registrationId}-BNMPC-pass.png`;
+          link.href = passCanvas.toDataURL("image/png");
+          link.click();
+        } finally {
+          downloadButton.disabled = false;
+          downloadButton.textContent = "Download QR Pass";
+        }
+      });
+    } catch (error) {
+      qrMount.innerHTML = "<span>QR unavailable</span>";
+      errorBox.hidden = false;
+      errorBox.textContent = "The QR generator could not load. Your registration ID is still valid; check the internet connection and try again.";
+      downloadButton.textContent = "QR unavailable";
+    }
+  };
 
   const submitRegistration = async (payload) => {
     const endpoint = String(config.googleAppsScriptUrl || "").trim();
@@ -109,8 +313,9 @@
         if (!payload) return;
         const result = await submitRegistration(payload);
         const modal = modalRoot.querySelector(".modal");
-        modal.innerHTML = successContent(successTitle, successMessage, payload.registrationId, result.demo);
+        modal.innerHTML = successContent(successTitle, successMessage, payload, result.demo);
         modal.querySelector("[data-finish]")?.addEventListener("click", closeModal);
+        prepareRegistrationPass(modal, payload);
       } catch (error) {
         if (errorBox) {
           errorBox.textContent = "Registration could not be submitted. Please check your connection and try again.";

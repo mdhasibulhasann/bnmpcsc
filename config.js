@@ -5,5 +5,11 @@
    ============================================================= */
 window.BNMPC_CONFIG = {
   googleAppsScriptUrl: "",
-  demoMode: true
+  demoMode: true,
+
+  /* The QR code opens this page. Keep it on the final domain. */
+  verificationPageUrl: "https://3rd-bnmpcsc-carnival.online/verify.html",
+
+  /* QRCodeJS is loaded only after a registration is completed. */
+  qrLibraryUrl: "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"
 };
