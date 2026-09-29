@@ -143,6 +143,21 @@
 /* শুধু PC-তে event logo আরেকটু উপরে */
 @media (min-width: 721px) {
   .home-page .event-logo-stage {
-    margin-top: -15.5vh !important;
+    margin-top: -18.5vh !important;
+  }
+}
+
+
+/* MOBILE HOMEPAGE BACKGROUND — FINAL FIX */
+@media (max-width: 720px) {
+  /* Black fallback layer বন্ধ */
+  .home-page .hero-bg-slot {
+    display: none !important;
+  }
+
+  /* Background সরাসরি homepage-এ বসানো */
+  .home-page .hero-shell {
+    background: #030204 url("assets/homepage-background.jpg")
+      center center / cover no-repeat !important;
   }
 }
