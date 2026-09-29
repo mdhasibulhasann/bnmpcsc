@@ -127,42 +127,137 @@ function ensureUniqueRoboSoccerMembers_(sheet, members) {
 
 function sendConfirmation_(data) {
   const isVisitor = data.registrationType === "Visitor";
-  const recipients = isVisitor
-    ? [data.email]
-    : (data.members || []).map(member => member.email).filter(Boolean);
-  const uniqueRecipients = [...new Set(recipients.map(email => String(email).trim().toLowerCase()).filter(Boolean))];
-  if (!uniqueRecipients.length) return;
 
-  const registrationFor = isVisitor ? "Visitor Registration" : data.segment;
-  const subject = `${EVENT_NAME} — Registration Confirmation`;
+  // Participant registration হলে শুধু প্রথম member নির্বাচন করবে
+  const firstMember =
+    Array.isArray(data.members) && data.members.length > 0
+      ? data.members[0]
+      : null;
+
+  // Visitor হলে visitor-এর email,
+  // Participant/Team হলে শুধু Member 1-এর email
+  const recipient = isVisitor
+    ? String(data.email || "").trim().toLowerCase()
+    : String(firstMember?.email || "").trim().toLowerCase();
+
+  // কোনো valid email না পাওয়া গেলে email পাঠাবে না
+  if (!recipient) return;
+
+  const registrationFor = isVisitor
+    ? "Visitor Registration"
+    : String(data.segment || "Participant Registration");
+
+  const registrationId = String(data.registrationId || "");
+
+  const subject =
+    `${EVENT_NAME} — Registration Confirmation`;
+
+  // Plain-text version
+  const body = `
+Registration confirmed
+
+${EVENT_NAME}
+
+Thank you for registering. Please keep the registration ID below for verification.
+
+Registration ID: ${registrationId}
+Registration: ${registrationFor}
+Date: ${EVENT_DATES}
+Venue: ${EVENT_VENUE}
+
+Please bring a valid institutional ID and follow the official rules of your selected segment.
+
+BNMPC Science Club
+  `.trim();
+
+  // Designed HTML email version
   const htmlBody = `
-    <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#0c0c11;color:#f5f5f8;padding:30px;border-radius:22px">
-      <p style="color:#ff5750;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Registration confirmed</p>
-      <h1 style="font-size:28px;margin:8px 0 16px">${EVENT_NAME}</h1>
-      <p style="color:#c5c5ce;line-height:1.6">Thank you for registering. Please keep the registration ID below for verification.</p>
-      <div style="background:#191921;border:1px solid #30303a;padding:18px;border-radius:14px;margin:20px 0">
-        <p style="margin:0 0 8px"><strong>Registration ID:</strong> ${escapeHtml_(data.registrationId)}</p>
-        <p style="margin:0 0 8px"><strong>Registration:</strong> ${escapeHtml_(registrationFor)}</p>
-        <p style="margin:0 0 8px"><strong>Date:</strong> ${EVENT_DATES}</p>
-        <p style="margin:0"><strong>Venue:</strong> ${EVENT_VENUE}</p>
+    <div style="
+      font-family:Arial,sans-serif;
+      max-width:620px;
+      margin:auto;
+      background:#0c0c11;
+      color:#f5f5f8;
+      padding:30px;
+      border-radius:22px;
+    ">
+
+      <p style="
+        color:#ff5750;
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:1px;
+        text-transform:uppercase;
+      ">
+        Registration confirmed
+      </p>
+
+      <h1 style="
+        font-size:28px;
+        margin:8px 0 16px;
+      ">
+        ${EVENT_NAME}
+      </h1>
+
+      <p style="
+        color:#c5c5ce;
+        line-height:1.6;
+      ">
+        Thank you for registering. Please keep the registration ID
+        below for verification.
+      </p>
+
+      <div style="
+        background:#191921;
+        border:1px solid #30303a;
+        padding:18px;
+        border-radius:14px;
+        margin:20px 0;
+      ">
+
+        <p style="margin:0 0 8px;">
+          <strong>Registration ID:</strong>
+          ${escapeHtml_(registrationId)}
+        </p>
+
+        <p style="margin:0 0 8px;">
+          <strong>Registration:</strong>
+          ${escapeHtml_(registrationFor)}
+        </p>
+
+        <p style="margin:0 0 8px;">
+          <strong>Date:</strong>
+          ${EVENT_DATES}
+        </p>
+
+        <p style="margin:0;">
+          <strong>Venue:</strong>
+          ${EVENT_VENUE}
+        </p>
+
       </div>
-      <p style="color:#9b9ba7;font-size:13px;line-height:1.6">Please bring a valid institutional ID and follow the official rules of your selected segment.</p>
-      <p style="margin-top:24px">BNMPC Science Club</p>
-    </div>`;
+
+      <p style="
+        color:#9b9ba7;
+        font-size:13px;
+        line-height:1.6;
+      ">
+        Please bring a valid institutional ID and follow the
+        official rules of your selected segment.
+      </p>
+
+      <p style="margin-top:24px;">
+        BNMPC Science Club
+      </p>
+
+    </div>
+  `;
 
   MailApp.sendEmail({
-    to: uniqueRecipients[0],
-    bcc: uniqueRecipients.slice(1).join(","),
-    subject,
-    htmlBody,
+    to: recipient,
+    subject: subject,
+    body: body,
+    htmlBody: htmlBody,
     name: "BNMPC Science Club"
   });
-}
-
-function escapeHtml_(value) {
-  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function json_(data) {
-  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
 }
