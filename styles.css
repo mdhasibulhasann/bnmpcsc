@@ -641,41 +641,60 @@ img { display: block; max-width: 100%; }
 }
 
 
-/* ==========================================
-   MOBILE RESPONSIVE FIX
-   ========================================== */
+
+/* Event logo bigger and centered */
+.event-logo-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+
+  width: min(1050px, 86vw);
+  height: min(56vh, 560px);
+
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.event-logo {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  max-width: 1050px;
+  max-height: min(56vh, 560px);
+
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+
+/* Remove the circle behind the logo */
+.logo-orbit {
+  display: none !important;
+}
 
 @media (max-width: 720px) {
   .event-logo-stage {
-    width: 94vw;
-    height: min(43vh, 390px);
-    margin: 0 auto;
+    width: 98vw;
+    height: min(47vh, 430px);
   }
 
   .event-logo {
-    width: 100%;
-    height: 100%;
-    max-width: 680px;
-    max-height: min(43vh, 390px);
-  }
-
-  .club-logo-wrap {
-    width: 34px;
-    height: 34px;
+    max-width: 760px;
+    max-height: min(47vh, 430px);
   }
 }
 
 @media (max-width: 450px) {
   .event-logo-stage {
-    height: min(38vh, 330px);
+    height: min(42vh, 370px);
   }
 
   .event-logo {
-    max-height: min(38vh, 330px);
-  }
-
-  .club-logo-wrap {
-    width: 32px;
-    height: 32px;
+    max-height: min(42vh, 370px);
   }
 }
