@@ -717,3 +717,115 @@ img { display: block; max-width: 100%; }
   .success-state .pass-actions { grid-template-columns: 1fr auto; }
   .success-state .pass-actions button { width: auto; }
 }
+
+
+/* =====================================================
+   MOBILE HOMEPAGE BACKGROUND + EVENT LOGO FIX
+   ===================================================== */
+
+@media (max-width: 720px) {
+
+  /* Show the complete background theme on mobile */
+  .hero-shell {
+    background-color: #050307 !important;
+    background-image: url("assets/homepage-background.jpg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 100% 100% !important;
+  }
+
+  .hero-bg-slot {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    opacity: 1 !important;
+  }
+
+  .hero-bg-image {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+
+    /* Square background will fit the mobile screen */
+    object-fit: fill !important;
+    object-position: center !important;
+
+    opacity: 1 !important;
+  }
+
+  /* Keep the entire hero content centred */
+  .hero-content {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+  }
+
+  /* Event logo stage centred */
+  .event-logo-stage {
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: min(44vh, 390px) !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .event-logo-slot {
+    position: absolute !important;
+    inset: 0 !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Main event logo */
+  .event-logo-slot .event-logo,
+  .event-logo {
+    display: block !important;
+
+    width: min(94vw, 720px) !important;
+    height: auto !important;
+    max-width: 94vw !important;
+    max-height: 44vh !important;
+
+    margin: 0 auto !important;
+
+    object-fit: contain !important;
+    object-position: center !important;
+
+    /* Visually bring the logo back from the right */
+    transform: translateX(-1.5vw) !important;
+  }
+
+  /* Remove the circle behind the logo */
+  .logo-orbit {
+    display: none !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .event-logo-stage {
+    height: min(40vh, 350px) !important;
+  }
+
+  .event-logo-slot .event-logo,
+  .event-logo {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 40vh !important;
+    transform: translateX(-1vw) !important;
+  }
+}
