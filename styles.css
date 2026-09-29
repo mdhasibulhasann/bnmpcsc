@@ -718,38 +718,3 @@ img { display: block; max-width: 100%; }
   .success-state .pass-actions button { width: auto; }
 }
 
-
-/* =============================================================
-   MOBILE BACKGROUND + DESKTOP LOGO POSITION FIX
-   ============================================================= */
-
-/* Mobile-এ PC-এর একই homepage background */
-@media (max-width: 720px) {
-  .home-page .hero-shell {
-    background-image: url("assets/homepage-background.jpg") !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-color: #030204 !important;
-  }
-
-  .home-page .hero-bg-slot,
-  .home-page .hero-bg-image {
-    display: block !important;
-    opacity: 1 !important;
-  }
-
-  .home-page .hero-bg-image {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    object-position: center center !important;
-  }
-}
-
-/* শুধু PC-তে event logo আরেকটু উপরে */
-@media (min-width: 721px) {
-  .home-page .event-logo-stage {
-    margin-top: -6.5vh !important;
-  }
-}
