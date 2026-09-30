@@ -15,7 +15,7 @@ const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka
 const VERIFY_PAGE_URL = "https://3rd-bnmpcsc-carnival.online/verify.html";
 
 /* Change this before deployment. Keep the real PIN only in Apps Script. */
-const STAFF_PIN = "420";
+const STAFF_PIN = "2026";
 
 const SEGMENT_SHEETS = [
   "Visitor Registration",
