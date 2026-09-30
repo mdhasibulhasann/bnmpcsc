@@ -115,3 +115,178 @@
   .staff-result-details div:first-child { grid-column: auto; }
   .staff-result-actions button { width: 100%; }
 }
+
+/* =============================================================
+   05. ONE-SCREEN EVENT-DAY MODE
+   Keeps the PIN, scanner, manual fallback and result controls inside
+   one viewport. The result opens above the scanner instead of below it.
+   ============================================================= */
+.staff-verification-shell {
+  height: 100dvh;
+  min-height: 100dvh;
+  padding: 10px 0;
+  overflow: hidden;
+}
+.staff-access-card {
+  max-height: calc(100dvh - 20px);
+  margin: clamp(10px, 4vh, 38px) auto;
+  overflow: hidden;
+}
+.scanner-console {
+  display: grid;
+  grid-template-rows: 66px minmax(0, 1fr);
+  height: calc(100dvh - 20px);
+  min-height: 0;
+}
+.scanner-header { min-height: 66px; }
+.scanner-layout {
+  min-height: 0;
+  height: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.scanner-camera-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  height: 100%;
+  min-height: 0;
+  padding: 17px;
+}
+.scanner-section-heading { margin-bottom: 10px; }
+.scanner-section-heading h1 { font-size: clamp(1.6rem, 3.3vw, 2.35rem); }
+.qr-reader-shell {
+  height: 100%;
+  min-height: 0;
+}
+#qr-reader {
+  height: 100%;
+  min-height: 0;
+}
+#qr-reader video {
+  height: 100% !important;
+  min-height: 0;
+}
+.scanner-actions { margin-top: 9px; }
+.scanner-actions button { min-height: 43px; }
+.camera-help { margin-top: 7px; }
+
+/* Verification result appears as a compact overlay; no page scroll. */
+.staff-result-card {
+  position: fixed;
+  z-index: 600;
+  inset: 50% auto auto 50%;
+  width: min(860px, calc(100% - 22px));
+  max-height: calc(100dvh - 22px);
+  margin: 0;
+  padding: 18px;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(145deg, rgba(27,26,34,.985), rgba(8,8,12,.99));
+  box-shadow: 0 40px 140px rgba(0,0,0,.78), 0 0 0 100vmax rgba(0,0,0,.68);
+}
+.staff-result-mark { width: 58px; height: 58px; border-radius: 18px; }
+.staff-result-copy h2 { margin: 5px 0 3px; font-size: clamp(1.4rem, 3vw, 2rem); }
+.staff-result-details {
+  gap: 7px;
+  margin-top: 0;
+}
+.staff-result-details div { padding: 9px 11px; border-radius: 12px; }
+.staff-result-details span { margin-bottom: 3px; font-size: .54rem; }
+.staff-result-details strong { font-size: .75rem; }
+.staff-result-actions button { min-height: 42px; }
+
+@media (max-width: 760px) {
+  .staff-verification-shell {
+    width: min(100% - 14px, 620px);
+    padding: 7px 0;
+  }
+  .scanner-console {
+    grid-template-rows: 58px minmax(0, 1fr);
+    height: calc(100dvh - 14px);
+  }
+  .scanner-header {
+    min-height: 58px;
+    padding: 7px 10px;
+  }
+  .verification-brand.compact img { width: 36px; height: 36px; }
+  .verification-brand.compact strong { font-size: .82rem; }
+  .verification-brand.compact span { font-size: .5rem; }
+  .scanner-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 7px;
+    margin-top: 7px;
+  }
+  .scanner-camera-card {
+    min-height: 0;
+    padding: 11px;
+  }
+  .scanner-section-heading { margin-bottom: 7px; }
+  .scanner-section-heading h1 { margin-top: 3px; font-size: 1.45rem; }
+  .camera-state { padding: 6px 9px; }
+  .qr-reader-shell, #qr-reader video {
+    height: 100%;
+    min-height: 0;
+  }
+  .scanner-actions { margin-top: 7px; }
+  .scanner-actions button { min-height: 40px; padding-inline: 14px; }
+  .camera-help { display: none; }
+
+  /* Manual fallback becomes one compact row on mobile. */
+  .scanner-side-card {
+    order: 2;
+    padding: 9px;
+    border-radius: 17px;
+  }
+  .scanner-side-card > .modal-kicker,
+  .scanner-side-card > h2,
+  .scanner-side-card > p,
+  .manual-verify-form label { display: none; }
+  .manual-verify-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+  .manual-verify-form input,
+  .manual-verify-form button {
+    min-height: 42px;
+    margin: 0;
+  }
+  .manual-verify-form button {
+    padding: 0 12px;
+    font-size: .68rem;
+  }
+
+  .staff-result-card {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 10px 12px;
+    width: calc(100% - 14px);
+    max-height: calc(100dvh - 14px);
+    padding: 13px;
+    border-radius: 21px;
+  }
+  .staff-result-mark { width: 50px; height: 50px; border-radius: 15px; }
+  .staff-result-copy h2 { font-size: 1.3rem; }
+  .staff-result-copy p { font-size: .68rem; line-height: 1.35; }
+  .staff-result-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px;
+  }
+  .staff-result-details div,
+  .staff-result-details div:first-child {
+    grid-column: auto;
+    padding: 7px 8px;
+  }
+  .staff-result-details div:first-child { grid-column: 1 / -1; }
+  .staff-result-details span { font-size: .48rem; }
+  .staff-result-details strong { font-size: .66rem; line-height: 1.2; }
+  .staff-result-actions button { width: 100%; min-height: 39px; }
+}
+
+@media (max-height: 650px) {
+  .staff-access-card { padding-block: 18px; }
+  .staff-lock-mark { width: 58px; height: 58px; margin-bottom: 12px; }
+  .staff-lock-mark svg { width: 27px; }
+  .staff-access-card h1 { font-size: 2.15rem; }
+  .staff-access-card > p { margin-bottom: 16px; }
+  .staff-result-details div { padding-block: 6px; }
+}
