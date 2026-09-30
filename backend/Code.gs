@@ -8,14 +8,14 @@
    4. Paste the deployment URL into dist/config.js.
    ============================================================= */
 
-const SPREADSHEET_ID = "PASTE_GOOGLE_SPREADSHEET_ID_HERE";
+const SPREADSHEET_ID = "1mZpwjLMkXXte22ZmvM52nox3AQKwzCkNUtUtbmxbOuw";
 const EVENT_NAME = "3rd BNMPC National Science Carnival 2026";
 const EVENT_DATES = "29–31 October 2026";
 const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka";
 const VERIFY_PAGE_URL = "https://3rd-bnmpcsc-carnival.online/verify.html";
 
 /* Change this before deployment. Keep the real PIN only in Apps Script. */
-const STAFF_PIN = "CHANGE_THIS_PIN";
+const STAFF_PIN = "2026";
 
 /* Private PIN for the gaming payment committee portal. */
 const GAMING_STAFF_PIN = "4040";
