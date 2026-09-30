@@ -48,17 +48,41 @@
   };
 
   /* ===========================================================
-     02. JSONP BRIDGE: STATIC WEBSITE TO GOOGLE APPS SCRIPT
+     02. BACKEND BRIDGE: FETCH FIRST, JSONP FALLBACK
      =========================================================== */
-  const requestBackend = (action, parameters = {}) => new Promise((resolve, reject) => {
-    if (!endpoint) return reject(new Error("Google Sheets endpoint is not configured."));
-
-    const callbackName = `bnmpcStaff_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const script = document.createElement("script");
+  const buildBackendUrl = (action, parameters = {}) => {
     const url = new URL(endpoint);
     url.searchParams.set("action", action);
+    url.searchParams.set("_", Date.now().toString());
+    Object.entries(parameters).forEach(([key, value]) => {
+      url.searchParams.set(key, String(value ?? ""));
+    });
+    return url;
+  };
+
+  const requestWithFetch = async (action, parameters) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(buildBackendUrl(action, parameters).href, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-store",
+        redirect: "follow",
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error(`Verification service returned ${response.status}.`);
+      return await response.json();
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+
+  const requestWithJsonp = (action, parameters) => new Promise((resolve, reject) => {
+    const callbackName = `bnmpcStaff_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    const url = buildBackendUrl(action, parameters);
     url.searchParams.set("callback", callbackName);
-    Object.entries(parameters).forEach(([key, value]) => url.searchParams.set(key, String(value ?? "")));
 
     const cleanup = () => {
       clearTimeout(timeout);
@@ -81,6 +105,15 @@
     script.src = url.href;
     document.head.appendChild(script);
   });
+
+  const requestBackend = async (action, parameters = {}) => {
+    if (!endpoint) throw new Error("Google Sheets endpoint is not configured.");
+    try {
+      return await requestWithFetch(action, parameters);
+    } catch (fetchError) {
+      return await requestWithJsonp(action, parameters);
+    }
+  };
 
   /* ===========================================================
      03. STAFF PIN AUTHENTICATION
