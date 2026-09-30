@@ -4,39 +4,116 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#050508">
-  <meta name="description" content="Verify a 3rd BNMPC National Science Carnival 2026 registration pass.">
-  <title>Verify Registration · 3rd BNMPC National Science Carnival 2026</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="Private organiser verification console for the 3rd BNMPC National Science Carnival 2026.">
+  <title>Staff Verification · 3rd BNMPC National Science Carnival 2026</title>
   <link rel="icon" type="image/jpeg" href="assets/club-logo.jpg">
   <link rel="apple-touch-icon" href="assets/club-logo.jpg">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="verification.css">
 </head>
-<body class="verification-page">
+<body class="verification-page staff-verification-page">
   <!-- =========================================================
-       REGISTRATION QR VERIFICATION RESULT
-       Private fields such as email and phone are never displayed.
+       01. PRIVATE STAFF PIN GATE
        ========================================================= -->
-  <main class="verification-shell">
-    <section class="verification-card" id="verification-card" data-state="loading" aria-live="polite">
+  <main class="staff-verification-shell">
+    <section class="staff-access-card glass-panel" id="staff-access-card" aria-labelledby="staff-access-title">
       <div class="verification-brand">
         <img src="assets/header-logo.png" onerror="this.src='assets/club-logo.jpg'" alt="BNMPC Science Club logo">
-        <strong>BNMPC Science Club</strong>
+        <div><strong>BNMPC Science Club</strong><span>Organiser Console</span></div>
       </div>
-      <div class="verification-status-mark" id="verification-mark" aria-hidden="true">···</div>
-      <span class="modal-kicker">Registration verification</span>
-      <h1 id="verification-title">Checking pass…</h1>
-      <p id="verification-message">Please wait while the registration code is checked.</p>
-      <div class="verification-details" id="verification-details" hidden>
-        <div><span>Registration ID</span><strong id="verify-id"></strong></div>
-        <div><span>Registration</span><strong id="verify-segment"></strong></div>
-        <div><span>Name / Team Leader</span><strong id="verify-name"></strong></div>
-        <div><span>Group</span><strong id="verify-group"></strong></div>
-        <div><span>Members</span><strong id="verify-members"></strong></div>
-        <div><span>Status</span><strong id="verify-status"></strong></div>
+      <div class="staff-lock-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10" rx="3"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><circle cx="12" cy="15" r="1"></circle></svg>
       </div>
-      <a class="verification-home primary-button" href="index.html">Back to Website</a>
+      <span class="modal-kicker">Restricted access</span>
+      <h1 id="staff-access-title">Staff Verification</h1>
+      <p>Enter the organiser PIN to open the QR scanner and check-in console.</p>
+      <form class="staff-pin-form" id="staff-pin-form" autocomplete="off">
+        <label for="staff-pin">Staff PIN</label>
+        <div class="staff-pin-row">
+          <input id="staff-pin" name="staff-pin" type="password" inputmode="numeric" minlength="4" maxlength="12" placeholder="Enter staff PIN" required autocomplete="one-time-code">
+          <button class="primary-button" type="submit">Unlock</button>
+        </div>
+        <p class="staff-form-message" id="staff-pin-message" role="alert" hidden></p>
+      </form>
+      <a class="staff-back-link" href="index.html">Back to website</a>
+    </section>
+
+    <!-- =======================================================
+         02. CAMERA SCANNER AND MANUAL ID FALLBACK
+         ======================================================= -->
+    <section class="scanner-console" id="scanner-console" hidden aria-labelledby="scanner-title">
+      <header class="scanner-header glass-panel">
+        <div class="verification-brand compact">
+          <img src="assets/header-logo.png" onerror="this.src='assets/club-logo.jpg'" alt="BNMPC Science Club logo">
+          <div><strong>Entry Verification</strong><span>Staff access active</span></div>
+        </div>
+        <div class="scanner-header-actions">
+          <span class="service-indicator" id="service-indicator"><i></i><b>Ready</b></span>
+          <button class="staff-lock-button" id="staff-lock-button" type="button">Lock</button>
+        </div>
+      </header>
+
+      <div class="scanner-layout">
+        <section class="scanner-camera-card glass-panel">
+          <div class="scanner-section-heading">
+            <div><span class="modal-kicker">Live camera</span><h1 id="scanner-title">Scan Entry Pass</h1></div>
+            <span class="camera-state" id="camera-state">Camera off</span>
+          </div>
+          <div class="qr-reader-shell">
+            <div id="qr-reader" aria-label="QR code camera scanner"></div>
+            <div class="scanner-idle" id="scanner-idle">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"></path><path d="M8 8h8v8H8z"></path></svg>
+              <strong>Camera is ready</strong>
+              <span>Point the camera at a registration QR pass.</span>
+            </div>
+          </div>
+          <div class="scanner-actions">
+            <button class="primary-button" id="start-scanner" type="button">Start Camera</button>
+            <button class="ghost-button" id="stop-scanner" type="button" hidden>Stop Camera</button>
+          </div>
+          <p class="camera-help">Camera access requires HTTPS and browser permission. The rear camera is selected automatically on mobile.</p>
+        </section>
+
+        <aside class="scanner-side-card glass-panel">
+          <span class="modal-kicker">Manual fallback</span>
+          <h2>Enter Registration ID</h2>
+          <p>Use this if the pass is damaged or the camera cannot read its QR code.</p>
+          <form id="manual-verify-form" class="manual-verify-form">
+            <label for="manual-registration-id">Registration ID</label>
+            <input id="manual-registration-id" name="registration-id" type="text" spellcheck="false" autocapitalize="characters" placeholder="BNMPC26-..." required>
+            <button class="primary-button" type="submit">Verify &amp; Check In</button>
+          </form>
+        </aside>
+      </div>
+
+      <!-- =====================================================
+           03. VERIFICATION RESULT
+           ===================================================== -->
+      <section class="staff-result-card glass-panel" id="staff-result-card" data-state="idle" hidden aria-live="assertive">
+        <div class="staff-result-mark" id="staff-result-mark" aria-hidden="true">···</div>
+        <div class="staff-result-copy">
+          <span class="modal-kicker" id="staff-result-kicker">Verification result</span>
+          <h2 id="staff-result-title">Checking registration…</h2>
+          <p id="staff-result-message">Please wait while the official registration record is checked.</p>
+        </div>
+        <div class="verification-details staff-result-details" id="staff-result-details" hidden>
+          <div><span>Registration ID</span><strong id="verify-id"></strong></div>
+          <div><span>Registration</span><strong id="verify-segment"></strong></div>
+          <div><span>Name / Team Leader</span><strong id="verify-name"></strong></div>
+          <div><span>Institution</span><strong id="verify-institution"></strong></div>
+          <div><span>Group</span><strong id="verify-group"></strong></div>
+          <div><span>Team</span><strong id="verify-team"></strong></div>
+          <div><span>Members</span><strong id="verify-members"></strong></div>
+          <div><span>Check-in Time</span><strong id="verify-time"></strong></div>
+          <div><span>Status</span><strong id="verify-status"></strong></div>
+        </div>
+        <div class="staff-result-actions">
+          <button class="primary-button" id="scan-next" type="button">Scan Next Pass</button>
+        </div>
+      </section>
     </section>
   </main>
-
   <script src="config.js"></script>
   <script src="verification.js"></script>
 </body>

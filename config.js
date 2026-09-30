@@ -11,5 +11,11 @@ window.BNMPC_CONFIG = {
   verificationPageUrl: "https://3rd-bnmpcsc-carnival.online/verify.html",
 
   /* QRCodeJS is loaded only after a registration is completed. */
-  qrLibraryUrl: "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"
+  qrLibraryUrl: "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
+
+  /* Camera scanner used only on the private staff verification page. */
+  qrScannerLibraryUrl: "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
+
+  /* Preview only. Ignored after demoMode is changed to false. */
+  demoStaffPin: "2026"
 };

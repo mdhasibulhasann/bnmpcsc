@@ -12,6 +12,10 @@ const SPREADSHEET_ID = "PASTE_GOOGLE_SPREADSHEET_ID_HERE";
 const EVENT_NAME = "3rd BNMPC National Science Carnival 2026";
 const EVENT_DATES = "29–31 October 2026";
 const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka";
+const VERIFY_PAGE_URL = "https://3rd-bnmpcsc-carnival.online/verify.html";
+
+/* Change this before deployment. Keep the real PIN only in Apps Script. */
+const STAFF_PIN = "CHANGE_THIS_PIN";
 
 const SEGMENT_SHEETS = [
   "Visitor Registration",
@@ -44,19 +48,143 @@ const PARTICIPANT_HEADERS = (() => {
   for (let number = 1; number <= 7; number += 1) {
     headers.push(`Member ${number} Name`, `Member ${number} Class`, `Member ${number} Institution`, `Member ${number} Mobile`, `Member ${number} Email`, `Member ${number} In-game Name & Tag`, `Member ${number} Discord Username`);
   }
-  headers.push("Status", "Raw Submission");
+  headers.push("Status", "Raw Submission", "Check-in Time");
   return headers;
 })();
 
-const VISITOR_HEADERS = ["Timestamp", "Registration ID", "Name", "Institution", "Email", "Mobile", "Address / District", "Status", "Raw Submission"];
+const VISITOR_HEADERS = ["Timestamp", "Registration ID", "Name", "Institution", "Email", "Mobile", "Address / District", "Status", "Raw Submission", "Check-in Time"];
 
 function setupSheets() {
   const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   SEGMENT_SHEETS.forEach(name => ensureSheet_(spreadsheet, name, name === "Visitor Registration" ? VISITOR_HEADERS : PARTICIPANT_HEADERS));
 }
 
-function doGet() {
-  return json_({ ok: true, event: EVENT_NAME, message: "Registration service is running." });
+function doGet(event) {
+  try {
+    const parameters = event && event.parameter ? event.parameter : {};
+    if (parameters.action === "staff-auth") {
+      return response_({ ok: true, authorized: validStaffPin_(parameters.pin) }, parameters.callback);
+    }
+    if (parameters.action === "staff-checkin") {
+      if (!validStaffPin_(parameters.pin)) {
+        return response_({ ok: false, authorized: false, valid: false }, parameters.callback);
+      }
+      return response_(staffCheckIn_(parameters.id), parameters.callback);
+    }
+    if (parameters.action === "verify") {
+      if (!validStaffPin_(parameters.pin)) {
+        return response_({ ok: false, authorized: false, valid: false }, parameters.callback);
+      }
+      const result = verifyRegistration_(parameters.id);
+      return response_(result, parameters.callback);
+    }
+    return response_({ ok: true, event: EVENT_NAME, message: "Registration service is running." }, parameters.callback);
+  } catch (error) {
+    return response_({ ok: false, valid: false, message: error.message || "Verification failed." }, event && event.parameter && event.parameter.callback);
+  }
+}
+
+function verifyRegistration_(registrationId) {
+  const id = String(registrationId || "").trim().toUpperCase();
+  if (!/^BNMPC26-[A-Z0-9-]+$/.test(id)) return { ok: true, valid: false };
+
+  const record = findRegistrationRecord_(id);
+  if (!record) return { ok: true, valid: false };
+  return { ok: true, valid: true, registration: registrationFromRecord_(record) };
+}
+
+function validStaffPin_(pin) {
+  const supplied = String(pin || "").trim();
+  return STAFF_PIN !== "CHANGE_THIS_PIN" && supplied.length >= 4 && supplied === STAFF_PIN;
+}
+
+function findRegistrationRecord_(registrationId) {
+  const id = String(registrationId || "").trim().toUpperCase();
+  if (!/^BNMPC26-[A-Z0-9-]+$/.test(id)) return null;
+
+  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+  for (let index = 0; index < SEGMENT_SHEETS.length; index += 1) {
+    const sheetName = SEGMENT_SHEETS[index];
+    const isVisitor = sheetName === "Visitor Registration";
+    const headers = isVisitor ? VISITOR_HEADERS : PARTICIPANT_HEADERS;
+    const sheet = ensureSheet_(spreadsheet, sheetName, headers);
+    if (sheet.getLastRow() < 2) continue;
+    const match = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1)
+      .createTextFinder(id)
+      .matchEntireCell(true)
+      .matchCase(false)
+      .findNext();
+    if (!match) continue;
+    return {
+      id: id,
+      isVisitor: isVisitor,
+      sheetName: sheetName,
+      sheet: sheet,
+      rowNumber: match.getRow(),
+      headers: headers,
+      row: sheet.getRange(match.getRow(), 1, 1, headers.length).getDisplayValues()[0]
+    };
+  }
+  return null;
+}
+
+function registrationFromRecord_(record) {
+  const raw = record.row[record.headers.indexOf("Raw Submission")];
+  let data = {};
+  try { data = JSON.parse(raw || "{}"); } catch (error) { data = {}; }
+  const firstMember = Array.isArray(data.members) && data.members.length ? data.members[0] : {};
+  const value = header => record.row[record.headers.indexOf(header)] || "";
+
+  return {
+    registrationId: record.id,
+    registrationType: record.isVisitor ? "Visitor" : "Participant",
+    segment: record.isVisitor ? "Visitor Registration" : record.sheetName,
+    name: record.isVisitor ? (data.name || value("Name")) : (firstMember.name || value("Member 1 Name")),
+    institution: record.isVisitor ? (data.institution || value("Institution")) : (firstMember.institution || value("Member 1 Institution")),
+    group: record.isVisitor ? "Open for all" : (data.group || value("Group") || "Open for all"),
+    teamName: record.isVisitor ? "" : (data.teamName || value("Team Name")),
+    memberCount: record.isVisitor ? 1 : (data.memberCount || value("Member Count") || 1),
+    status: value("Status") || "Registered",
+    checkInTime: value("Check-in Time")
+  };
+}
+
+function staffCheckIn_(registrationId) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    const record = findRegistrationRecord_(registrationId);
+    if (!record) return { ok: true, authorized: true, valid: false };
+
+    const statusIndex = record.headers.indexOf("Status");
+    const timeIndex = record.headers.indexOf("Check-in Time");
+    const currentStatus = String(record.row[statusIndex] || "");
+    if (/checked\s*in/i.test(currentStatus)) {
+      return {
+        ok: true,
+        authorized: true,
+        valid: true,
+        alreadyCheckedIn: true,
+        registration: registrationFromRecord_(record)
+      };
+    }
+
+    const checkedInAt = new Date();
+    record.sheet.getRange(record.rowNumber, statusIndex + 1).setValue("Checked In");
+    record.sheet.getRange(record.rowNumber, timeIndex + 1).setValue(checkedInAt);
+    record.row[statusIndex] = "Checked In";
+    record.row[timeIndex] = Utilities.formatDate(checkedInAt, Session.getScriptTimeZone() || "Asia/Dhaka", "dd MMM yyyy, hh:mm a");
+
+    return {
+      ok: true,
+      authorized: true,
+      valid: true,
+      alreadyCheckedIn: false,
+      registration: registrationFromRecord_(record)
+    };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function doPost(event) {
@@ -95,12 +223,20 @@ function ensureSheet_(spreadsheet, name, headers) {
     sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#111118").setFontColor("#ffffff");
     sheet.setFrozenRows(1);
     sheet.autoResizeColumns(1, headers.length);
+  } else {
+    const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+    headers.forEach(header => {
+      if (currentHeaders.indexOf(header) === -1) {
+        currentHeaders.push(header);
+        sheet.getRange(1, currentHeaders.length).setValue(header).setFontWeight("bold").setBackground("#111118").setFontColor("#ffffff");
+      }
+    });
   }
   return sheet;
 }
 
 function visitorRow_(data) {
-  return [new Date(), data.registrationId, data.name, data.institution, data.email, data.phone, data.address, "New", JSON.stringify(data)];
+  return [new Date(), data.registrationId, data.name, data.institution, data.email, data.phone, data.address, "New", JSON.stringify(data), ""];
 }
 
 function participantRow_(data) {
@@ -110,7 +246,7 @@ function participantRow_(data) {
     const member = members[index] || {};
     row.push(member.name || "", member.className || "", member.institution || "", member.mobile || "", member.email || "", member.inGameNameTag || "", member.discordUsername || "");
   }
-  row.push("New", JSON.stringify(data));
+  row.push("New", JSON.stringify(data), "");
   return row;
 }
 
@@ -127,137 +263,50 @@ function ensureUniqueRoboSoccerMembers_(sheet, members) {
 
 function sendConfirmation_(data) {
   const isVisitor = data.registrationType === "Visitor";
-
-  // Participant registration হলে শুধু প্রথম member নির্বাচন করবে
-  const firstMember =
-    Array.isArray(data.members) && data.members.length > 0
-      ? data.members[0]
-      : null;
-
-  // Visitor হলে visitor-এর email,
-  // Participant/Team হলে শুধু Member 1-এর email
-  const recipient = isVisitor
-    ? String(data.email || "").trim().toLowerCase()
-    : String(firstMember?.email || "").trim().toLowerCase();
-
-  // কোনো valid email না পাওয়া গেলে email পাঠাবে না
+  const recipient = String((isVisitor ? data.email : ((data.members || [])[0] || {}).email) || "").trim().toLowerCase();
   if (!recipient) return;
 
-  const registrationFor = isVisitor
-    ? "Visitor Registration"
-    : String(data.segment || "Participant Registration");
-
-  const registrationId = String(data.registrationId || "");
-
-  const subject =
-    `${EVENT_NAME} — Registration Confirmation`;
-
-  // Plain-text version
-  const body = `
-Registration confirmed
-
-${EVENT_NAME}
-
-Thank you for registering. Please keep the registration ID below for verification.
-
-Registration ID: ${registrationId}
-Registration: ${registrationFor}
-Date: ${EVENT_DATES}
-Venue: ${EVENT_VENUE}
-
-Please bring a valid institutional ID and follow the official rules of your selected segment.
-
-BNMPC Science Club
-  `.trim();
-
-  // Designed HTML email version
+  const registrationFor = isVisitor ? "Visitor Registration" : data.segment;
+  const verificationUrl = `${VERIFY_PAGE_URL}?id=${encodeURIComponent(data.registrationId)}`;
+  const subject = `${EVENT_NAME} — Registration Confirmation`;
   const htmlBody = `
-    <div style="
-      font-family:Arial,sans-serif;
-      max-width:620px;
-      margin:auto;
-      background:#0c0c11;
-      color:#f5f5f8;
-      padding:30px;
-      border-radius:22px;
-    ">
-
-      <p style="
-        color:#ff5750;
-        font-size:12px;
-        font-weight:700;
-        letter-spacing:1px;
-        text-transform:uppercase;
-      ">
-        Registration confirmed
-      </p>
-
-      <h1 style="
-        font-size:28px;
-        margin:8px 0 16px;
-      ">
-        ${EVENT_NAME}
-      </h1>
-
-      <p style="
-        color:#c5c5ce;
-        line-height:1.6;
-      ">
-        Thank you for registering. Please keep the registration ID
-        below for verification.
-      </p>
-
-      <div style="
-        background:#191921;
-        border:1px solid #30303a;
-        padding:18px;
-        border-radius:14px;
-        margin:20px 0;
-      ">
-
-        <p style="margin:0 0 8px;">
-          <strong>Registration ID:</strong>
-          ${escapeHtml_(registrationId)}
-        </p>
-
-        <p style="margin:0 0 8px;">
-          <strong>Registration:</strong>
-          ${escapeHtml_(registrationFor)}
-        </p>
-
-        <p style="margin:0 0 8px;">
-          <strong>Date:</strong>
-          ${EVENT_DATES}
-        </p>
-
-        <p style="margin:0;">
-          <strong>Venue:</strong>
-          ${EVENT_VENUE}
-        </p>
-
+    <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#0c0c11;color:#f5f5f8;padding:30px;border-radius:22px">
+      <p style="color:#ff5750;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Registration confirmed</p>
+      <h1 style="font-size:28px;margin:8px 0 16px">${EVENT_NAME}</h1>
+      <p style="color:#c5c5ce;line-height:1.6">Thank you for registering. Please keep the registration ID below for verification.</p>
+      <div style="background:#191921;border:1px solid #30303a;padding:18px;border-radius:14px;margin:20px 0">
+        <p style="margin:0 0 8px"><strong>Registration ID:</strong> ${escapeHtml_(data.registrationId)}</p>
+        <p style="margin:0 0 8px"><strong>Registration:</strong> ${escapeHtml_(registrationFor)}</p>
+        <p style="margin:0 0 8px"><strong>Date:</strong> ${EVENT_DATES}</p>
+        <p style="margin:0"><strong>Venue:</strong> ${EVENT_VENUE}</p>
       </div>
-
-      <p style="
-        color:#9b9ba7;
-        font-size:13px;
-        line-height:1.6;
-      ">
-        Please bring a valid institutional ID and follow the
-        official rules of your selected segment.
-      </p>
-
-      <p style="margin-top:24px;">
-        BNMPC Science Club
-      </p>
-
-    </div>
-  `;
+      <p style="margin:22px 0"><a href="${verificationUrl}" style="display:inline-block;background:#e92f32;color:#ffffff;text-decoration:none;font-weight:700;padding:13px 18px;border-radius:11px">Open Verification Pass</a></p>
+      <p style="color:#9b9ba7;font-size:13px;line-height:1.6">Please bring a valid institutional ID and follow the official rules of your selected segment.</p>
+      <p style="margin-top:24px">BNMPC Science Club</p>
+    </div>`;
 
   MailApp.sendEmail({
     to: recipient,
-    subject: subject,
-    body: body,
-    htmlBody: htmlBody,
+    subject,
+    htmlBody,
     name: "BNMPC Science Club"
   });
+}
+
+function escapeHtml_(value) {
+  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function json_(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function response_(data, callback) {
+  const callbackName = String(callback || "").trim();
+  if (/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callbackName)) {
+    return ContentService
+      .createTextOutput(`${callbackName}(${JSON.stringify(data)});`)
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return json_(data);
 }
