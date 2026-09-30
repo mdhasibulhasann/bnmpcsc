@@ -5,7 +5,7 @@
    ============================================================= */
 window.BNMPC_CONFIG = {
   googleAppsScriptUrl: "AKfycbwmpgmE3bED4V9iRppaABH7GNQ7X15oryM3S6t-lRZpmsQG7kDjPFL-n29h8MrcRWm6RQ",
-  demoMode: true,
+  demoMode: false,
 
   /* The QR code opens this page. Keep it on the final domain. */
   verificationPageUrl: "https://3rd-bnmpcsc-carnival.online/verify.html",
