@@ -8,7 +8,7 @@
    4. Paste the deployment URL into dist/config.js.
    ============================================================= */
 
-const SPREADSHEET_ID = "PASTE_GOOGLE_SPREADSHEET_ID_HERE";
+const SPREADSHEET_ID = "1mZpwjLMkXXte22ZmvM52nox3AQKwzCkNUtUtbmxbOuw";
 const EVENT_NAME = "3rd BNMPC National Science Carnival 2026";
 const EVENT_DATES = "29–31 October 2026";
 const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka";
