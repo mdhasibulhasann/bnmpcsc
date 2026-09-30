@@ -148,16 +148,17 @@
 }
 
 
-/* MOBILE HOMEPAGE BACKGROUND — FINAL FIX */
+/* MOBILE HOMEPAGE BACKGROUND — FULL PAGE FIT */
 @media (max-width: 720px) {
-  /* Black fallback layer বন্ধ */
   .home-page .hero-bg-slot {
     display: none !important;
   }
 
-  /* Background সরাসরি homepage-এ বসানো */
   .home-page .hero-shell {
-    background: #030204 url("assets/homepage-background.jpg")
-      center center / cover no-repeat !important;
+    background-image: url("assets/homepage-background.jpg") !important;
+    background-position: center center !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+    background-color: #030204 !important;
   }
 }
