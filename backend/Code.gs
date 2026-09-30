@@ -263,44 +263,152 @@ function ensureUniqueRoboSoccerMembers_(sheet, members) {
 
 function sendConfirmation_(data) {
   const isVisitor = data.registrationType === "Visitor";
-  const recipient = String((isVisitor ? data.email : ((data.members || [])[0] || {}).email) || "").trim().toLowerCase();
+
+  const recipient = String(
+    (isVisitor
+      ? data.email
+      : ((data.members || [])[0] || {}).email
+    ) || ""
+  ).trim().toLowerCase();
+
   if (!recipient) return;
 
-  const registrationFor = isVisitor ? "Visitor Registration" : data.segment;
-  const verificationUrl = `${VERIFY_PAGE_URL}?id=${encodeURIComponent(data.registrationId)}`;
+  const registrationId = String(data.registrationId || "").trim();
+  const registrationFor = isVisitor
+    ? "Visitor Registration"
+    : String(data.segment || "Participant Registration");
+
+  const verificationUrl =
+    `${VERIFY_PAGE_URL}?id=${encodeURIComponent(registrationId)}`;
+
   const subject = `${EVENT_NAME} — Registration Confirmation`;
+
+  /* Create QR image */
+  let qrBlob = null;
+
+  try {
+    const qrApiUrl =
+      "https://quickchart.io/qr" +
+      "?text=" + encodeURIComponent(verificationUrl) +
+      "&size=360" +
+      "&margin=2" +
+      "&ecLevel=H" +
+      "&format=png";
+
+    const qrResponse = UrlFetchApp.fetch(qrApiUrl, {
+      muteHttpExceptions: true
+    });
+
+    if (qrResponse.getResponseCode() === 200) {
+      qrBlob = qrResponse
+        .getBlob()
+        .setName(`${registrationId}-QR-Pass.png`);
+    }
+  } catch (error) {
+    console.log("QR generation failed: " + error.message);
+  }
+
+  const qrSection = qrBlob
+    ? `
+      <div style="margin:22px 0;text-align:center">
+        <p style="margin:0 0 12px;font-weight:700;color:#ffffff">
+          Entry QR Pass
+        </p>
+
+        <div style="display:inline-block;background:#ffffff;padding:14px;border-radius:16px">
+          <img
+            src="cid:entryQr"
+            width="260"
+            height="260"
+            alt="Registration QR Code"
+            style="display:block"
+          >
+        </div>
+
+        <p style="margin:12px 0 0;color:#b8b8c2;font-size:13px">
+          Present this QR code at the entry desk.
+        </p>
+      </div>
+    `
+    : `
+      <p style="color:#b8b8c2">
+        QR image could not be generated. Your registration ID is still valid.
+      </p>
+    `;
+
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;background:#0c0c11;color:#f5f5f8;padding:30px;border-radius:22px">
-      <p style="color:#ff5750;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Registration confirmed</p>
-      <h1 style="font-size:28px;margin:8px 0 16px">${EVENT_NAME}</h1>
-      <p style="color:#c5c5ce;line-height:1.6">Thank you for registering. Please keep the registration ID below for verification.</p>
+      
+      <p style="color:#ff5750;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">
+        Registration confirmed
+      </p>
+
+      <h1 style="font-size:28px;margin:8px 0 16px">
+        ${EVENT_NAME}
+      </h1>
+
+      <p style="color:#c5c5ce;line-height:1.6">
+        Thank you for registering. Please keep your registration ID and QR pass for entry verification.
+      </p>
+
       <div style="background:#191921;border:1px solid #30303a;padding:18px;border-radius:14px;margin:20px 0">
-        <p style="margin:0 0 8px"><strong>Registration ID:</strong> ${escapeHtml_(data.registrationId)}</p>
-        <p style="margin:0 0 8px"><strong>Registration:</strong> ${escapeHtml_(registrationFor)}</p>
-        <p style="margin:0 0 8px"><strong>Date:</strong> ${EVENT_DATES}</p>
-        <p style="margin:0"><strong>Venue:</strong> ${EVENT_VENUE}</p>
+        <p style="margin:0 0 8px">
+          <strong>Registration ID:</strong>
+          ${escapeHtml_(registrationId)}
+        </p>
+
+        <p style="margin:0 0 8px">
+          <strong>Registration:</strong>
+          ${escapeHtml_(registrationFor)}
+        </p>
+
+        <p style="margin:0 0 8px">
+          <strong>Date:</strong> ${EVENT_DATES}
+        </p>
+
+        <p style="margin:0">
+          <strong>Venue:</strong> ${EVENT_VENUE}
+        </p>
       </div>
-      <p style="margin:22px 0"><a href="${verificationUrl}" style="display:inline-block;background:#e92f32;color:#ffffff;text-decoration:none;font-weight:700;padding:13px 18px;border-radius:11px">Open Verification Pass</a></p>
-      <p style="color:#9b9ba7;font-size:13px;line-height:1.6">Please bring a valid institutional ID and follow the official rules of your selected segment.</p>
-      <p style="margin-top:24px">BNMPC Science Club</p>
-    </div>`;
 
-  MailApp.sendEmail({
+      ${qrSection}
+
+      <p style="color:#9b9ba7;font-size:13px;line-height:1.6">
+        Please bring a valid institutional ID and follow the official rules of your selected segment.
+      </p>
+
+      <p style="margin-top:24px">
+        BNMPC Science Club
+      </p>
+    </div>
+  `;
+
+  const mailOptions = {
     to: recipient,
-    subject,
-    htmlBody,
+    subject: subject,
+    body:
+      `Registration confirmed.\n\n` +
+      `Registration ID: ${registrationId}\n` +
+      `Registration: ${registrationFor}\n` +
+      `Date: ${EVENT_DATES}\n` +
+      `Venue: ${EVENT_VENUE}\n\n` +
+      `Please present your QR pass or registration ID at the entry desk.`,
+    htmlBody: htmlBody,
     name: "BNMPC Science Club"
-  });
-}
+  };
 
-function escapeHtml_(value) {
-  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
+  if (qrBlob) {
+    mailOptions.inlineImages = {
+      entryQr: qrBlob
+    };
 
-function json_(data) {
-  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
-}
+    mailOptions.attachments = [
+      qrBlob.copyBlob().setName(`${registrationId}-QR-Pass.png`)
+    ];
+  }
 
+  MailApp.sendEmail(mailOptions);
+}
 function response_(data, callback) {
   const callbackName = String(callback || "").trim();
   if (/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callbackName)) {
