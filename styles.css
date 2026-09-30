@@ -718,3 +718,78 @@ img { display: block; max-width: 100%; }
   .success-state .pass-actions button { width: auto; }
 }
 
+/* =============================================================
+   22. CATEGORY-WISE PARTICIPANT REGISTRATION PAGE
+   ============================================================= */
+.participant-page-content { width: min(1240px, calc(100% - 36px)); }
+.participant-heading { max-width: 850px; }
+.category-nav { position: sticky; z-index: 18; top: 104px; display: flex; gap: 8px; margin: 0 0 42px; padding: 8px; overflow-x: auto; border-radius: 22px; scrollbar-width: none; }
+.category-nav::-webkit-scrollbar { display: none; }
+.category-tab { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 17px; border: 1px solid transparent; border-radius: 15px; color: var(--muted); font-size: .75rem; font-weight: 850; white-space: nowrap; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+.category-tab:hover { color: #fff; background: rgba(255,255,255,.055); }
+.category-tab.active { color: #fff; border-color: rgba(255,255,255,.16); background: linear-gradient(135deg, rgba(243,52,47,.95), rgba(115,7,17,.9)); box-shadow: 0 9px 30px rgba(190,14,23,.2); }
+.category-sections { display: grid; gap: 74px; }
+.event-category-section { scroll-margin-top: 190px; }
+.category-heading { position: relative; display: grid; grid-template-columns: minmax(0, .9fr) minmax(280px, 1.1fr) auto; align-items: end; gap: 28px; margin: 0 0 22px; padding: 0 3px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.category-heading > div { display: flex; align-items: center; gap: 13px; }
+.category-heading h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3.1rem); line-height: 1; letter-spacing: -.05em; }
+.category-heading p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.55; }
+.category-number { display: grid; place-items: center; width: 43px; height: 43px; flex: none; border-radius: 14px; background: rgba(255,255,255,.065); border: 1px solid rgba(255,255,255,.09); color: #ff8c88; font-size: .7rem; font-weight: 900; }
+.category-count { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: #bcbcc5; font-size: .67rem; font-weight: 850; white-space: nowrap; }
+
+/* =============================================================
+   23. GAMING CARDS, PAYMENT GUIDE AND PENDING STATE
+   ============================================================= */
+.gaming-event-card { min-height: 360px; border-color: rgba(255,70,65,.2); background: radial-gradient(circle at 100% 100%, rgba(237,31,36,.11), transparent 45%), var(--panel-strong); }
+.gaming-fee-chip { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: auto 0 12px; padding: 11px 13px; border: 1px solid rgba(255,255,255,.09); border-radius: 14px; background: rgba(0,0,0,.2); }
+.gaming-fee-chip span { color: var(--muted); font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; }
+.gaming-fee-chip strong { color: #fff; font-size: .8rem; }
+.gaming-card-top-actions { margin-top: 0; }
+.gaming-register-button { position: relative; z-index: 2; width: 100%; min-height: 48px; margin-top: 9px; border-radius: 14px; border: 1px solid rgba(255,255,255,.16); font-size: .82rem; font-weight: 900; cursor: pointer; }
+.payment-guide-amount { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 16px; margin: 18px 0 12px; padding: 18px; border-radius: 19px; background: linear-gradient(135deg, rgba(239,43,43,.15), rgba(255,255,255,.035)); border: 1px solid rgba(255,83,77,.2); }
+.payment-guide-amount span { color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.payment-guide-amount strong { grid-row: 1 / 3; grid-column: 2; font-size: 2rem; }
+.payment-guide-amount small { color: #fff; font-size: .75rem; }
+.payment-account-card { margin-bottom: 13px; padding: 18px; border-radius: 19px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); }
+.payment-account-card span, .payment-account-card small { display: block; color: var(--muted); font-size: .7rem; line-height: 1.45; }
+.payment-account-card strong { display: block; margin: 7px 0; font-size: 1.3rem; letter-spacing: .04em; }
+.payment-number-pending { border-color: rgba(247,178,75,.24); background: rgba(247,178,75,.06); }
+.payment-steps strong { color: #fff; }
+.payment-contact-note { margin: 0 0 18px; padding: 12px 14px; border-radius: 14px; background: rgba(51,93,255,.07); border: 1px solid rgba(72,97,255,.14); color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.payment-contact-note strong { color: #fff; }
+.gaming-payment-fields { grid-column: 1 / -1; padding: 18px; border-radius: 21px; background: linear-gradient(145deg, rgba(232,39,40,.1), rgba(255,255,255,.025)); border: 1px solid rgba(255,76,70,.18); }
+.gaming-payment-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 14px; }
+.gaming-payment-heading span, .gaming-payment-heading strong { display: block; }
+.gaming-payment-heading span { margin-bottom: 5px; color: #ff8d88; font-size: .67rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.gaming-payment-heading strong { font-size: 1rem; }
+.gaming-payment-heading em { max-width: 260px; color: var(--muted); font-size: .66rem; font-style: normal; line-height: 1.45; text-align: right; }
+.gaming-payment-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gaming-payment-fields > p { margin: 13px 0 0; color: var(--muted); font-size: .69rem; line-height: 1.5; }
+.payment-pending-mark { background: linear-gradient(145deg, #e58d26, #81500e); box-shadow: 0 0 40px rgba(229,141,38,.2); font-size: 1.1rem; }
+.pending-payment-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: min(470px, 100%); margin: 2px 0 12px; text-align: left; }
+.pending-payment-summary div { padding: 11px 13px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+.pending-payment-summary span { display: block; margin-bottom: 4px; color: var(--muted); font-size: .57rem; letter-spacing: .08em; text-transform: uppercase; }
+.pending-payment-summary strong { display: block; font-size: .76rem; }
+
+@media (max-width: 800px) {
+  .category-heading { grid-template-columns: 1fr auto; gap: 13px; }
+  .category-heading p { grid-column: 1 / -1; grid-row: 2; }
+  .category-count { grid-column: 2; grid-row: 1; }
+}
+
+@media (max-width: 720px) {
+  .category-nav { top: 82px; margin-bottom: 32px; border-radius: 18px; }
+  .event-category-section { scroll-margin-top: 155px; }
+  .category-sections { gap: 58px; }
+  .category-heading { grid-template-columns: 1fr; align-items: start; gap: 12px; }
+  .category-count { grid-column: 1; grid-row: 3; justify-self: start; }
+  .gaming-payment-inputs { grid-template-columns: 1fr; }
+  .gaming-payment-heading { align-items: flex-start; flex-direction: column; }
+  .gaming-payment-heading em { text-align: left; }
+}
+
+@media (max-width: 450px) {
+  .category-tab { min-height: 42px; padding: 0 14px; font-size: .69rem; }
+  .pending-payment-summary { grid-template-columns: 1fr; }
+  .payment-guide-amount strong { font-size: 1.55rem; }
+}

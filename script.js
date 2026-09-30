@@ -6,6 +6,8 @@
      =========================================================== */
   const modalRoot = document.getElementById("modal-root");
   const events = Array.isArray(window.BNMPC_EVENTS) ? window.BNMPC_EVENTS : [];
+  const eventCategories = Array.isArray(window.BNMPC_EVENT_CATEGORIES) ? window.BNMPC_EVENT_CATEGORIES : [];
+  const gamingPayment = window.BNMPC_GAMING_PAYMENT || {};
   const config = window.BNMPC_CONFIG || {};
   let lastFocused = null;
 
@@ -88,6 +90,22 @@
       ${demo ? '<p class="connection-notice">Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.</p>' : '<p class="connection-notice success">Your entry pass is ready. Download it and present it to the organisers at the entry desk.</p>'}
       <p class="qr-error" data-qr-error hidden></p>
       <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><button class="ghost-button" type="button" data-finish>Done</button></div>
+    </div>`;
+
+  const paymentPendingContent = (payload, demo) => `
+    <div class="success-state payment-pending-state">
+      <div class="success-mark payment-pending-mark" aria-hidden="true">⌛</div>
+      <span class="modal-kicker">Payment verification pending</span>
+      <h2>Registration received</h2>
+      <p class="modal-lead">Your ${escapeHtml(payload.segment)} registration and payment information have been submitted.</p>
+      <div class="pending-payment-summary">
+        <div><span>Event</span><strong>${escapeHtml(payload.segment)}</strong></div>
+        <div><span>Amount</span><strong>৳${Number(payload.paymentAmount || 0).toLocaleString("en-BD")}</strong></div>
+        <div><span>Payment method</span><strong>bKash</strong></div>
+        <div><span>Status</span><strong>${demo ? "Preview pending" : "Under committee review"}</strong></div>
+      </div>
+      <p class="connection-notice success">The committee will verify the payment. Your confirmed registration ID and QR entry pass will be sent to the first participant’s email after approval.</p>
+      <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-finish>Done</button></div>
     </div>`;
 
   const createRegistrationId = () => `BNMPC26-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -279,6 +297,50 @@
     }
   };
 
+  const requestPublicBackend = async (action, parameters = {}) => {
+    const endpoint = String(config.googleAppsScriptUrl || "").trim();
+    if (!endpoint) throw new Error("Registration service is not configured.");
+    const makeUrl = () => {
+      const url = new URL(endpoint);
+      url.searchParams.set("action", action);
+      url.searchParams.set("_", Date.now().toString());
+      Object.entries(parameters).forEach(([key, value]) => url.searchParams.set(key, String(value ?? "")));
+      return url;
+    };
+
+    try {
+      const response = await fetch(makeUrl().href, { method: "GET", mode: "cors", cache: "no-store", redirect: "follow" });
+      if (!response.ok) throw new Error("Service request failed.");
+      return await response.json();
+    } catch (fetchError) {
+      return await new Promise((resolve, reject) => {
+        const callbackName = `bnmpcPublic_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const url = makeUrl();
+        url.searchParams.set("callback", callbackName);
+        const timeout = setTimeout(() => {
+          script.remove();
+          delete window[callbackName];
+          reject(new Error("Registration service could not be reached."));
+        }, 15000);
+        window[callbackName] = response => {
+          clearTimeout(timeout);
+          script.remove();
+          delete window[callbackName];
+          resolve(response);
+        };
+        script.onerror = () => {
+          clearTimeout(timeout);
+          script.remove();
+          delete window[callbackName];
+          reject(new Error("Registration service could not be reached."));
+        };
+        script.src = url.href;
+        document.head.appendChild(script);
+      });
+    }
+  };
+
   const submitRegistration = async (payload) => {
     const endpoint = String(config.googleAppsScriptUrl || "").trim();
     if (config.demoMode || !endpoint) {
@@ -286,6 +348,11 @@
       saved.push(payload);
       localStorage.setItem("bnmpc-registration-preview", JSON.stringify(saved.slice(-25)));
       return { demo: true };
+    }
+    if (payload.paymentRequired) {
+      const availability = await requestPublicBackend("gaming-transaction-available", { transactionId: payload.transactionId });
+      if (!availability?.ok) throw new Error(availability?.message || "Payment information could not be checked.");
+      if (!availability.available) throw new Error("This transaction ID has already been used for another gaming registration.");
     }
     await fetch(endpoint, {
       method: "POST",
@@ -312,12 +379,14 @@
         const result = await submitRegistration(payload);
         const modal = modalRoot.querySelector(".modal");
         modal.classList.add("success-modal");
-        modal.innerHTML = successContent(successTitle, successMessage, payload, result.demo);
+        modal.innerHTML = payload.paymentRequired
+          ? paymentPendingContent(payload, result.demo)
+          : successContent(successTitle, successMessage, payload, result.demo);
         modal.querySelector("[data-finish]")?.addEventListener("click", closeModal);
-        prepareRegistrationPass(modal, payload);
+        if (!payload.paymentRequired) prepareRegistrationPass(modal, payload);
       } catch (error) {
         if (errorBox) {
-          errorBox.textContent = "Registration could not be submitted. Please check your connection and try again.";
+          errorBox.textContent = error.message || "Registration could not be submitted. Please check your connection and try again.";
           errorBox.hidden = false;
         }
       } finally {
@@ -371,8 +440,8 @@
       <h2>How would you like to join?</h2>
       <p class="modal-lead">Visitor entry is free. Participants can select a competition segment before registering.</p>
       <div class="register-choice">
+        <a class="choice-card participant-choice" href="participant-registration.html"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a category, review a segment and enter the competition.</span></a>
         <button class="choice-card" type="button" data-visitor-choice><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"/><path d="M5.5 28c.8-5.2 4.3-8 10.5-8s9.7 2.8 10.5 8"/><path d="M24 8h5v8h-5"/></svg></span><strong>Register as Visitor</strong><span>Visit the exhibitions and experience the carnival.</span></button>
-        <a class="choice-card" href="events.html"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a segment and enter the competition.</span></a>
       </div>`, "Registration options");
     modalRoot.querySelector("[data-visitor-choice]")?.addEventListener("click", visitorForm);
   };
@@ -383,14 +452,57 @@
      04. EVENTS PAGE AND OFFICIAL RULES
      =========================================================== */
   const eventGrid = document.getElementById("event-grid");
+  const categoryNav = document.getElementById("category-nav");
+  const categorySections = document.getElementById("category-sections");
+
+  const eventCardMarkup = (event, index) => {
+    const paymentActions = event.paymentRequired ? `
+      <div class="card-actions gaming-card-top-actions">
+        <button class="ghost-button details-button" type="button">See Details</button>
+        <button class="ghost-button payment-guide-button" type="button">How to Pay</button>
+      </div>
+      <button class="primary-button event-register gaming-register-button" type="button">Register Now · ৳${Number(event.paymentAmount).toLocaleString("en-BD")}</button>` : `
+      <div class="card-actions">
+        <button class="ghost-button details-button" type="button">See Details</button>
+        <button class="primary-button event-register" type="button">Register Now</button>
+      </div>`;
+
+    return `<article class="event-card glass-panel${event.paymentRequired ? " gaming-event-card" : ""}" data-event-slug="${escapeHtml(event.slug)}">
+      <div class="card-top"><span class="event-number">${String(index + 1).padStart(2, "0")}</span><span class="event-type">${escapeHtml(event.type)}</span></div>
+      <h2>${escapeHtml(event.title)}</h2>
+      <p>${escapeHtml(event.summary)}</p>
+      ${event.paymentRequired ? `<div class="gaming-fee-chip"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")} / ${escapeHtml(event.paymentUnit)}</strong></div>` : ""}
+      ${paymentActions}
+    </article>`;
+  };
+
   if (eventGrid && events.length) {
-    eventGrid.innerHTML = events.map((event, index) => `
-      <article class="event-card glass-panel" data-event-slug="${escapeHtml(event.slug)}">
-        <div class="card-top"><span class="event-number">${String(index + 1).padStart(2, "0")}</span><span class="event-type">${escapeHtml(event.type)}</span></div>
-        <h2>${escapeHtml(event.title)}</h2>
-        <p>${escapeHtml(event.summary)}</p>
-        <div class="card-actions"><button class="ghost-button details-button" type="button">See Details</button><button class="primary-button event-register" type="button">Register Now</button></div>
-      </article>`).join("");
+    eventGrid.innerHTML = events.map(event => eventCardMarkup(event, events.indexOf(event))).join("");
+  }
+
+  if (categoryNav && categorySections && events.length && eventCategories.length) {
+    categoryNav.innerHTML = eventCategories.map((category, index) => `
+      <a class="category-tab${index === 0 ? " active" : ""}" href="#category-${escapeHtml(category.slug)}">${escapeHtml(category.title)}</a>`).join("");
+
+    categorySections.innerHTML = eventCategories.map((category, index) => {
+      const categoryEvents = category.eventSlugs.map(slug => events.find(event => event.slug === slug)).filter(Boolean);
+      return `<section class="event-category-section" id="category-${escapeHtml(category.slug)}" data-category-index="${index}">
+        <div class="category-heading">
+          <div><span class="category-number">${String(index + 1).padStart(2, "0")}</span><h2>${escapeHtml(category.title)}</h2></div>
+          <p>${escapeHtml(category.description)}</p>
+          <span class="category-count">${categoryEvents.length} event${categoryEvents.length === 1 ? "" : "s"}</span>
+        </div>
+        <div class="event-grid category-event-grid">${categoryEvents.map(event => eventCardMarkup(event, events.indexOf(event))).join("")}</div>
+      </section>`;
+    }).join("");
+
+    categoryNav.addEventListener("click", event => {
+      const tab = event.target.closest(".category-tab");
+      if (!tab) return;
+      event.preventDefault();
+      categoryNav.querySelectorAll(".category-tab").forEach(item => item.classList.toggle("active", item === tab));
+      document.querySelector(tab.getAttribute("href"))?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   const memberFormat = (event) => {
@@ -402,6 +514,32 @@
 
   const findEvent = (element) => events.find(event => event.slug === element.closest("[data-event-slug]")?.dataset.eventSlug);
 
+  const showPaymentGuide = (event) => {
+    const accountNumber = String(gamingPayment.accountNumber || "To be announced");
+    const numberReady = /\d{8,}/.test(accountNumber.replace(/\D/g, ""));
+    openModal(`
+      <span class="modal-kicker">${escapeHtml(event.title)} · bKash payment</span>
+      <h2>How to Pay</h2>
+      <p class="modal-lead">Pay the registration fee before submitting the gaming registration form.</p>
+      <div class="payment-guide-amount"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong><small>Per ${escapeHtml(event.paymentUnit)}</small></div>
+      <div class="payment-account-card${numberReady ? "" : " payment-number-pending"}">
+        <span>bKash ${escapeHtml(gamingPayment.accountType || "Personal")} number</span>
+        <strong>${escapeHtml(accountNumber)}</strong>
+        ${numberReady ? "" : "<small>The official payment number will be added here before gaming registration opens.</small>"}
+      </div>
+      <section class="rules-panel payment-steps"><h3>Payment steps</h3><ol>
+        <li>Open the bKash app and choose <strong>Send Money</strong>.</li>
+        <li>Enter the official BNMPC Science Club payment number shown above.</li>
+        <li>Send exactly <strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong> for ${escapeHtml(event.title)} registration.</li>
+        <li>Keep the bKash sender number and Transaction ID.</li>
+        <li>Enter both correctly in the registration form and submit for committee verification.</li>
+      </ol></section>
+      <p class="payment-contact-note">Payment support: <strong>${escapeHtml(gamingPayment.contactName || "Md. Tahmid Mahir")}</strong> · ${escapeHtml(gamingPayment.contactPhone || "+880 19 0222 3848")}</p>
+      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button><button class="primary-button" type="button" data-register-event>Continue to Registration</button></div>`, `${event.title} payment guide`, true);
+    modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
+    modalRoot.querySelector("[data-register-event]")?.addEventListener("click", () => participantForm(event));
+  };
+
   const eventDetails = (event, index) => {
     openModal(`
       <span class="modal-kicker">Event ${String(index + 1).padStart(2, "0")} · Official details</span>
@@ -412,22 +550,27 @@
         <div><span>Format</span><strong>${escapeHtml(memberFormat(event))}</strong></div>
         <div><span>Venue</span><strong>BNMPC Campus</strong></div>
         <div><span>Event dates</span><strong>October 29–31, 2026</strong></div>
+        ${event.paymentRequired ? `<div><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")} / ${escapeHtml(event.paymentUnit)}</strong></div>` : ""}
       </div>
       <section class="rules-panel"><h3>Rules & Guidelines</h3><ol>${event.rules.map(rule => `<li>${escapeHtml(rule)}</li>`).join("")}</ol></section>
-      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button><button class="primary-button" type="button" data-register-event>Register Now</button></div>`, `${event.title} details`, event.rules.length > 7);
+      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button>${event.paymentRequired ? '<button class="ghost-button" type="button" data-payment-guide>How to Pay</button>' : ""}<button class="primary-button" type="button" data-register-event>Register Now</button></div>`, `${event.title} details`, event.rules.length > 7);
     modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
+    modalRoot.querySelector("[data-payment-guide]")?.addEventListener("click", () => showPaymentGuide(event));
     modalRoot.querySelector("[data-register-event]")?.addEventListener("click", () => participantForm(event));
   };
 
-  eventGrid?.addEventListener("click", event => {
-    const detailsButton = event.target.closest(".details-button");
-    const registerButton = event.target.closest(".event-register");
-    if (!detailsButton && !registerButton) return;
-    const eventData = findEvent(detailsButton || registerButton);
+  [eventGrid, categorySections].filter(Boolean).forEach(root => root.addEventListener("click", clickEvent => {
+    const detailsButton = clickEvent.target.closest(".details-button");
+    const paymentButton = clickEvent.target.closest(".payment-guide-button");
+    const registerButton = clickEvent.target.closest(".event-register");
+    const actionButton = detailsButton || paymentButton || registerButton;
+    if (!actionButton) return;
+    const eventData = findEvent(actionButton);
     if (!eventData) return;
     if (detailsButton) eventDetails(eventData, events.indexOf(eventData));
+    if (paymentButton) showPaymentGuide(eventData);
     if (registerButton) participantForm(eventData);
-  });
+  }));
 
   /* ===========================================================
      05. DYNAMIC PARTICIPANT REGISTRATION
@@ -444,11 +587,21 @@
   const participantForm = (event) => {
     const countChoices = Array.from({ length: event.maxMembers - event.minMembers + 1 }, (_, index) => event.minMembers + index);
     const isTeamEvent = event.maxMembers > 1;
+    const isGaming = Boolean(event.paymentRequired);
     const skipsClass = event.slug === "valorant" || event.slug === "fifa";
     const asksGroup = event.groups.length < 4 && event.slug !== "valorant";
     const groupField = asksGroup ? `<div class="field full registration-group-field"><label for="registration-group">Select Group</label><select id="registration-group" name="registrationGroup" required><option value="" selected disabled>Select your group</option>${groupOptions(event.groups)}</select></div>` : "";
     const countField = isTeamEvent ? `
       <div class="field full member-count-field"><label for="member-count">Select Your Team Size</label><select id="member-count" name="memberCount" required><option value="" selected disabled>Select your team size</option>${countChoices.map(count => `<option value="${count}">${event.valorantRoster ? (count === 5 ? "5 main players" : `5 main players + ${count - 5} substitute${count === 6 ? "" : "s"}`) : `${count} member${count > 1 ? "s" : ""}`}</option>`).join("")}</select></div>` : `<input type="hidden" id="member-count" name="memberCount" value="1">`;
+    const paymentFields = isGaming ? `
+      <section class="gaming-payment-fields full">
+        <div class="gaming-payment-heading"><div><span>bKash payment verification</span><strong>Payable amount: ৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong></div><em>Use the How to Pay guide on the event card before completing this form.</em></div>
+        <div class="gaming-payment-inputs">
+          <div class="field"><label for="payment-phone">Payment bKash Number</label><input id="payment-phone" name="paymentPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" required></div>
+          <div class="field"><label for="transaction-id">Transaction ID</label><input id="transaction-id" name="transactionId" inputmode="text" autocomplete="off" placeholder="e.g. A1B2C3D4E5" minlength="6" maxlength="20" pattern="[A-Za-z0-9]+" required></div>
+        </div>
+        <p>Your payment will be checked by the carnival committee. The final registration ID and QR pass will be emailed only after approval.</p>
+      </section>` : "";
 
     openModal(`
       <span class="modal-kicker">Participant registration</span>
@@ -461,6 +614,7 @@
         ${(event.extraFields || []).map(extraFieldMarkup).join("")}
         ${countField}
         <div class="member-fields full" id="member-fields"></div>
+        ${paymentFields}
         <div class="honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
         <p class="form-error" data-form-error hidden></p>
         <p class="form-note">Please provide accurate information for every registered participant.</p>
@@ -530,6 +684,13 @@
         entryFields,
         memberCount: members.length,
         members,
+        paymentRequired: isGaming,
+        paymentMethod: isGaming ? "bKash" : "",
+        paymentAmount: isGaming ? Number(event.paymentAmount) : 0,
+        paymentUnit: isGaming ? event.paymentUnit : "",
+        paymentPhone: isGaming ? String(formData.get("paymentPhone") || "").trim() : "",
+        transactionId: isGaming ? String(formData.get("transactionId") || "").trim().toUpperCase() : "",
+        paymentStatus: isGaming ? "Pending" : "Not Required",
         website: formData.get("website") || ""
       };
     }, "Registration received", `Your ${event.title} registration has been submitted successfully.`);

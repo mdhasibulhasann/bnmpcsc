@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050407">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Private BNMPC Science Carnival gaming payment committee portal.">
+  <title>Gaming Payment Review · BNMPC Science Carnival 2026</title>
+  <link rel="icon" type="image/jpeg" href="assets/club-logo.jpg">
+  <link rel="stylesheet" href="styles.css?v=payment-1">
+  <link rel="stylesheet" href="gaming-payments.css?v=payment-1">
+</head>
+<body class="gaming-payment-page">
+  <!-- 01. Private portal background -->
+  <div class="payment-portal-backdrop" aria-hidden="true"><div></div></div>
+
+  <!-- 02. Committee PIN access -->
+  <main class="payment-portal-shell">
+    <section class="payment-access-card" id="gaming-access-card" aria-labelledby="gaming-access-title">
+      <div class="payment-portal-brand">
+        <img src="assets/header-logo.png" onerror="this.src='assets/club-logo.jpg'" alt="BNMPC Science Club logo">
+        <div><strong>BNMPC Science Club</strong><span>Gaming Payment Committee</span></div>
+      </div>
+      <span class="portal-kicker">Restricted organiser access</span>
+      <h1 id="gaming-access-title">Payment Review</h1>
+      <p>Enter the private gaming committee PIN to review Valorant and FIFA payments.</p>
+      <form id="gaming-pin-form" class="payment-pin-form">
+        <label for="gaming-pin">Committee PIN</label>
+        <input id="gaming-pin" type="password" inputmode="numeric" minlength="4" maxlength="12" autocomplete="current-password" required>
+        <p class="portal-error" id="gaming-pin-message" hidden></p>
+        <button class="primary-button" type="submit">Unlock Portal</button>
+      </form>
+      <a class="portal-home-link" href="index.html">Back to website</a>
+    </section>
+
+    <!-- 03. Payment dashboard; hidden until PIN authentication -->
+    <section class="payment-dashboard" id="gaming-dashboard" hidden>
+      <header class="payment-dashboard-header">
+        <div class="payment-portal-brand compact">
+          <img src="assets/header-logo.png" onerror="this.src='assets/club-logo.jpg'" alt="">
+          <div><strong>Gaming Payments</strong><span id="gaming-service-status">Secure committee portal</span></div>
+        </div>
+        <div class="dashboard-header-actions">
+          <button class="portal-secondary-button" id="refresh-payments" type="button">Refresh</button>
+          <button class="portal-secondary-button" id="gaming-lock-button" type="button">Lock</button>
+        </div>
+      </header>
+
+      <!-- 04. Live summary and filters -->
+      <section class="payment-summary-grid" aria-label="Payment summary">
+        <div><span>All</span><strong id="payment-total">0</strong></div>
+        <div><span>Pending</span><strong id="payment-pending">0</strong></div>
+        <div><span>Needs attention</span><strong id="payment-issues">0</strong></div>
+        <div><span>Approved</span><strong id="payment-approved">0</strong></div>
+      </section>
+
+      <nav class="payment-filter-bar" id="payment-filter-bar" aria-label="Payment filters">
+        <button class="active" type="button" data-payment-filter="Pending">Pending</button>
+        <button type="button" data-payment-filter="Needs Attention">Needs Attention</button>
+        <button type="button" data-payment-filter="Approved">Approved</button>
+        <button type="button" data-payment-filter="All">All</button>
+      </nav>
+
+      <!-- 05. Records generated from the Valorant and FIFA sheets -->
+      <p class="portal-error dashboard-error" id="gaming-dashboard-error" hidden></p>
+      <div class="payment-loading" id="payment-loading">Loading gaming registrations…</div>
+      <section class="payment-review-grid" id="payment-review-grid" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <script src="config.js?v=live-4"></script>
+  <script src="gaming-payments.js?v=payment-1"></script>
+</body>
+</html>

@@ -270,6 +270,9 @@ window.BNMPC_EVENTS = [
     maxMembers: 7,
     teamName: true,
     valorantRoster: true,
+    paymentRequired: true,
+    paymentAmount: 1000,
+    paymentUnit: "team",
     rules: ["Each team must register 5 main players.", "Up to 2 substitute players may be added.", "Detailed match rules will be published later."]
   },
   {
@@ -281,6 +284,72 @@ window.BNMPC_EVENTS = [
     groups: ["C", "D"],
     minMembers: 1,
     maxMembers: 1,
+    paymentRequired: true,
+    paymentAmount: 500,
+    paymentUnit: "participant",
     rules: ["This is a solo event.", "Detailed match rules will be published later."]
   }
 ];
+
+/* =============================================================
+   PARTICIPANT PAGE CATEGORIES
+   Edit a category title, description or event order here.
+   ============================================================= */
+window.BNMPC_EVENT_CATEGORIES = [
+  {
+    slug: "project-exhibition",
+    title: "Project & Exhibition",
+    description: "Build, research and present scientific ideas through practical and visual formats.",
+    eventSlugs: ["project-display", "wall-magazine", "scrapbook"]
+  },
+  {
+    slug: "olympiads",
+    title: "Olympiads",
+    description: "Challenge subject knowledge, concepts and analytical problem-solving.",
+    eventSlugs: ["physics-olympiad", "chemistry-olympiad", "mathematics-olympiad", "biology-olympiad", "it-olympiad", "gk-olympiad"]
+  },
+  {
+    slug: "quizzes",
+    title: "Quizzes",
+    description: "Compete through fast recall, teamwork and knowledge across popular themes.",
+    eventSlugs: ["marvel-dc-quiz", "movie-series-quiz", "team-quiz"]
+  },
+  {
+    slug: "technology-robotics",
+    title: "Technology & Robotics",
+    description: "Solve technical challenges through code, engineering and intelligent machines.",
+    eventSlugs: ["coding-contest", "robo-soccer"]
+  },
+  {
+    slug: "creative-presentation",
+    title: "Creative & Presentation",
+    description: "Communicate scientific ideas through speaking, storytelling and multimedia.",
+    eventSlugs: ["multimedia-presentation", "extempore-speech", "scientific-story-writing"]
+  },
+  {
+    slug: "puzzle-problem-solving",
+    title: "Puzzle & Problem Solving",
+    description: "Test speed, logic and accuracy through focused individual challenges.",
+    eventSlugs: ["sudoku", "case-solving", "rubiks-cube"]
+  },
+  {
+    slug: "gaming",
+    title: "Gaming",
+    description: "Paid competitive gaming registrations with committee payment verification.",
+    eventSlugs: ["valorant", "fifa"]
+  }
+];
+
+/* =============================================================
+   GAMING PAYMENT COPY
+   Replace the placeholder number when the official bKash number
+   is ready. Both gaming cards use this single configuration.
+   ============================================================= */
+window.BNMPC_GAMING_PAYMENT = {
+  method: "bKash",
+  accountNumber: "To be announced",
+  accountType: "Personal",
+  contactName: "Md. Tahmid Mahir",
+  contactRole: "General Secretary",
+  contactPhone: "+880 19 0222 3848"
+};
