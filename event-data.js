@@ -285,7 +285,7 @@ window.BNMPC_EVENTS = [
     minMembers: 1,
     maxMembers: 1,
     paymentRequired: true,
-    paymentAmount: 500,
+    paymentAmount: 200,
     paymentUnit: "participant",
     rules: ["This is a solo event.", "Detailed match rules will be published later."]
   }
