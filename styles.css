@@ -409,6 +409,7 @@ img { display: block; max-width: 100%; }
 .registration-id strong { display: block; margin-top: 5px; font-size: .9rem; letter-spacing: .04em; }
 .connection-notice { max-width: 480px; margin: 0 0 18px; color: #f4b777; font-size: .76rem; line-height: 1.5; }
 .connection-notice.success { color: #9bd3aa; }
+.visitor-download-required { width: min(520px, 100%); margin: 0 0 14px; padding: 11px 15px; border: 1px solid rgba(255,62,62,.55); border-radius: 12px; background: rgba(255,32,32,.11); color: #ff5853; font-size: .78rem; font-weight: 850; line-height: 1.5; text-align: center; }
 
 /* =============================================================
    12A. QR REGISTRATION PASS
@@ -736,6 +737,39 @@ img { display: block; max-width: 100%; }
 .category-heading p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.55; }
 .category-number { display: grid; place-items: center; width: 43px; height: 43px; flex: none; border-radius: 14px; background: rgba(255,255,255,.065); border: 1px solid rgba(255,255,255,.09); color: #ff8c88; font-size: .7rem; font-weight: 900; }
 .category-count { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: #bcbcc5; font-size: .67rem; font-weight: 850; white-space: nowrap; }
+
+/* ===========================================================
+   18. SPONSOR PAGE
+   Each sponsor tier has its own upload-ready logo slot.
+   =========================================================== */
+.sponsor-content { width: min(1120px, calc(100% - 36px)); }
+.sponsor-heading { max-width: 850px; }
+.sponsor-content { display: grid; gap: 24px; }
+.sponsor-content .sponsor-heading { margin-bottom: 12px; }
+.sponsor-tier { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(230px, .72fr) minmax(320px, 1.28fr); align-items: center; gap: clamp(24px, 5vw, 70px); min-height: 250px; padding: clamp(24px, 4vw, 48px); border-radius: 30px; }
+.sponsor-tier::after { content: ""; position: absolute; width: 280px; height: 280px; right: -110px; bottom: -170px; border-radius: 50%; background: radial-gradient(circle, rgba(241,43,43,.2), transparent 68%); pointer-events: none; }
+.sponsor-tier-title { min-height: 330px; border-color: rgba(255,80,75,.24); background: linear-gradient(135deg, rgba(69,7,13,.62), rgba(10,10,15,.78) 56%, rgba(25,34,87,.35)); }
+.sponsor-tier-gold { border-color: rgba(226,181,82,.24); }
+.sponsor-tier-gold::after { background: radial-gradient(circle, rgba(226,181,82,.2), transparent 68%); }
+.sponsor-tier-copy { position: relative; z-index: 2; }
+.sponsor-tier-copy > span { display: block; margin-bottom: 10px; color: #ff817c; font-size: .68rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+.sponsor-tier-gold .sponsor-tier-copy > span { color: #e7bf67; }
+.sponsor-tier-copy h2 { margin: 0; font-size: clamp(2rem, 4.8vw, 4rem); line-height: .98; letter-spacing: -.055em; }
+.sponsor-logo-slot { position: relative; z-index: 2; display: grid; place-items: center; width: 100%; min-height: 180px; padding: 22px; overflow: hidden; border: 1px dashed rgba(255,255,255,.22); border-radius: 24px; background: rgba(255,255,255,.045); }
+.sponsor-tier-title .sponsor-logo-slot { min-height: 230px; }
+.sponsor-logo-slot img { display: none; width: min(100%, 430px); max-height: 210px; object-fit: contain; }
+.sponsor-logo-slot.asset-ready img { display: block; }
+.sponsor-logo-slot.asset-ready .sponsor-placeholder { display: none; }
+.sponsor-placeholder { display: grid; gap: 8px; place-items: center; color: rgba(255,255,255,.78); font-size: clamp(1rem, 2vw, 1.35rem); font-weight: 850; letter-spacing: .03em; text-align: center; }
+.sponsor-placeholder small { color: var(--muted); font-size: .63rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+
+@media (max-width: 720px) {
+  .sponsor-content { width: min(100% - 24px, 1120px); gap: 16px; }
+  .sponsor-tier, .sponsor-tier-title { grid-template-columns: 1fr; gap: 18px; min-height: 0; padding: 22px; border-radius: 24px; }
+  .sponsor-tier-copy h2 { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+  .sponsor-logo-slot, .sponsor-tier-title .sponsor-logo-slot { min-height: 155px; border-radius: 19px; }
+  .sponsor-logo-slot img { max-height: 145px; }
+}
 
 /* =============================================================
    23. GAMING CARDS, PAYMENT GUIDE AND PENDING STATE

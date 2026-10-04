@@ -67,9 +67,9 @@
     lastFocused = document.activeElement;
     modalRoot.innerHTML = `<div class="modal-backdrop" role="presentation"><section class="modal${wide ? " modal-wide" : ""}" role="dialog" aria-modal="true" aria-label="${escapeHtml(label)}"><button class="modal-close" type="button" aria-label="Close dialog">×</button>${content}</section></div>`;
     document.body.style.overflow = "hidden";
-    const backdrop = modalRoot.querySelector(".modal-backdrop");
     modalRoot.querySelector(".modal-close")?.addEventListener("click", closeModal);
-    backdrop?.addEventListener("click", event => { if (event.target === backdrop) closeModal(); });
+    // Keep registration/details dialogs open when the shaded area is clicked.
+    // Users close them deliberately with the cross or an on-screen action.
     modalRoot.querySelector("button, a, input, select, textarea")?.focus();
   };
 
@@ -88,18 +88,11 @@
         </div>
       </div>
       ${payload.registrationType === "Visitor"
-  ? `<p class="visitor-download-required">
-      IMPORTANT: You must download and save this QR pass now.
-      Visitor confirmation will not be sent by email.
-    </p>`
-  : demo
-    ? `<p class="connection-notice">
-        Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.
-      </p>`
-    : `<p class="connection-notice success">
-        Your entry pass is ready. Download it and present it to the organisers at the entry desk.
-      </p>`
-}
+        ? '<p class="visitor-download-required">IMPORTANT: You must download and save this QR pass now. Visitor confirmation will not be sent by email.</p>'
+        : demo
+          ? '<p class="connection-notice">Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.</p>'
+          : '<p class="connection-notice success">Your entry pass is ready. Download it and present it to the organisers at the entry desk.</p>'}
+      <p class="qr-error" data-qr-error hidden></p>
       <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><button class="ghost-button" type="button" data-finish>Done</button></div>
     </div>`;
 
@@ -284,8 +277,9 @@
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const qrCanvas = qrMount.querySelector("canvas");
       if (!qrCanvas) throw new Error("QR canvas was not created.");
+      const downloadLabel = payload.registrationType === "Visitor" ? "Download QR Pass — Required" : "Download QR Pass";
       downloadButton.disabled = false;
-      downloadButton.textContent = "Download QR Pass";
+      downloadButton.textContent = downloadLabel;
       downloadButton.addEventListener("click", async () => {
         downloadButton.disabled = true;
         downloadButton.textContent = "Creating image…";
@@ -297,7 +291,7 @@
           link.click();
         } finally {
           downloadButton.disabled = false;
-          downloadButton.textContent = "Download QR Pass";
+          downloadButton.textContent = downloadLabel;
         }
       });
     } catch (error) {
@@ -451,7 +445,7 @@
       <h2>How would you like to join?</h2>
       <p class="modal-lead">Visitor entry is free. Participants can select a competition segment before registering.</p>
       <div class="register-choice">
-        <a class="choice-card participant-choice" href="participant-registration.html"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a category, review a segment and enter the competition.</span></a>
+        <a class="choice-card participant-choice" href="/participant-registration/"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a category, review a segment and enter the competition.</span></a>
         <button class="choice-card" type="button" data-visitor-choice><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"/><path d="M5.5 28c.8-5.2 4.3-8 10.5-8s9.7 2.8 10.5 8"/><path d="M24 8h5v8h-5"/></svg></span><strong>Register as Visitor</strong><span>Visit the exhibitions and experience the carnival.</span></button>
       </div>`, "Registration options");
     modalRoot.querySelector("[data-visitor-choice]")?.addEventListener("click", visitorForm);
@@ -511,9 +505,48 @@
       const tab = event.target.closest(".category-tab");
       if (!tab) return;
       event.preventDefault();
-      categoryNav.querySelectorAll(".category-tab").forEach(item => item.classList.toggle("active", item === tab));
+      setActiveCategory([...categoryNav.querySelectorAll(".category-tab")].indexOf(tab));
       document.querySelector(tab.getAttribute("href"))?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+
+    // Follow the visible category while the page is scrolled and keep the
+    // corresponding category indicator visible inside the horizontal bar.
+    const categorySectionNodes = [...categorySections.querySelectorAll(".event-category-section")];
+    const categoryTabs = [...categoryNav.querySelectorAll(".category-tab")];
+    let activeCategoryIndex = -1;
+    let categoryScrollFrame = 0;
+
+    const setActiveCategory = (index) => {
+      if (index < 0 || index === activeCategoryIndex) return;
+      activeCategoryIndex = index;
+      categoryTabs.forEach((tab, tabIndex) => tab.classList.toggle("active", tabIndex === index));
+      const activeTab = categoryTabs[index];
+      if (!activeTab) return;
+      const targetLeft = activeTab.offsetLeft - ((categoryNav.clientWidth - activeTab.offsetWidth) / 2);
+      categoryNav.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+    };
+
+    const syncCategoryIndicator = () => {
+      categoryScrollFrame = 0;
+      const marker = window.innerWidth <= 720 ? 170 : 205;
+      let visibleIndex = 0;
+      categorySectionNodes.forEach((section, index) => {
+        if (section.getBoundingClientRect().top <= marker) visibleIndex = index;
+      });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+        visibleIndex = categorySectionNodes.length - 1;
+      }
+      setActiveCategory(visibleIndex);
+    };
+
+    const requestCategorySync = () => {
+      if (categoryScrollFrame) return;
+      categoryScrollFrame = window.requestAnimationFrame(syncCategoryIndicator);
+    };
+
+    window.addEventListener("scroll", requestCategorySync, { passive: true });
+    window.addEventListener("resize", requestCategorySync);
+    syncCategoryIndicator();
   }
 
   const memberFormat = (event) => {
@@ -767,7 +800,7 @@
     };
     Object.entries(values).forEach(([key, value]) => {
       const node = document.getElementById(key);
-      if (node) node.textContent = key === "days" ? String(value).padStart(3, "0") : String(value).padStart(2, "0");
+      if (node) node.textContent = String(value).padStart(2, "0");
     });
   };
   countdown();
