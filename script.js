@@ -87,8 +87,19 @@
           <small>Present this QR pass at the entry desk</small>
         </div>
       </div>
-      ${demo ? '<p class="connection-notice">Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.</p>' : '<p class="connection-notice success">Your entry pass is ready. Download it and present it to the organisers at the entry desk.</p>'}
-      <p class="qr-error" data-qr-error hidden></p>
+      ${payload.registrationType === "Visitor"
+  ? `<p class="visitor-download-required">
+      IMPORTANT: You must download and save this QR pass now.
+      Visitor confirmation will not be sent by email.
+    </p>`
+  : demo
+    ? `<p class="connection-notice">
+        Your preview entry pass is ready. Official organiser validation will activate after Google Sheets is connected.
+      </p>`
+    : `<p class="connection-notice success">
+        Your entry pass is ready. Download it and present it to the organisers at the entry desk.
+      </p>`
+}
       <div class="modal-actions pass-actions"><button class="primary-button" type="button" data-download-pass disabled>Preparing pass…</button><button class="ghost-button" type="button" data-finish>Done</button></div>
     </div>`;
 
@@ -414,7 +425,7 @@
         <div class="field full"><label for="visitor-address">Address / District</label><textarea id="visitor-address" name="address" autocomplete="street-address" required></textarea></div>
         <div class="honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
         <p class="form-error" data-form-error hidden></p>
-        <p class="form-note">Visitor registration is free. A confirmation email will be sent after successful online submission.</p>
+        <p class="form-note">Visitor registration is free. After submitting, you must download and save the QR entry pass shown on the screen.</p>
         <button class="submit-button primary-button" type="submit">Submit Registration</button>
       </form>`, "Visitor registration");
     const form = document.getElementById("visitor-form");
