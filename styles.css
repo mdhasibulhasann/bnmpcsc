@@ -755,20 +755,31 @@ img { display: block; max-width: 100%; }
 .sponsor-tier-copy > span { display: block; margin-bottom: 10px; color: #ff817c; font-size: .68rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .sponsor-tier-gold .sponsor-tier-copy > span { color: #e7bf67; }
 .sponsor-tier-copy h2 { margin: 0; font-size: clamp(2rem, 4.8vw, 4rem); line-height: .98; letter-spacing: -.055em; }
-.sponsor-logo-slot { position: relative; z-index: 2; display: grid; place-items: center; width: 100%; min-height: 180px; padding: 22px; overflow: hidden; border: 1px dashed rgba(255,255,255,.22); border-radius: 24px; background: rgba(255,255,255,.045); }
-.sponsor-tier-title .sponsor-logo-slot { min-height: 230px; }
-.sponsor-logo-slot img { display: none; width: min(100%, 430px); max-height: 210px; object-fit: contain; }
-.sponsor-logo-slot.asset-ready img { display: block; }
-.sponsor-logo-slot.asset-ready .sponsor-placeholder { display: none; }
-.sponsor-placeholder { display: grid; gap: 8px; place-items: center; color: rgba(255,255,255,.78); font-size: clamp(1rem, 2vw, 1.35rem); font-weight: 850; letter-spacing: .03em; text-align: center; }
+.sponsor-logo-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; width: 100%; min-height: 180px; }
+.sponsor-logo-grid-title { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); min-height: 230px; }
+.sponsor-logo-card, .sponsor-placeholder { display: grid; place-items: center; align-content: center; min-height: 218px; padding: 13px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 24px; background: rgba(255,255,255,.055); color: #fff; text-align: center; }
+.sponsor-logo-grid-title .sponsor-logo-card, .sponsor-logo-grid-title .sponsor-placeholder { min-height: 258px; }
+.sponsor-logo-card { grid-template-rows: 1fr auto; align-content: stretch; gap: 11px; transition: transform .22s ease, border-color .22s ease, background .22s ease; }
+a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.085); }
+.sponsor-logo-visual { display: grid; place-items: center; width: 100%; height: 150px; padding: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,.2); border-radius: 17px; background: #ffffff; }
+.sponsor-logo-grid-title .sponsor-logo-visual { height: 190px; }
+.sponsor-logo-visual img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.sponsor-logo-name { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 34px; padding: 2px 8px; color: rgba(255,255,255,.88); font-size: .72rem; font-weight: 850; line-height: 1.3; letter-spacing: .035em; text-align: center; }
+.sponsor-placeholder { gap: 8px; border-style: dashed; border-color: rgba(255,255,255,.22); color: rgba(255,255,255,.78); font-size: clamp(1rem, 2vw, 1.35rem); font-weight: 850; letter-spacing: .03em; }
 .sponsor-placeholder small { color: var(--muted); font-size: .63rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 
 @media (max-width: 720px) {
   .sponsor-content { width: min(100% - 24px, 1120px); gap: 16px; }
   .sponsor-tier, .sponsor-tier-title { grid-template-columns: 1fr; gap: 18px; min-height: 0; padding: 22px; border-radius: 24px; }
   .sponsor-tier-copy h2 { font-size: clamp(1.8rem, 9vw, 2.6rem); }
-  .sponsor-logo-slot, .sponsor-tier-title .sponsor-logo-slot { min-height: 155px; border-radius: 19px; }
-  .sponsor-logo-slot img { max-height: 145px; }
+  .sponsor-logo-grid, .sponsor-logo-grid-title { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-height: 145px; }
+  .sponsor-logo-card, .sponsor-placeholder, .sponsor-logo-grid-title .sponsor-logo-card, .sponsor-logo-grid-title .sponsor-placeholder { min-height: 184px; padding: 10px; border-radius: 19px; }
+  .sponsor-logo-visual, .sponsor-logo-grid-title .sponsor-logo-visual { height: 122px; padding: 14px; border-radius: 14px; }
+  .sponsor-logo-name { min-height: 30px; padding-inline: 3px; font-size: .62rem; }
+}
+
+@media (max-width: 420px) {
+  .sponsor-logo-grid, .sponsor-logo-grid-title { grid-template-columns: 1fr; }
 }
 
 /* =============================================================

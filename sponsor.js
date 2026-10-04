@@ -41,8 +41,8 @@
     if (!sponsors.length) return;
 
     list.innerHTML = sponsors.map((sponsor, index) => {
-      const image = `<img src="${escapeHtml(assetUrl(sponsor.logo))}" alt="${escapeHtml(sponsor.name)} logo" loading="lazy">`;
-      const content = `${image}<span>${escapeHtml(sponsor.name)}</span>`;
+      const image = `<div class="sponsor-logo-visual"><img src="${escapeHtml(assetUrl(sponsor.logo))}" alt="${escapeHtml(sponsor.name)} logo" loading="lazy"></div>`;
+      const content = `${image}<span class="sponsor-logo-name">${escapeHtml(sponsor.name)}</span>`;
       if (/^https?:\/\//i.test(sponsor.website)) {
         return `<a class="sponsor-logo-card" href="${escapeHtml(sponsor.website)}" target="_blank" rel="noreferrer" data-sponsor-index="${index}">${content}</a>`;
       }
