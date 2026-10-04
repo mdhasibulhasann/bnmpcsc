@@ -271,11 +271,11 @@ function doPost(event) {
       lock.releaseLock();
     }
 
-    if (!isGaming) sendConfirmation_(data);
-    return json_({ ok: true, registrationId: data.registrationId, paymentPending: isGaming });
-  } catch (error) {
-    return json_({ ok: false, message: error.message || "Registration failed." });
-  }
+    if (isGaming) {
+  sendGamingPendingEmail_(data);
+} else if (!isVisitor) {
+  sendConfirmation_(data);
+}
 }
 
 function ensureSheet_(spreadsheet, name, headers) {
