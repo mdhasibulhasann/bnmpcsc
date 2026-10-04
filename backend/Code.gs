@@ -274,6 +274,116 @@ function doPost(event) {
     if (isGaming) {
   sendGamingPendingEmail_(data);
 } else if (!isVisitor) {
+/* =========================================================
+   GAMING PAYMENT PENDING EMAIL
+   Sent only to the first team member
+   No QR or final entry pass is included
+   ========================================================= */
+
+function sendGamingPendingEmail_(data) {
+  const firstMember =
+    Array.isArray(data.members) && data.members.length
+      ? data.members[0]
+      : {};
+
+  const recipient = String(firstMember.email || "")
+    .trim()
+    .toLowerCase();
+
+  if (!recipient) return;
+
+  const segment = String(data.segment || "Gaming Registration");
+  const transactionId = String(data.transactionId || "");
+  const paymentPhone = String(data.paymentPhone || "");
+  const paymentAmount = Number(data.paymentAmount || 0);
+
+  const subject =
+    `${EVENT_NAME} — Payment Verification Pending`;
+
+  const htmlBody = `
+    <div style="
+      font-family:Arial,sans-serif;
+      max-width:620px;
+      margin:auto;
+      background:#0c0c11;
+      color:#f5f5f8;
+      padding:30px;
+      border-radius:22px;
+    ">
+      <p style="
+        color:#ffb347;
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:1px;
+        text-transform:uppercase;
+      ">
+        Payment verification pending
+      </p>
+
+      <h1 style="font-size:28px;margin:8px 0 16px">
+        ${escapeHtml_(EVENT_NAME)}
+      </h1>
+
+      <p style="color:#c5c5ce;line-height:1.6">
+        Your gaming registration and payment information have been
+        received successfully. The carnival committee will now verify
+        your payment.
+      </p>
+
+      <div style="
+        background:#191921;
+        border:1px solid #30303a;
+        padding:18px;
+        border-radius:14px;
+        margin:20px 0;
+      ">
+        <p style="margin:0 0 8px">
+          <strong>Event:</strong> ${escapeHtml_(segment)}
+        </p>
+
+        <p style="margin:0 0 8px">
+          <strong>Payment amount:</strong> ৳${paymentAmount}
+        </p>
+
+        <p style="margin:0 0 8px">
+          <strong>bKash number:</strong> ${escapeHtml_(paymentPhone)}
+        </p>
+
+        <p style="margin:0">
+          <strong>Transaction ID:</strong>
+          ${escapeHtml_(transactionId)}
+        </p>
+      </div>
+
+      <p style="
+        color:#ffb347;
+        font-weight:700;
+        line-height:1.6;
+      ">
+        This is not your final entry pass. Your registration ID and QR
+        entry pass will be emailed after the payment is approved.
+      </p>
+
+      <p style="margin-top:24px">
+        BNMPC Science Club
+      </p>
+    </div>
+  `;
+
+  MailApp.sendEmail({
+    to: recipient,
+    subject: subject,
+    body:
+      `Payment verification pending.\n\n` +
+      `Event: ${segment}\n` +
+      `Payment amount: ৳${paymentAmount}\n` +
+      `bKash number: ${paymentPhone}\n` +
+      `Transaction ID: ${transactionId}\n\n` +
+      `Your registration ID and QR entry pass will be emailed after payment approval.`,
+    htmlBody: htmlBody,
+    name: "BNMPC Science Club"
+  });
+}
   sendConfirmation_(data);
 }
 }
