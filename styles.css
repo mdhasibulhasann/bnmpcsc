@@ -755,8 +755,13 @@ img { display: block; max-width: 100%; }
 .sponsor-tier-copy > span { display: block; margin-bottom: 10px; color: #ff817c; font-size: .68rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .sponsor-tier-gold .sponsor-tier-copy > span { color: #e7bf67; }
 .sponsor-tier-copy h2 { margin: 0; font-size: clamp(2rem, 4.8vw, 4rem); line-height: .98; letter-spacing: -.055em; }
-.sponsor-logo-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; width: 100%; min-height: 180px; }
-.sponsor-logo-grid-title { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); min-height: 230px; }
+.sponsor-logo-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 230px));
+justify-content: center; gap: 14px; width: 100%; min-height: 180px; }
+.sponsor-logo-grid-title {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 290px));
+  justify-content: center;
+  min-height: 230px;
+}
 .sponsor-logo-card, .sponsor-placeholder { display: grid; place-items: center; align-content: center; min-height: 218px; padding: 13px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 24px; background: rgba(255,255,255,.055); color: #fff; text-align: center; }
 .sponsor-logo-grid-title .sponsor-logo-card, .sponsor-logo-grid-title .sponsor-placeholder { min-height: 258px; }
 .sponsor-logo-card { grid-template-rows: 1fr auto; align-content: stretch; gap: 11px; transition: transform .22s ease, border-color .22s ease, background .22s ease; }
