@@ -25,6 +25,19 @@
     D: "Group D · Class 11–12"
   };
 
+  /* Olympiads that run at the same time for specific groups.
+     Registration remains available after the participant acknowledges
+     that they can physically attend only one conflicting event. */
+  const scheduleConflicts = {
+    "science-olympiad": { B: "Mathematics Olympiad" },
+    "mathematics-olympiad": { B: "Science Olympiad", C: "Biology Olympiad", D: "Biology Olympiad" },
+    "physics-olympiad": { C: "Chemistry Olympiad", D: "Chemistry Olympiad" },
+    "chemistry-olympiad": { C: "Physics Olympiad", D: "Physics Olympiad" },
+    "biology-olympiad": { C: "Mathematics Olympiad", D: "Mathematics Olympiad" },
+    "it-olympiad": { C: "General Knowledge Olympiad", D: "General Knowledge Olympiad" },
+    "gk-olympiad": { C: "IT Olympiad", D: "IT Olympiad" }
+  };
+
   document.querySelectorAll("[data-image-slot]").forEach(slot => {
     const image = slot.querySelector("[data-upload-image]");
     if (!image) return;
@@ -71,6 +84,38 @@
     // Keep registration/details dialogs open when the shaded area is clicked.
     // Users close them deliberately with the cross or an on-screen action.
     modalRoot.querySelector("button, a, input, select, textarea")?.focus();
+  };
+
+  const showScheduleConflictWarning = ({ event, group, conflictingEvent, onCancel, onProceed }) => {
+    const modal = modalRoot?.querySelector(".modal");
+    if (!modal) return;
+
+    modalRoot.querySelector(".schedule-conflict-overlay")?.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "schedule-conflict-overlay";
+    overlay.innerHTML = `
+      <section class="schedule-conflict-dialog" role="alertdialog" aria-modal="true" aria-labelledby="schedule-conflict-title" aria-describedby="schedule-conflict-copy">
+        <span class="schedule-conflict-icon" aria-hidden="true">!</span>
+        <p class="modal-kicker">${escapeHtml(groupLabels[group] || `Group ${group}`)} · Schedule conflict</p>
+        <h3 id="schedule-conflict-title">These events run at the same time</h3>
+        <p id="schedule-conflict-copy"><strong>${escapeHtml(event.title)}</strong> and <strong>${escapeHtml(conflictingEvent)}</strong> will be held at the same time for this group. A participant can attend only one of these events.</p>
+        <p class="schedule-conflict-note">You may continue this registration, but please choose your event carefully.</p>
+        <div class="modal-actions schedule-conflict-actions">
+          <button class="ghost-button" type="button" data-conflict-cancel>Change Selection</button>
+          <button class="primary-button" type="button" data-conflict-proceed>Proceed Anyway</button>
+        </div>
+      </section>`;
+    modalRoot.appendChild(overlay);
+
+    const finish = (proceed) => {
+      overlay.remove();
+      if (proceed) onProceed?.();
+      else onCancel?.();
+    };
+
+    overlay.querySelector("[data-conflict-cancel]")?.addEventListener("click", () => finish(false));
+    overlay.querySelector("[data-conflict-proceed]")?.addEventListener("click", () => finish(true));
+    overlay.querySelector("[data-conflict-proceed]")?.focus();
   };
 
   const successContent = (title, message, payload, demo) => `
@@ -558,128 +603,31 @@
 
   const findEvent = (element) => events.find(event => event.slug === element.closest("[data-event-slug]")?.dataset.eventSlug);
 
-const showPaymentGuide = (event) => {
-  const isValorant = event.slug === "valorant";
-
-  const fee = Number(
-    event.paymentAmount || (isValorant ? 1000 : 200)
-  );
-
-  const paymentFor = isValorant
-    ? "Valorant Team"
-    : "FIFA Player";
-
-  const informationText = isValorant
-    ? "Team Name, Institution Name and Mobile Number"
-    : "Player Name, Institution Name and Mobile Number";
-
-  const feeUnit = isValorant
-    ? "Per Team"
-    : "Per Player";
-
-  openModal(`
-    <span class="modal-kicker">
-      ${escapeHtml(event.title)} · bKash Payment
-    </span>
-
-    <h2>${escapeHtml(event.title)} — How to Pay</h2>
-
-    <p class="modal-lead">
-      Follow the instructions below to complete your
-      ${escapeHtml(event.title)} registration payment.
-    </p>
-
-    <div class="payment-guide-amount">
-      <span>Registration Fee</span>
-      <strong>৳${fee.toLocaleString("en-BD")}</strong>
-      <small>${feeUnit}</small>
-    </div>
-
-    <section class="rules-panel payment-steps">
-      <h3>Payment Steps</h3>
-
-      <ol>
-        <li>
-          Open the <strong>bKash App</strong>.
-        </li>
-
-        <li>
-          Go to the <strong>Education Fee</strong> section.
-        </li>
-
-        <li>
-          Search for
-          <strong>BNMPC National Science Carnival</strong>.
-        </li>
-
-        <li>
-          Open the event payment option and enter your
-          <strong>${informationText}</strong>.
-        </li>
-
-        <li>
-          Tap <strong>Next</strong> and enter exactly
-          <strong>৳${fee.toLocaleString("en-BD")}</strong>
-          for the ${paymentFor} registration.
-        </li>
-
-        <li>
-          Check all the information carefully and submit the payment.
-        </li>
-
-        <li>
-          Copy the <strong>Transaction ID</strong> and enter it
-          correctly in the website registration form.
-        </li>
-      </ol>
-    </section>
-
-    <p class="payment-refund-warning">
-      <strong>Warning:</strong>
-      Please verify the event, information and payment amount before
-      submitting. Incorrect payments are strictly non-refundable.
-    </p>
-
-    <p class="payment-contact-note">
-      Payment support:
-      <strong>
-        ${escapeHtml(
-          gamingPayment.contactName || "Md. Tahmid Mahir"
-        )}
-      </strong>
-      ·
-      ${escapeHtml(
-        gamingPayment.contactPhone || "+880 19 0222 3848"
-      )}
-    </p>
-
-    <div class="modal-actions">
-      <button
-        class="ghost-button"
-        type="button"
-        data-cancel
-      >
-        Close
-      </button>
-
-      <button
-        class="primary-button"
-        type="button"
-        data-register-event
-      >
-        Continue to Registration
-      </button>
-    </div>
-  `, `${event.title} payment guide`, true);
-
-  modalRoot
-    .querySelector("[data-cancel]")
-    ?.addEventListener("click", closeModal);
-
-  modalRoot
-    .querySelector("[data-register-event]")
-    ?.addEventListener("click", () => participantForm(event));
-};
+  const showPaymentGuide = (event) => {
+    const accountNumber = String(gamingPayment.accountNumber || "To be announced");
+    const numberReady = /\d{8,}/.test(accountNumber.replace(/\D/g, ""));
+    openModal(`
+      <span class="modal-kicker">${escapeHtml(event.title)} · bKash payment</span>
+      <h2>How to Pay</h2>
+      <p class="modal-lead">Pay the registration fee before submitting the gaming registration form.</p>
+      <div class="payment-guide-amount"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong><small>Per ${escapeHtml(event.paymentUnit)}</small></div>
+      <div class="payment-account-card${numberReady ? "" : " payment-number-pending"}">
+        <span>bKash ${escapeHtml(gamingPayment.accountType || "Personal")} number</span>
+        <strong>${escapeHtml(accountNumber)}</strong>
+        ${numberReady ? "" : "<small>The official payment number will be added here before gaming registration opens.</small>"}
+      </div>
+      <section class="rules-panel payment-steps"><h3>Payment steps</h3><ol>
+        <li>Open the bKash app and choose <strong>Send Money</strong>.</li>
+        <li>Enter the official BNMPC Science Club payment number shown above.</li>
+        <li>Send exactly <strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong> for ${escapeHtml(event.title)} registration.</li>
+        <li>Keep the bKash sender number and Transaction ID.</li>
+        <li>Enter both correctly in the registration form and submit for committee verification.</li>
+      </ol></section>
+      <p class="payment-contact-note">Payment support: <strong>${escapeHtml(gamingPayment.contactName || "Md. Tahmid Mahir")}</strong> · ${escapeHtml(gamingPayment.contactPhone || "+880 19 0222 3848")}</p>
+      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button><button class="primary-button" type="button" data-register-event>Continue to Registration</button></div>`, `${event.title} payment guide`, true);
+    modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
+    modalRoot.querySelector("[data-register-event]")?.addEventListener("click", () => participantForm(event));
+  };
 
   const eventDetails = (event, index) => {
     openModal(`
@@ -722,7 +670,10 @@ const showPaymentGuide = (event) => {
     if (field.type === "select") {
       return `<div class="field full"><label for="entry-${field.key}">${escapeHtml(field.label)}</label><select id="entry-${field.key}" name="${field.key}" data-entry-field ${field.required ? "required" : ""}><option value="">Select ${escapeHtml(field.label.toLowerCase())}</option>${field.options.map(option => `<option>${escapeHtml(option)}</option>`).join("")}</select></div>`;
     }
-    return `<div class="field full"><label for="entry-${field.key}">${escapeHtml(field.label)}</label><input id="entry-${field.key}" name="${field.key}" data-entry-field ${field.required ? "required" : ""}></div>`;
+    const inputType = field.type === "url" ? "url" : "text";
+    const placeholder = field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : "";
+    const pattern = field.pattern ? ` pattern="${escapeHtml(field.pattern)}"` : "";
+    return `<div class="field full"><label for="entry-${field.key}">${escapeHtml(field.label)}</label><input id="entry-${field.key}" name="${field.key}" type="${inputType}" data-entry-field${placeholder}${pattern} ${field.required ? "required" : ""}></div>`;
   };
 
   const participantForm = (event) => {
@@ -730,7 +681,8 @@ const showPaymentGuide = (event) => {
     const isTeamEvent = event.maxMembers > 1;
     const isGaming = Boolean(event.paymentRequired);
     const skipsClass = event.slug === "valorant" || event.slug === "fifa";
-    const asksGroup = event.groups.length < 4 && event.slug !== "valorant";
+    const hasScheduleConflict = Boolean(scheduleConflicts[event.slug]);
+    const asksGroup = (event.groups.length < 4 || hasScheduleConflict) && event.slug !== "valorant";
     const groupField = asksGroup ? `<div class="field full registration-group-field"><label for="registration-group">Select Group</label><select id="registration-group" name="registrationGroup" required><option value="" selected disabled>Select your group</option>${groupOptions(event.groups)}</select></div>` : "";
     const countField = isTeamEvent ? `
       <div class="field full member-count-field"><label for="member-count">Select Your Team Size</label><select id="member-count" name="memberCount" required><option value="" selected disabled>Select your team size</option>${countChoices.map(count => `<option value="${count}">${event.valorantRoster ? (count === 5 ? "5 main players" : `5 main players + ${count - 5} substitute${count === 6 ? "" : "s"}`) : `${count} member${count > 1 ? "s" : ""}`}</option>`).join("")}</select></div>` : `<input type="hidden" id="member-count" name="memberCount" value="1">`;
@@ -765,6 +717,7 @@ const showPaymentGuide = (event) => {
     const form = document.getElementById("participant-form");
     const memberFields = document.getElementById("member-fields");
     const countSelect = document.getElementById("member-count");
+    const groupSelect = document.getElementById("registration-group");
 
     const renderMembers = (count) => {
       if (!count) { memberFields.innerHTML = ""; return; }
@@ -788,6 +741,33 @@ const showPaymentGuide = (event) => {
 
     if (isTeamEvent) countSelect.addEventListener("change", () => renderMembers(Number(countSelect.value)));
     else renderMembers(1);
+
+    groupSelect?.addEventListener("change", () => {
+      const group = groupSelect.value;
+      const conflictingEvent = scheduleConflicts[event.slug]?.[group];
+      const conflictKey = conflictingEvent ? `${event.slug}:${group}:${conflictingEvent}` : "";
+
+      if (!conflictingEvent) {
+        delete groupSelect.dataset.approvedConflict;
+        return;
+      }
+      if (groupSelect.dataset.approvedConflict === conflictKey) return;
+
+      showScheduleConflictWarning({
+        event,
+        group,
+        conflictingEvent,
+        onCancel: () => {
+          groupSelect.value = "";
+          delete groupSelect.dataset.approvedConflict;
+          groupSelect.focus();
+        },
+        onProceed: () => {
+          groupSelect.dataset.approvedConflict = conflictKey;
+          groupSelect.focus();
+        }
+      });
+    });
 
     connectForm(form, () => {
       const errorBox = form.querySelector("[data-form-error]");

@@ -54,12 +54,37 @@ window.BNMPC_EVENTS = [
     rules: ["The subject of the scrapbook must be science-based.", "This is a solo event."]
   },
   {
+    slug: "photography-exhibition",
+    title: "Photography Exhibition",
+    type: "Photography",
+    summary: "Submit an original photograph captured with a mobile phone or DSLR camera for exhibition throughout the carnival.",
+    eligibility: "Open for all groups",
+    groups: ["A", "B", "C", "D"],
+    minMembers: 1,
+    maxMembers: 1,
+    extraFields: [
+      { key: "photographyCategory", label: "Photography Category", type: "select", options: ["Mobile Photography", "DSLR Photography"], required: true },
+      { key: "pictureDriveLink", label: "Picture Drive Link", type: "url", placeholder: "https://drive.google.com/...", pattern: "https://(drive\\.google\\.com|docs\\.google\\.com)/.+", required: true }
+    ],
+    rules: [
+      "This is a solo event and is open to all groups.",
+      "Participants must select either Mobile Photography or DSLR Photography during registration.",
+      "Each participant may submit one original photograph captured by the participant.",
+      "The photograph must be uploaded in high resolution to Google Drive and submitted through a viewable Drive link.",
+      "Drive sharing must be set to Anyone with the link can view until the carnival ends.",
+      "Basic exposure, colour, crop and straightening adjustments are allowed.",
+      "AI-generated images, composite images, plagiarism and excessive manipulation are prohibited.",
+      "Entries containing offensive, unsafe or copyrighted third-party material may be disqualified.",
+      "Selected photographs may be displayed throughout the three-day carnival."
+    ]
+  },
+  {
     slug: "physics-olympiad",
     title: "Physics Olympiad",
     type: "Olympiad",
     summary: "Test conceptual understanding, reasoning and physics problem-solving.",
-    eligibility: "Open for all groups",
-    groups: ["A", "B", "C", "D"],
+    eligibility: "Groups A, C and D",
+    groups: ["A", "C", "D"],
     minMembers: 1,
     maxMembers: 1,
     rules: ["20 questions carrying 1 mark each.", "Duration: 20 minutes.", "No spot registration.", "Bring your own equipment.", "Calculators and mobile devices are prohibited."]
@@ -69,8 +94,8 @@ window.BNMPC_EVENTS = [
     title: "Chemistry Olympiad",
     type: "Olympiad",
     summary: "Explore chemical concepts, reactions and analytical reasoning.",
-    eligibility: "Open for all groups",
-    groups: ["A", "B", "C", "D"],
+    eligibility: "Groups A, C and D",
+    groups: ["A", "C", "D"],
     minMembers: 1,
     maxMembers: 1,
     rules: ["20 questions carrying 1 mark each.", "Duration: 20 minutes.", "No spot registration.", "Bring your own equipment.", "Calculators and mobile devices are prohibited."]
@@ -87,12 +112,23 @@ window.BNMPC_EVENTS = [
     rules: ["20 questions carrying 1 mark each.", "Duration: 20 minutes.", "No spot registration.", "Bring your own equipment.", "Calculators and mobile devices are prohibited."]
   },
   {
+    slug: "science-olympiad",
+    title: "Science Olympiad",
+    type: "Olympiad",
+    summary: "Test scientific knowledge, observation and reasoning across core science topics.",
+    eligibility: "Group B only",
+    groups: ["B"],
+    minMembers: 1,
+    maxMembers: 1,
+    rules: ["This is a solo event for Group B participants.", "20 questions carrying 1 mark each.", "Duration: 20 minutes.", "No spot registration.", "Bring your own equipment.", "Calculators and mobile devices are prohibited."]
+  },
+  {
     slug: "biology-olympiad",
     title: "Biology Olympiad",
     type: "Olympiad",
     summary: "Apply your knowledge of living systems, genetics, ecology and observation.",
-    eligibility: "Open for all groups",
-    groups: ["A", "B", "C", "D"],
+    eligibility: "Groups A, C and D",
+    groups: ["A", "C", "D"],
     minMembers: 1,
     maxMembers: 1,
     rules: ["20 questions carrying 1 mark each.", "Duration: 20 minutes.", "No spot registration.", "Bring your own equipment.", "Calculators and mobile devices are prohibited."]
@@ -300,13 +336,13 @@ window.BNMPC_EVENT_CATEGORIES = [
     slug: "project-exhibition",
     title: "Project & Exhibition",
     description: "Build, research and present scientific ideas through practical and visual formats.",
-    eventSlugs: ["project-display", "wall-magazine", "scrapbook"]
+    eventSlugs: ["project-display", "wall-magazine", "scrapbook", "photography-exhibition"]
   },
   {
     slug: "olympiads",
     title: "Olympiads",
     description: "Challenge subject knowledge, concepts and analytical problem-solving.",
-    eventSlugs: ["physics-olympiad", "chemistry-olympiad", "mathematics-olympiad", "biology-olympiad", "it-olympiad", "gk-olympiad"]
+    eventSlugs: ["physics-olympiad", "chemistry-olympiad", "mathematics-olympiad", "science-olympiad", "biology-olympiad", "it-olympiad", "gk-olympiad"]
   },
   {
     slug: "quizzes",
