@@ -90,7 +90,7 @@
     const modal = modalRoot?.querySelector(".modal");
     if (!modal) return;
 
-    modalRoot.querySelector(".schedule-conflict-overlay")?.remove();
+    document.querySelector(".schedule-conflict-overlay")?.remove();
     const overlay = document.createElement("div");
     overlay.className = "schedule-conflict-overlay";
     overlay.innerHTML = `
@@ -105,7 +105,7 @@
           <button class="primary-button" type="button" data-conflict-proceed>Proceed Anyway</button>
         </div>
       </section>`;
-    modalRoot.appendChild(overlay);
+    document.body.appendChild(overlay);
 
     const finish = (proceed) => {
       overlay.remove();

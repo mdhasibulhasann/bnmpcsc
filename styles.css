@@ -268,6 +268,25 @@ img { display: block; max-width: 100%; }
 .success-mark { display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 18px; border-radius: 50%; background: linear-gradient(145deg, var(--red), #690710); box-shadow: 0 0 40px rgba(255,48,47,.22); font-size: 2rem; }
 .success-state h2 { margin-right: 0; }
 
+/* =============================================================
+   10A. OLYMPIAD SCHEDULE-CONFLICT WARNING
+   ============================================================= */
+.schedule-conflict-overlay { position: fixed !important; z-index: 9999; inset: 0; display: grid; place-items: center; width: 100vw; min-height: 100dvh; padding: 20px; overflow: auto; background: rgba(0,0,0,.78); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); animation: fadeIn .18s ease; }
+.schedule-conflict-dialog { width: min(520px, 100%); padding: 26px; border: 1px solid rgba(255,91,83,.3); border-radius: 27px; background: linear-gradient(145deg, rgba(37,24,28,.98), rgba(11,10,15,.98)); box-shadow: 0 28px 90px rgba(0,0,0,.75), 0 0 55px rgba(255,42,38,.12); animation: modalIn .22s cubic-bezier(.2,.8,.2,1); }
+.schedule-conflict-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 17px; border: 1px solid rgba(255,127,120,.38); border-radius: 50%; background: linear-gradient(145deg, #ef3b35, #830812); color: #fff; box-shadow: 0 0 30px rgba(255,48,47,.2); font-size: 1.45rem; font-weight: 950; }
+.schedule-conflict-dialog h3 { margin: 9px 0 12px; font-size: clamp(1.45rem, 5vw, 2rem); line-height: 1.08; letter-spacing: -.035em; }
+.schedule-conflict-dialog > p:not(.modal-kicker) { margin: 0; color: #c4c4cc; font-size: .87rem; line-height: 1.65; }
+.schedule-conflict-dialog > p strong { color: #fff; }
+.schedule-conflict-note { margin-top: 12px !important; padding: 12px 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: rgba(255,255,255,.04); }
+.schedule-conflict-actions { margin-top: 20px; }
+.schedule-conflict-actions button { flex: 1; }
+
+@media (max-width: 520px) {
+  .schedule-conflict-dialog { padding: 22px 18px; border-radius: 23px; }
+  .schedule-conflict-actions { flex-direction: column-reverse; }
+  .schedule-conflict-actions button { width: 100%; }
+}
+
 @keyframes breathe { to { opacity: .82; transform: translateX(3vw) scale(1.05); } }
 @keyframes drift { to { transform: translateX(22px); } }
 @keyframes logoFloat { 0%,100% { transform: translateY(0) rotateX(0); } 50% { transform: translateY(-9px) rotateX(1deg); } }
