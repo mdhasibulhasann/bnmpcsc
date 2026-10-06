@@ -38,21 +38,27 @@
     "gk-olympiad": { C: "IT Olympiad", D: "IT Olympiad" }
   };
 
-  document.querySelectorAll("[data-image-slot]").forEach(slot => {
-    const image = slot.querySelector("[data-upload-image]");
-    if (!image) return;
-    const markReady = () => slot.classList.toggle("asset-ready", image.naturalWidth > 0);
-    image.addEventListener("load", markReady);
-    image.addEventListener("error", () => {
-      const fallback = image.dataset.fallbackSrc;
-      if (fallback && image.src !== new URL(fallback, document.baseURI).href) {
-        image.src = fallback;
-        return;
-      }
-      markReady();
+  const activateImageSlots = (scope = document) => {
+    scope.querySelectorAll("[data-image-slot]").forEach(slot => {
+      if (slot.dataset.imageSlotReady === "true") return;
+      const image = slot.querySelector("[data-upload-image]");
+      if (!image) return;
+      slot.dataset.imageSlotReady = "true";
+      const markReady = () => slot.classList.toggle("asset-ready", image.naturalWidth > 0);
+      image.addEventListener("load", markReady);
+      image.addEventListener("error", () => {
+        const fallback = image.dataset.fallbackSrc;
+        if (fallback && image.src !== new URL(fallback, document.baseURI).href) {
+          image.src = fallback;
+          return;
+        }
+        markReady();
+      });
+      if (image.complete) markReady();
     });
-    if (image.complete) markReady();
-  });
+  };
+
+  activateImageSlots();
 
   const menuToggle = document.querySelector("[data-menu-toggle]");
   const primaryNav = document.getElementById("primary-nav");
@@ -505,6 +511,15 @@
   const categoryNav = document.getElementById("category-nav");
   const categorySections = document.getElementById("category-sections");
 
+  const gamingPoweredByMarkup = (variant = "inline") => `
+    <div class="gaming-powered-by gaming-powered-by-${variant}">
+      <span>Powered by</span>
+      <span class="gaming-powered-logo-box upload-image-slot" data-image-slot>
+        <img src="/assets/gaming-powered-by-logo.png" alt="Gaming powered by logo" data-upload-image>
+        <span class="asset-placeholder" aria-hidden="true">Logo</span>
+      </span>
+    </div>`;
+
   const eventCardMarkup = (event, index) => {
     const paymentActions = event.paymentRequired ? `
       <div class="card-actions gaming-card-top-actions">
@@ -527,7 +542,14 @@
   };
 
   if (eventGrid && events.length) {
-    eventGrid.innerHTML = events.map(event => eventCardMarkup(event, events.indexOf(event))).join("");
+    const requestedSlugs = String(eventGrid.dataset.eventFilter || "")
+      .split(",")
+      .map(slug => slug.trim())
+      .filter(Boolean);
+    const visibleEvents = requestedSlugs.length
+      ? requestedSlugs.map(slug => events.find(event => event.slug === slug)).filter(Boolean)
+      : events;
+    eventGrid.innerHTML = visibleEvents.map(event => eventCardMarkup(event, events.indexOf(event))).join("");
   }
 
   if (categoryNav && categorySections && events.length && eventCategories.length) {
@@ -536,15 +558,18 @@
 
     categorySections.innerHTML = eventCategories.map((category, index) => {
       const categoryEvents = category.eventSlugs.map(slug => events.find(event => event.slug === slug)).filter(Boolean);
+      const poweredBy = category.slug === "gaming" ? gamingPoweredByMarkup("inline") : "";
       return `<section class="event-category-section" id="category-${escapeHtml(category.slug)}" data-category-index="${index}">
         <div class="category-heading">
-          <div><span class="category-number">${String(index + 1).padStart(2, "0")}</span><h2>${escapeHtml(category.title)}</h2></div>
+          <div class="category-title-group"><span class="category-number">${String(index + 1).padStart(2, "0")}</span><h2>${escapeHtml(category.title)}</h2>${poweredBy}</div>
           <p>${escapeHtml(category.description)}</p>
           <span class="category-count">${categoryEvents.length} event${categoryEvents.length === 1 ? "" : "s"}</span>
         </div>
         <div class="event-grid category-event-grid">${categoryEvents.map(event => eventCardMarkup(event, events.indexOf(event))).join("")}</div>
       </section>`;
     }).join("");
+
+    activateImageSlots(categorySections);
 
     categoryNav.addEventListener("click", event => {
       const tab = event.target.closest(".category-tab");

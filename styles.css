@@ -758,6 +758,25 @@ img { display: block; max-width: 100%; }
 .category-count { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: #bcbcc5; font-size: .67rem; font-weight: 850; white-space: nowrap; }
 
 /* ===========================================================
+   17A. GAMING PAGE AND SHARED POWERED-BY LOGO
+   Upload: assets/gaming-powered-by-logo.png
+   =========================================================== */
+.gaming-page-content { width: min(980px, calc(100% - 36px)); }
+.gaming-page-heading { max-width: 760px; }
+.gaming-page-heading > p:not(.eyebrow) { max-width: 650px; margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.65; }
+.gaming-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gaming-powered-by { display: inline-flex; align-items: center; gap: 10px; }
+.gaming-powered-by > span:first-child { color: var(--muted); font-size: .62rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+.gaming-powered-logo-box { position: relative; display: grid; place-items: center; width: 58px; height: 58px; flex: none; overflow: hidden; border: 1px solid rgba(255,255,255,.13); border-radius: 15px; background: rgba(255,255,255,.055); box-shadow: inset 0 1px rgba(255,255,255,.08), 0 12px 30px rgba(0,0,0,.2); }
+.gaming-powered-logo-box > * { grid-area: 1 / 1; }
+.gaming-powered-logo-box img { display: block; width: 100%; height: 100%; padding: 7px; object-fit: contain; }
+.gaming-powered-logo-box .asset-placeholder { font-size: .5rem; letter-spacing: .08em; }
+.gaming-powered-by-page { flex-direction: column; align-items: flex-start; gap: 9px; margin-top: 22px; }
+.gaming-powered-by-page .gaming-powered-logo-box { width: 112px; height: 112px; border-radius: 25px; }
+.gaming-powered-by-inline { margin-left: 5px; }
+.category-title-group { flex-wrap: wrap; }
+
+/* ===========================================================
    18. SPONSOR PAGE
    Each sponsor tier has its own upload-ready logo slot.
    =========================================================== */
@@ -903,6 +922,9 @@ a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,
   .gaming-payment-inputs { grid-template-columns: 1fr; }
   .gaming-payment-heading { align-items: flex-start; flex-direction: column; }
   .gaming-payment-heading em { text-align: left; }
+  .gaming-page-grid { grid-template-columns: 1fr; }
+  .gaming-powered-by-inline { width: 100%; margin: 2px 0 0 56px; }
+  .gaming-powered-by-inline .gaming-powered-logo-box { width: 50px; height: 50px; border-radius: 13px; }
 }
 
 @media (max-width: 450px) {
