@@ -768,20 +768,14 @@ img { display: block; max-width: 100%; }
 .gaming-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .gaming-powered-by { display: inline-flex; align-items: center; gap: 10px; }
 .gaming-powered-by > span:first-child { color: var(--muted); font-size: .62rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
-.gaming-powered-logo-box { position: relative; display: grid; place-items: center; width: 58px; height: 58px; flex: none; overflow: hidden; border: 1px solid rgba(255,255,255,.13); border-radius: 15px; background: rgba(255,255,255,.055); box-shadow: inset 0 1px rgba(255,255,255,.08), 0 12px 30px rgba(0,0,0,.2); }
+.gaming-powered-logo-box { position: relative; display: grid; place-items: center; width: 142px; height: 64px; flex: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .gaming-powered-logo-box > * { grid-area: 1 / 1; }
-.gaming-powered-logo-box img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  object-fit: cover;
-  object-position: center;
-}
+.gaming-powered-logo-box img { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; padding: 0; object-fit: contain; object-position: center; }
 .gaming-powered-logo-box .asset-placeholder { font-size: .5rem; letter-spacing: .08em; }
 .gaming-powered-by-page { flex-direction: row; align-items: center; gap: 14px; margin: 0 0 17px; }
 .gaming-powered-by-page > span:first-child { color: rgba(255,255,255,.82); font-size: .88rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
-.gaming-powered-by-page .gaming-powered-logo-box { width: 142px; height: 64px; border-radius: 15px; }
+.gaming-powered-by-page .gaming-powered-logo-box,
+.gaming-powered-by-inline .gaming-powered-logo-box { width: 142px; height: 64px; border-radius: 0; }
 .gaming-powered-by-inline { margin-left: 5px; }
 .category-title-group { flex-wrap: wrap; }
 
@@ -934,42 +928,13 @@ a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,
   .gaming-page-grid { grid-template-columns: 1fr; }
   .gaming-page-heading h1 { font-size: clamp(3.5rem, 18vw, 5.2rem); }
   .gaming-powered-by-page { gap: 11px; }
-  .gaming-powered-by-page .gaming-powered-logo-box { width: 126px; height: 58px; border-radius: 14px; }
-  .gaming-powered-by-inline { width: 100%; margin: 2px 0 0 56px; }
-  .gaming-powered-by-inline .gaming-powered-logo-box { width: 50px; height: 50px; border-radius: 13px; }
+  .gaming-powered-by-page .gaming-powered-logo-box,
+  .gaming-powered-by-inline .gaming-powered-logo-box { width: 126px; height: 58px; border-radius: 0; }
+  .gaming-powered-by-inline { width: auto; margin: 4px 0 0; }
 }
 
 @media (max-width: 450px) {
   .category-tab { min-height: 42px; padding: 0 14px; font-size: .69rem; }
   .pending-payment-summary { grid-template-columns: 1fr; }
   .payment-guide-amount strong { font-size: 1.55rem; }
-}
-
-/* Registration page Gaming powered-by logo */
-.gaming-powered-by-inline .gaming-powered-logo-box {
-  width: 142px;
-  height: 64px;
-  border-radius: 15px;
-}
-
-.gaming-powered-by-inline .gaming-powered-logo-box img {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Mobile */
-@media (max-width: 720px) {
-  .gaming-powered-by-inline {
-    width: auto;
-    margin: 4px 0 0;
-  }
-
-  .gaming-powered-by-inline .gaming-powered-logo-box {
-    width: 126px;
-    height: 58px;
-    border-radius: 14px;
-  }
 }
