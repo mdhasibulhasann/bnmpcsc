@@ -190,10 +190,10 @@ img { display: block; max-width: 100%; }
 .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.075); }
 .developer-credit { display: inline-flex; align-items: center; justify-content: flex-end; gap: 9px; flex: none; margin-left: auto; }
 .developer-credit > span:first-child { color: #8f8f99; font-size: .61rem; font-weight: 750; letter-spacing: .04em; }
-.developer-logo-box { position: relative; display: grid; place-items: center; width: 52px; height: 36px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.045); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
-.developer-logo-box:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.09); }
+.developer-logo-box { position: relative; display: grid; place-items: center; width: 40px; height: 40px; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; transition: transform .2s ease, opacity .2s ease; }
+.developer-logo-box:hover { transform: translateY(-2px) scale(1.04); opacity: .9; }
 .developer-logo-box > * { grid-area: 1 / 1; }
-.developer-logo-box img { display: block; width: 100%; height: 100%; padding: 4px; object-fit: contain; object-position: center; }
+.developer-logo-box img { display: block; width: 100%; height: 100%; padding: 0; object-fit: contain; object-position: center; }
 .developer-logo-box .asset-placeholder { font-size: .42rem; letter-spacing: .08em; }
 
 /* =============================================================
