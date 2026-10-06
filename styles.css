@@ -175,6 +175,26 @@ img { display: block; max-width: 100%; }
 .ghost-button { background: rgba(255,255,255,.045); }
 .ghost-button:hover { background: rgba(255,255,255,.1); }
 .site-footer { display: flex; justify-content: space-between; gap: 20px; width: min(1240px, calc(100% - 36px)); margin: 0 auto; padding: 24px 0 38px; border-top: 1px solid rgba(255,255,255,.09); color: #777784; font-size: .75rem; }
+.home-footer { display: grid; justify-content: initial; gap: 17px; margin: 0 auto 28px; padding: 22px 24px 17px; border: 1px solid rgba(255,255,255,.1); border-radius: 26px; color: #8d8d98; background: linear-gradient(125deg, rgba(59,8,14,.35), rgba(11,11,17,.82) 43%, rgba(16,23,67,.28)); box-shadow: inset 0 1px rgba(255,255,255,.06), 0 22px 65px rgba(0,0,0,.22); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.footer-main { display: grid; grid-template-columns: minmax(250px, 1.1fr) minmax(330px, 1.5fr) auto; align-items: center; gap: 24px; }
+.footer-brand { display: inline-flex; align-items: center; gap: 11px; width: fit-content; }
+.footer-brand-logo { display: grid; place-items: center; width: 39px; height: 39px; flex: none; overflow: hidden; border-radius: 50%; background: #fff; box-shadow: 0 0 24px rgba(68,95,255,.14); }
+.footer-brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+.footer-brand strong, .footer-brand small { display: block; }
+.footer-brand strong { color: #fff; font-size: .86rem; }
+.footer-brand small { margin-top: 3px; color: #81818c; font-size: .61rem; }
+.footer-links { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px 17px; }
+.footer-links a, .footer-social-links a { color: #a7a7b1; font-size: .68rem; font-weight: 750; transition: color .2s ease; }
+.footer-links a:hover, .footer-social-links a:hover { color: #fff; }
+.footer-social-links { display: flex; align-items: center; justify-content: flex-end; gap: 13px; }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.075); }
+.developer-credit { display: inline-flex; align-items: center; justify-content: flex-end; gap: 9px; flex: none; margin-left: auto; }
+.developer-credit > span:first-child { color: #8f8f99; font-size: .61rem; font-weight: 750; letter-spacing: .04em; }
+.developer-logo-box { position: relative; display: grid; place-items: center; width: 52px; height: 36px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.045); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.developer-logo-box:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.09); }
+.developer-logo-box > * { grid-area: 1 / 1; }
+.developer-logo-box img { display: block; width: 100%; height: 100%; padding: 4px; object-fit: contain; object-position: center; }
+.developer-logo-box .asset-placeholder { font-size: .42rem; letter-spacing: .08em; }
 
 /* =============================================================
    08. THREE-DAY SCHEDULE
@@ -356,6 +376,11 @@ img { display: block; max-width: 100%; }
   .choice-card { min-height: 125px; }
   .detail-meta { grid-template-columns: 1fr; }
   .site-footer { flex-direction: column; gap: 6px; }
+  .home-footer { display: grid; gap: 16px; padding: 20px; border: 1px solid rgba(255,255,255,.1); border-radius: 23px; }
+  .footer-main { grid-template-columns: 1fr; align-items: start; gap: 17px; }
+  .footer-links { justify-content: flex-start; }
+  .footer-social-links { justify-content: flex-start; }
+  .footer-bottom { flex-wrap: wrap; }
   .member-grid, .teacher-grid { grid-template-columns: 1fr; }
   .member-card { min-height: 345px; }
   .member-photo { height: 240px; }
