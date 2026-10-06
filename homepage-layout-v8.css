@@ -24,7 +24,7 @@
   display: none !important;
 }
 
-/* A stable central stage. It does not crop the transparent PNG canvas. */
+/* A responsive central stage constrained by both viewport width and height. */
 .home-page .event-logo-stage {
   position: relative !important;
   display: grid !important;
@@ -32,11 +32,11 @@
   align-self: center !important;
   justify-self: center !important;
   flex: none !important;
-  width: min(580px, 50vw) !important;
-  height: clamp(270px, 39dvh, 380px) !important;
+  width: min(820px, 66vw) !important;
+  height: min(54dvh, 560px) !important;
   min-width: 0 !important;
   min-height: 0 !important;
-  margin: -5.5vh auto 0 !important;
+  margin: 0 auto !important;
   overflow: visible !important;
 }
 
@@ -56,15 +56,14 @@
   grid-area: 1 / 1 !important;
 }
 
-/* Critical fix: use the PNG's natural aspect ratio. Do not force height:100%,
-   do not scale it, and do not apply a max-height that can cut the artwork. */
+/* Fit the full PNG inside the stage without cropping or overflowing. */
 .home-page .event-logo-stage .event-logo-slot img.event-logo {
   position: static !important;
   display: block !important;
-  width: min(580px, 50vw) !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   margin: 0 !important;
   object-fit: contain !important;
   object-position: center !important;
@@ -79,35 +78,35 @@
 
 @media (max-width: 720px) {
   .home-page .event-logo-stage {
-    width: min(92vw, 520px) !important;
-    height: clamp(190px, 30dvh, 285px) !important;
-    margin-top: -2.5vh !important;
+    width: min(94vw, 620px) !important;
+    height: min(42dvh, 360px) !important;
+    margin: 0 auto !important;
   }
 
   .home-page .event-logo-stage .event-logo-slot img.event-logo {
-    width: min(92vw, 520px) !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
 }
 
 @media (max-width: 450px) {
   .home-page .event-logo-stage {
-    width: 92vw !important;
-    height: clamp(175px, 28dvh, 250px) !important;
+    width: 94vw !important;
+    height: min(38dvh, 320px) !important;
   }
 
   .home-page .event-logo-stage .event-logo-slot img.event-logo {
-    width: 92vw !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 
 @media (max-height: 690px) and (min-width: 721px) {
-  .home-page .event-logo-stage,
-  .home-page .event-logo-stage .event-logo-slot img.event-logo {
-    width: min(520px, 46vw) !important;
-  }
-
   .home-page .event-logo-stage {
-    height: 35dvh !important;
+    width: min(700px, 62vw) !important;
+    height: min(42dvh, 330px) !important;
   }
 }
 
@@ -140,10 +139,10 @@
   }
 }
 
-/* শুধু PC-তে event logo আরেকটু উপরে */
+/* Keep the logo centered on desktop instead of pulling it outside the stage. */
 @media (min-width: 721px) {
   .home-page .event-logo-stage {
-    margin-top: -18.5vh !important;
+    margin: 0 auto !important;
   }
 }
 
