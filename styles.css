@@ -944,3 +944,32 @@ a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,
   .pending-payment-summary { grid-template-columns: 1fr; }
   .payment-guide-amount strong { font-size: 1.55rem; }
 }
+
+/* Registration page Gaming powered-by logo */
+.gaming-powered-by-inline .gaming-powered-logo-box {
+  width: 142px;
+  height: 64px;
+  border-radius: 15px;
+}
+
+.gaming-powered-by-inline .gaming-powered-logo-box img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .gaming-powered-by-inline {
+    width: auto;
+    margin: 4px 0 0;
+  }
+
+  .gaming-powered-by-inline .gaming-powered-logo-box {
+    width: 126px;
+    height: 58px;
+    border-radius: 14px;
+  }
+}
