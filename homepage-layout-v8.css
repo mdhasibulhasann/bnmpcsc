@@ -27,14 +27,14 @@
   display: none !important;
 }
 
-/* Fill the available middle row, never the footer/header space. */
+/* Keep a moderate centered stage inside the available middle row. */
 .home-page .event-logo-stage {
   position: relative !important;
   display: grid !important;
   place-items: center !important;
-  width: min(960px, 96vw) !important;
+  width: min(620px, 92vw) !important;
   height: 100% !important;
-  max-width: 96vw !important;
+  max-width: 92vw !important;
   max-height: 100% !important;
   min-width: 0 !important;
   min-height: 0 !important;
@@ -59,14 +59,20 @@
   grid-area: 1 / 1 !important;
 }
 
-/* Both dimensions are constrained; contain guarantees the full PNG is shown. */
+/*
+   The PNG has a near-square canvas. Using auto dimensions plus both max
+   dimensions keeps the whole image visible without stretching or cropping.
+*/
 .home-page .event-logo-stage .event-logo-slot img.event-logo {
   position: static !important;
   display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
+  place-self: center !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(580px, 88vw) !important;
   max-height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   margin: 0 !important;
   object-fit: contain !important;
   object-position: center center !important;
@@ -96,7 +102,12 @@
   }
 
   .home-page .event-logo-stage {
-    width: 96vw !important;
-    max-width: 96vw !important;
+    width: 92vw !important;
+    max-width: 92vw !important;
+  }
+
+  .home-page .event-logo-stage .event-logo-slot img.event-logo {
+    max-width: 88vw !important;
+    max-height: 100% !important;
   }
 }
