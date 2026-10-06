@@ -629,25 +629,29 @@
   const findEvent = (element) => events.find(event => event.slug === element.closest("[data-event-slug]")?.dataset.eventSlug);
 
   const showPaymentGuide = (event) => {
-    const accountNumber = String(gamingPayment.accountNumber || "To be announced");
-    const numberReady = /\d{8,}/.test(accountNumber.replace(/\D/g, ""));
+    const isValorant = event.slug === "valorant";
+    const paymentFor = isValorant ? "team" : "player";
+    const identityField = isValorant ? "Valorant Team Name" : "FIFA Player Name";
     openModal(`
       <span class="modal-kicker">${escapeHtml(event.title)} · bKash payment</span>
-      <h2>How to Pay</h2>
-      <p class="modal-lead">Pay the registration fee before submitting the gaming registration form.</p>
-      <div class="payment-guide-amount"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong><small>Per ${escapeHtml(event.paymentUnit)}</small></div>
-      <div class="payment-account-card${numberReady ? "" : " payment-number-pending"}">
-        <span>bKash ${escapeHtml(gamingPayment.accountType || "Personal")} number</span>
-        <strong>${escapeHtml(accountNumber)}</strong>
-        ${numberReady ? "" : "<small>The official payment number will be added here before gaming registration opens.</small>"}
+      <h2>${escapeHtml(event.title)} — How to Pay</h2>
+      <p class="modal-lead">Complete the ${escapeHtml(event.title)} registration payment through the bKash Education section.</p>
+      <div class="payment-guide-amount"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong><small>Per ${paymentFor}</small></div>
+      <div class="payment-account-card">
+        <span>Payment channel</span>
+        <strong>bKash Education</strong>
+        <small>Search for “BNMPC National Science Carnival” inside the Education section.</small>
       </div>
       <section class="rules-panel payment-steps"><h3>Payment steps</h3><ol>
-        <li>Open the bKash app and choose <strong>Send Money</strong>.</li>
-        <li>Enter the official BNMPC Science Club payment number shown above.</li>
-        <li>Send exactly <strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong> for ${escapeHtml(event.title)} registration.</li>
-        <li>Keep the bKash sender number and Transaction ID.</li>
-        <li>Enter both correctly in the registration form and submit for committee verification.</li>
+        <li>Open the <strong>bKash app</strong>.</li>
+        <li>Go to the <strong>Education</strong> section.</li>
+        <li>Search for and select <strong>BNMPC National Science Carnival</strong>.</li>
+        <li>Enter the <strong>${identityField}</strong>, <strong>Institution Name</strong>, and <strong>Mobile Number</strong>.</li>
+        <li>Tap <strong>Next</strong> and enter exactly <strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong>.</li>
+        <li>Review all information carefully and submit the payment.</li>
+        <li>Save the bKash sender number and Transaction ID, then enter both in the registration form.</li>
       </ol></section>
+      <p class="payment-contact-note"><strong>Warning:</strong> Please verify all information and the payment amount before submitting. Incorrect payments are non-refundable.</p>
       <p class="payment-contact-note">Payment support: <strong>${escapeHtml(gamingPayment.contactName || "Md. Tahmid Mahir")}</strong> · ${escapeHtml(gamingPayment.contactPhone || "+880 19 0222 3848")}</p>
       <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button><button class="primary-button" type="button" data-register-event>Continue to Registration</button></div>`, `${event.title} payment guide`, true);
     modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
