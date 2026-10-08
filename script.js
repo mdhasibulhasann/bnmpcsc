@@ -731,7 +731,7 @@
       <p class="modal-lead">${escapeHtml(event.eligibility)} · ${escapeHtml(memberFormat(event))}</p>
       <form class="registration-form participant-registration" id="participant-form">
         ${groupField}
-        <div class="field full"><label for="ca-reference">CA Reference</label><input id="ca-reference" name="caReference" autocomplete="off" placeholder="Enter CA reference" required></div>
+        <div class="field full"><label for="ca-reference">CA Reference <span class="optional-label">(Optional)</span></label><input id="ca-reference" name="caReference" autocomplete="off" placeholder="Enter CA reference, if available"></div>
         ${event.teamName ? '<div class="field full"><label for="team-name">Team Name</label><input id="team-name" name="teamName" required></div>' : ""}
         ${event.entryNameLabel ? `<div class="field full"><label for="entry-name">${escapeHtml(event.entryNameLabel)}</label><input id="entry-name" name="entryName" required></div>` : ""}
         ${(event.extraFields || []).map(extraFieldMarkup).join("")}
