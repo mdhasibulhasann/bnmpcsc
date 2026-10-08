@@ -309,7 +309,7 @@ window.BNMPC_EVENTS = [
     paymentRequired: true,
     paymentAmount: 1000,
     paymentUnit: "team",
-    rules: ["Each team must register 5 main players.", "Up to 2 substitute players may be added.", "Detailed match rules will be published later."]
+    rules: ["Each team must register 5 main players.", "A team may add 1 substitute player and 1 team manager.", "Detailed match rules will be published later."]
   },
   {
     slug: "fifa",

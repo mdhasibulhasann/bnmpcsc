@@ -620,7 +620,7 @@
   }
 
   const memberFormat = (event) => {
-    if (event.valorantRoster) return "5 players + up to 2 substitutes";
+    if (event.valorantRoster) return "5 main players + 1 substitute + 1 team manager";
     if (event.minMembers === 1 && event.maxMembers === 1) return "Solo event";
     if (event.minMembers === event.maxMembers) return `${event.minMembers} members`;
     return `${event.minMembers}–${event.maxMembers} members`;
@@ -714,7 +714,7 @@
     const asksGroup = (event.groups.length < 4 || hasScheduleConflict) && event.slug !== "valorant";
     const groupField = asksGroup ? `<div class="field full registration-group-field"><label for="registration-group">Select Group</label><select id="registration-group" name="registrationGroup" required><option value="" selected disabled>Select your group</option>${groupOptions(event.groups)}</select></div>` : "";
     const countField = isTeamEvent ? `
-      <div class="field full member-count-field"><label for="member-count">Select Your Team Size</label><select id="member-count" name="memberCount" required><option value="" selected disabled>Select your team size</option>${countChoices.map(count => `<option value="${count}">${event.valorantRoster ? (count === 5 ? "5 main players" : `5 main players + ${count - 5} substitute${count === 6 ? "" : "s"}`) : `${count} member${count > 1 ? "s" : ""}`}</option>`).join("")}</select></div>` : `<input type="hidden" id="member-count" name="memberCount" value="1">`;
+      <div class="field full member-count-field"><label for="member-count">Select Your Team Size</label><select id="member-count" name="memberCount" required><option value="" selected disabled>Select your team size</option>${countChoices.map(count => `<option value="${count}">${event.valorantRoster ? (count === 5 ? "5 main players" : count === 6 ? "5 main players + 1 substitute" : "5 main players + 1 substitute + 1 Team manager") : `${count} member${count > 1 ? "s" : ""}`}</option>`).join("")}</select></div>` : `<input type="hidden" id="member-count" name="memberCount" value="1">`;
     const paymentFields = isGaming ? `
       <section class="gaming-payment-fields full">
         <div class="gaming-payment-heading"><div><span>bKash payment verification</span><strong>Payable amount: ৳${Number(event.paymentAmount).toLocaleString("en-BD")}</strong></div><em>Use the How to Pay guide on the event card before completing this form.</em></div>
@@ -753,7 +753,9 @@
       if (!count) { memberFields.innerHTML = ""; return; }
       memberFields.innerHTML = Array.from({ length: count }, (_, index) => {
         const displayNumber = index + 1;
-        const label = event.valorantRoster ? (index < 5 ? `Player ${displayNumber}` : `Substitute ${displayNumber - 5}`) : (count === 1 ? "Participant" : `Member ${displayNumber}`);
+        const label = event.valorantRoster
+          ? (index < 5 ? `Player ${displayNumber}` : index === 5 ? "Substitute 1" : "Team Manager")
+          : (count === 1 ? "Participant" : `Member ${displayNumber}`);
         const institutionOrGaming = event.valorantRoster
           ? `<div class="field"><label for="member-${index}-ign">In-game Name &amp; Tag</label><input id="member-${index}-ign" data-member-field="inGameNameTag" placeholder="PlayerName#TAG" required></div><div class="field"><label for="member-${index}-discord">Discord Username</label><input id="member-${index}-discord" data-member-field="discordUsername" required></div>`
           : `<div class="field"><label for="member-${index}-institution">Institution</label><input id="member-${index}-institution" data-member-field="institution" required></div>`;
