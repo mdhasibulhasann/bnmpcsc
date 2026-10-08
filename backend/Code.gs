@@ -8,15 +8,15 @@
    4. Paste the deployment URL into dist/config.js.
    ============================================================= */
 
-const SPREADSHEET_ID = "1mZpwjLMkXXte22ZmvM52nox3AQKwzCkNUtUtbmxbOuw";
+const SPREADSHEET_ID = "PASTE_GOOGLE_SPREADSHEET_ID_HERE";
 const EVENT_NAME = "3rd BNMPC National Science Carnival 2026";
 const EVENT_DATES = "29–31 October 2026";
 const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka";
 const VERIFY_PAGE_URL = "https://3rd-bnmpcsc-carnival.online/verify.html";
-const BACKEND_VERSION = "2026-10-07-ca-reference-v1";
+const BACKEND_VERSION = "2026-10-08-ca-reference-optional-v2";
 
 /* Change this before deployment. Keep the real PIN only in Apps Script. */
-const STAFF_PIN = "2026";
+const STAFF_PIN = "CHANGE_THIS_PIN";
 
 /* Private PIN for the gaming payment committee portal. */
 const GAMING_STAFF_PIN = "4040";
@@ -306,7 +306,6 @@ function doPost(event) {
 
     if (!isVisitor) {
       data.caReference = String(data.caReference || "").trim();
-      if (!data.caReference) throw new Error("Enter CA Reference.");
     }
 
     if (isGaming) validateGamingPayment_(data, sheetName);
