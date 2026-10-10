@@ -1,21 +1,18 @@
 /* =============================================================
-   REGISTRATION CONNECTION
-   Paste the deployed Google Apps Script web-app URL below.
-   Keep demoMode true until the Google Sheet connection is ready.
+   BNMPC NATIONAL SCIENCE CARNIVAL 2026
+   LIVE REGISTRATION CONNECTION
    ============================================================= */
-window.BNMPC_CONFIG = {
-  googleAppsScriptUrl: "",
-  demoMode: true,
 
-  /* The QR code opens this page. Keep it on the final domain. */
+window.BNMPC_CONFIG = {
+  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbz2yYubvOam1Yey3qInEHV8ZEZPMxJa43W_iiNjGFfWgcESGJODNL-uL9TSiyf2LkTc4Q/exec",
+
+  demoMode: false,
+
   verificationPageUrl: "https://3rd-bnmpcsc-carnival.online/verify.html",
 
-  /* QRCodeJS is loaded only after a registration is completed. */
   qrLibraryUrl: "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
 
-  /* Camera scanner used only on the private staff verification page. */
   qrScannerLibraryUrl: "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
 
-  /* Preview only. Ignored after demoMode is changed to false. */
   demoStaffPin: "2026"
 };
