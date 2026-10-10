@@ -1,5 +1,5 @@
 /* =============================================================
-   3rd BNMPC National Science Carnival 2026
+   BNMPC National Science Carnival 2026
    GOOGLE APPS SCRIPT BACKEND
 
    1. Paste the Google Spreadsheet ID below.
@@ -9,7 +9,7 @@
    ============================================================= */
 
 const SPREADSHEET_ID = "1mZpwjLMkXXte22ZmvM52nox3AQKwzCkNUtUtbmxbOuw";
-const EVENT_NAME = "3rd BNMPC National Science Carnival 2026";
+const EVENT_NAME = "BNMPC National Science Carnival 2026";
 const EVENT_DATES = "29–31 October 2026";
 const EVENT_VENUE = "Birshreshtha Noor Mohammad Public College, Peelkhana, Dhaka";
 const VERIFY_PAGE_URL = "https://3rd-bnmpcsc-carnival.online/verify.html";
