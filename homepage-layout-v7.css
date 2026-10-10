@@ -1,0 +1,107 @@
+/* =============================================================
+   HOMEPAGE LAYOUT V7
+   This file loads after styles.css and intentionally controls only
+   the homepage hero. Do not move these rules back into styles.css.
+   ============================================================= */
+
+/* Keep the first section exactly one viewport tall. The club section
+   remains directly below it and appears when the visitor scrolls. */
+.home-page .hero-shell {
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  grid-template-rows: var(--header-h) minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+.home-page .hero-content {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* The approved homepage visual does not use the small presentation line
+   or the circular graphic behind the event logo. */
+.home-page .hero-content > .eyebrow,
+.home-page .event-logo-stage > .logo-orbit {
+  display: none !important;
+}
+
+/* This is the complete logo's fixed visual area. Both width and height
+   constrain the image, so a large 4032x3024 PNG cannot overflow it. */
+.home-page .event-logo-stage {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  justify-self: center !important;
+  flex: none !important;
+  width: min(620px, 52vw) !important;
+  height: clamp(270px, 40dvh, 390px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+
+/* Reset the earlier absolute/scale rules. Keeping the slot in normal grid
+   flow is what prevents the logo from jumping under the footer. */
+.home-page .event-logo-stage .event-logo-slot {
+  position: relative !important;
+  inset: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.home-page .event-logo-stage .event-logo-slot > * {
+  grid-area: 1 / 1 !important;
+}
+
+.home-page .event-logo-stage .event-logo-slot img.event-logo {
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  object-position: 50% 50% !important;
+  transform: none !important;
+  transform-origin: center !important;
+}
+
+/* Keep date and countdown in their own bottom row instead of allowing
+   either one to overlap the logo. */
+.home-page .hero-footer {
+  min-width: 0 !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 720px) {
+  .home-page .event-logo-stage {
+    width: min(92vw, 520px) !important;
+    height: clamp(190px, 31dvh, 300px) !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .home-page .event-logo-stage {
+    width: 94vw !important;
+    height: clamp(175px, 29dvh, 265px) !important;
+  }
+}
+
+@media (max-height: 690px) and (min-width: 721px) {
+  .home-page .event-logo-stage {
+    width: min(540px, 48vw) !important;
+    height: 36dvh !important;
+  }
+}

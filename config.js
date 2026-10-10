@@ -4,8 +4,8 @@
    Keep demoMode true until the Google Sheet connection is ready.
    ============================================================= */
 window.BNMPC_CONFIG = {
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbx3BeKE4UPhBZQelZ3uKvWje9D7rVWB1wjuGZAKAvvkIbfcwz2grGjovUO6jbyItALKpg/exec",
-  demoMode: false,
+  googleAppsScriptUrl: "",
+  demoMode: true,
 
   /* The QR code opens this page. Keep it on the final domain. */
   verificationPageUrl: "https://3rd-bnmpcsc-carnival.online/verify.html",

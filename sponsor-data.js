@@ -10,40 +10,20 @@
    ============================================================= */
 window.BNMPC_SPONSORS = {
   title: [
-    {
-      name: "HKF Real Estate Limited",
-      logo: "assets/sponsors/title-1.png",
-      website: "https://hkf-re.com"
-    },
-    
+    // { name: "Sponsor Name", logo: "assets/sponsors/title-1.png", website: "https://example.com" },
+    // { name: "Another Sponsor", logo: "assets/sponsors/title-2.png", website: "" },
   ],
 
   cohost: [
-    {
-      name: "Bangladesh Freedom Foundation",
-      logo: "assets/sponsors/cohost-1.png",
-      website: "https://freedomfound.org/"
-    }
+    // { name: "Co-host Name", logo: "assets/sponsors/cohost-1.png", website: "" },
   ],
 
   powered: [
-     {
-      name: "Star Tech Ltd",
-      logo: "assets/sponsors/power-1.png",
-      website: "https://www.startech.com.bd/"
-    }
+    // { name: "Powered By Name", logo: "assets/sponsors/powered-1.png", website: "" },
   ],
 
   gold: [
-    {
-      name: "ANAA Developers Ltd",
-      logo: "assets/sponsors/gold-1.png",
-      website: "https://www.anaadevelopersltd.com/"
-    },
-    {
-      name: "Maan Bangladesh Ltd",
-      logo: "assets/sponsors/gold-2.png",
-      website: "https://maanbd.com/"
-    }
+    // { name: "Gold Sponsor Name", logo: "assets/sponsors/gold-1.png", website: "" },
+    // { name: "Gold Sponsor Two", logo: "assets/sponsors/gold-2.png", website: "" },
   ]
 };

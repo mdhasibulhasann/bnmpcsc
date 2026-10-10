@@ -269,7 +269,7 @@
       context.textAlign = "center";
       context.fillStyle = "#ffffff";
       context.font = "900 42px Arial, sans-serif";
-      context.fillText("3RD BNMPC NATIONAL SCIENCE CARNIVAL 2026", 540, 320);
+      context.fillText("BNMPC NATIONAL SCIENCE CARNIVAL 2026", 540, 320);
       context.textAlign = "left";
     }
 
@@ -492,7 +492,7 @@
 
   const registrationChoice = () => {
     openModal(`
-      <span class="modal-kicker">3rd BNMPC National Science Carnival</span>
+      <span class="modal-kicker">BNMPC National Science Carnival 2026</span>
       <h2>How would you like to join?</h2>
       <p class="modal-lead">Visitor entry is free. Participants can select a competition segment before registering.</p>
       <div class="register-choice">
