@@ -309,7 +309,59 @@ window.BNMPC_EVENTS = [
     paymentRequired: true,
     paymentAmount: 1000,
     paymentUnit: "team",
-    rules: ["Each team must register 5 main players.", "A team may add 1 substitute player and 1 team manager.", "Detailed match rules will be published later."]
+    rules: ["• Registration information must be accurate and up to date.
+• Players may only compete using their registered game account.
+• Using or sharing another person's account, or playing on an unregistered account, is prohibited.
+• Each team roster must consist of 5 players, 1 substitute, and 1 manager.
+• Rosters cannot be changed once the tournament begins. Coaches are not allowed to play in any match.
+• Coach information must be submitted in the designated Discord channel.
+• Each player may represent only one team in the tournament.
+• All matches must be played in a full 5v5 format. Matches will not proceed with 3v5 or 4v5 teams.
+• Teams must have a complete lineup before the match starts. Otherwise, the team will forfeit the match.
+⏱️ Before the Match
+• The online phase begins on 17 October and will be self-hosted.
+• Team leaders must agree on a match time before the scheduled date and inform the organizers.
+• If the team leaders cannot agree on a time, the organizers will arrange one.
+• Teams may request moderators to be present. The organizers will host the match if such a request is made.
+• Match schedules and brackets will be published in the official Discord server.
+• Quarter-finals will be held online. Semi-finals and the Grand Final will be held on campus.
+• All team members must join their assigned Custom VC before the match.
+• Team leaders must join the Toss VC 10 minutes before the match for the toss.
+• Map bans will be conducted through mapban.gg and hosted by the organizers.
+• Organizers will verify players before every match.
+• Organizers reserve the right to join any match as observers.
+🎯 During the Match
+• Each team receives 2 tactical pauses per map, lasting 1 minute each.
+• Each team receives 5 minutes of technical pause time per map.
+• If a player disconnects during a round after the team's tactical and technical pause time has been exhausted, the match will not be paused.
+🏆 Gameplay Format
+Group Stage: BO1 — Double Elimination (Online, Self-Hosted)
+Quarter-finals: BO1 (Online)
+Semi-finals: BO3 (LAN)
+Grand Final: BO3 (LAN)
+🗺️ Allowed Maps
+All maps
+🔫 Allowed Guns
+All guns are permitted except the Warden.
+💬 Communication
+• All official communication with players and teams must take place in the official Discord server.
+• Coaches may remain in Discord with their teams but must be muted by the admins.
+• Team communication with the coach is permitted only during pauses, as specified by the organizers.
+• The official Discord server link will be shared through the organizers' page.
+⚖️ Ruling & Punishment
+• Using an unregistered player: Disqualification
+• Playing on the wrong game account: Disqualification
+• Exploiting glitches or bugs: Case-by-case review
+• Inappropriate or disruptive behaviour: Case-by-case review
+• Match-fixing or teaming: Disqualification and ban
+• Account sharing: Disqualification and ban
+• Cheating or knowingly playing with a cheater: Disqualification and ban
+📢 Disclaimer
+• The organizers reserve the right to modify these rules when necessary.
+• BNMPCSC may change the schedule of this tournament segment at any time.
+• If the segment is cancelled, participants will receive a full refund of their fees.
+• All participants must bring their student ID cards for verification.
+• The organizers reserve the right to disqualify any participant or team found violating the rules."]
   },
   {
     slug: "fifa",
