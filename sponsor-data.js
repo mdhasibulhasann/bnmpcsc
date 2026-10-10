@@ -19,7 +19,7 @@ window.BNMPC_SPONSORS = {
 
   cohost: [
      name: "Bangladesh Freedom Foundation",
-      logo: "assets/sponsors/powered-1.png",
+      logo: "assets/sponsors/cohost-1.png",
       website: "https://freedomfound.org"
   ],
 
