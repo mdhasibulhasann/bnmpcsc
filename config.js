@@ -4,7 +4,7 @@
    ============================================================= */
 
 window.BNMPC_CONFIG = {
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbz2yYubvOam1Yey3qInEHV8ZEZPMxJa43W_iiNjGFfWgcESGJODNL-uL9TSiyf2LkTc4Q/exec",
+  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbx3BeKE4UPhBZQelZ3uKvWje9D7rVWB1wjuGZAKAvvkIbfcwz2grGjovUO6jbyItALKpg/exec",
 
   demoMode: false,
 
