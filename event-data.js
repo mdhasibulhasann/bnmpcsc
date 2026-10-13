@@ -307,7 +307,7 @@ window.BNMPC_EVENTS = [
     teamName: true,
     valorantRoster: true,
     paymentRequired: true,
-    paymentAmount: 1000,
+    paymentAmount: 500,
     paymentUnit: "team",
     rules: ["Each team must register 5 main players.", "A team may add 1 substitute player and 1 team manager.", "Detailed match rules will be published later."]
   },
