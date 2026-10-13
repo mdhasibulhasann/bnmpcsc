@@ -14,12 +14,22 @@
   /* ===========================================================
      REGISTRATION AVAILABILITY
 
-     Keep only the slugs listed below open for participant
-     registration. Visitor registration is handled separately and
-     remains open.
+     The slugs listed below are closed. Science Olympiad remains open,
+     while the other Olympiad and Quiz registrations are closed.
+     Visitor registration and every non-listed segment remain open.
      =========================================================== */
-  const openRegistrationSlugs = new Set(["project-display", "valorant", "fifa"]);
-  const isRegistrationOpen = (event) => openRegistrationSlugs.has(event?.slug);
+  const closedRegistrationSlugs = new Set([
+    "physics-olympiad",
+    "chemistry-olympiad",
+    "mathematics-olympiad",
+    "biology-olympiad",
+    "it-olympiad",
+    "gk-olympiad",
+    "marvel-dc-quiz",
+    "movie-series-quiz",
+    "team-quiz"
+  ]);
+  const isRegistrationOpen = (event) => Boolean(event?.slug) && !closedRegistrationSlugs.has(event.slug);
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
@@ -513,7 +523,7 @@
     openModal(`
       <span class="modal-kicker">BNMPC National Science Carnival 2026</span>
       <h2>How would you like to join?</h2>
-      <p class="modal-lead">Visitor registration is open. Participant registration is currently available only for Project Display, Valorant and FIFA.</p>
+      <p class="modal-lead">Visitor registration and all non-quiz segments are open. Science Olympiad is also open; registration for the other Olympiads and all Quiz segments is closed.</p>
       <div class="register-choice">
         <a class="choice-card participant-choice" href="/participant-registration/"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a category, review a segment and enter the competition.</span></a>
         <button class="choice-card" type="button" data-visitor-choice><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"/><path d="M5.5 28c.8-5.2 4.3-8 10.5-8s9.7 2.8 10.5 8"/><path d="M24 8h5v8h-5"/></svg></span><strong>Register as Visitor</strong><span>Visit the exhibitions and experience the carnival.</span></button>
