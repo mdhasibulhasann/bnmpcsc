@@ -15,6 +15,7 @@
   const refreshButton = byId("refresh-payments");
   const lockButton = byId("gaming-lock-button");
   const filterBar = byId("payment-filter-bar");
+  const gameFilterBar = byId("game-filter-bar");
   const reviewGrid = byId("payment-review-grid");
   const loadingState = byId("payment-loading");
   const dashboardError = byId("gaming-dashboard-error");
@@ -22,6 +23,7 @@
   let committeePin = "";
   let payments = [];
   let activeFilter = "Pending";
+  let activeGameFilter = "All";
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
@@ -146,10 +148,13 @@
   const setCount = (id, value) => { byId(id).textContent = String(value); };
 
   const updateCounts = () => {
-    setCount("payment-total", payments.length);
-    setCount("payment-pending", payments.filter(item => item.paymentStatus === "Pending").length);
-    setCount("payment-issues", payments.filter(item => item.paymentStatus === "Needs Attention").length);
-    setCount("payment-approved", payments.filter(item => item.paymentStatus === "Approved").length);
+    const gamePayments = activeGameFilter === "All"
+      ? payments
+      : payments.filter(item => item.segment === activeGameFilter);
+    setCount("payment-total", gamePayments.length);
+    setCount("payment-pending", gamePayments.filter(item => item.paymentStatus === "Pending").length);
+    setCount("payment-issues", gamePayments.filter(item => item.paymentStatus === "Needs Attention").length);
+    setCount("payment-approved", gamePayments.filter(item => item.paymentStatus === "Approved").length);
   };
 
   const statusClass = status => {
@@ -202,10 +207,16 @@
   };
 
   const renderPayments = () => {
-    const filtered = activeFilter === "All" ? payments : payments.filter(item => item.paymentStatus === activeFilter);
+    const filtered = payments.filter(item => {
+      const matchesStatus = activeFilter === "All" || item.paymentStatus === activeFilter;
+      const matchesGame = activeGameFilter === "All" || item.segment === activeGameFilter;
+      return matchesStatus && matchesGame;
+    });
+    const statusLabel = activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `;
+    const gameLabel = activeGameFilter === "All" ? "gaming" : activeGameFilter;
     reviewGrid.innerHTML = filtered.length
       ? filtered.map(paymentCard).join("")
-      : `<div class="payment-empty-state"><strong>No ${escapeHtml(activeFilter.toLowerCase())} payments</strong><span>Use Refresh to check the latest Google Sheet entries.</span></div>`;
+      : `<div class="payment-empty-state"><strong>No ${escapeHtml(statusLabel)}${escapeHtml(gameLabel)} payments</strong><span>Change a filter or use Refresh to check the latest Google Sheet entries.</span></div>`;
   };
 
   const loadPayments = async () => {
@@ -236,6 +247,15 @@
     if (!button) return;
     activeFilter = button.dataset.paymentFilter;
     filterBar.querySelectorAll("button").forEach(item => item.classList.toggle("active", item === button));
+    renderPayments();
+  });
+
+  gameFilterBar.addEventListener("click", event => {
+    const button = event.target.closest("[data-game-filter]");
+    if (!button) return;
+    activeGameFilter = button.dataset.gameFilter;
+    gameFilterBar.querySelectorAll("button").forEach(item => item.classList.toggle("active", item === button));
+    updateCounts();
     renderPayments();
   });
 
