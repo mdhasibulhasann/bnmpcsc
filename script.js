@@ -11,6 +11,16 @@
   const config = window.BNMPC_CONFIG || {};
   let lastFocused = null;
 
+  /* ===========================================================
+     REGISTRATION AVAILABILITY
+
+     Keep only the slugs listed below open for participant
+     registration. Visitor registration is handled separately and
+     remains open.
+     =========================================================== */
+  const openRegistrationSlugs = new Set(["project-display", "valorant", "fifa"]);
+  const isRegistrationOpen = (event) => openRegistrationSlugs.has(event?.slug);
+
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -90,6 +100,15 @@
     // Keep registration/details dialogs open when the shaded area is clicked.
     // Users close them deliberately with the cross or an on-screen action.
     modalRoot.querySelector("button, a, input, select, textarea")?.focus();
+  };
+
+  const showRegistrationClosed = (event) => {
+    openModal(`
+      <span class="modal-kicker">Quota filled</span>
+      <h2>Registration Closed</h2>
+      <p class="modal-lead">Registration for <strong>${escapeHtml(event?.title || "this segment")}</strong> is now closed because its quota has been filled.</p>
+      <div class="modal-actions"><button class="primary-button" type="button" data-cancel>Close</button></div>`, "Registration closed");
+    modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
   };
 
   const showScheduleConflictWarning = ({ event, group, conflictingEvent, onCancel, onProceed }) => {
@@ -494,7 +513,7 @@
     openModal(`
       <span class="modal-kicker">BNMPC National Science Carnival 2026</span>
       <h2>How would you like to join?</h2>
-      <p class="modal-lead">Visitor entry is free. Participants can select a competition segment before registering.</p>
+      <p class="modal-lead">Visitor registration is open. Participant registration is currently available only for Project Display, Valorant and FIFA.</p>
       <div class="register-choice">
         <a class="choice-card participant-choice" href="/participant-registration/"><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.7 9-6 9s-6-3-6-9V5Z"/><path d="M10 8H5c0 5 2.1 8 6.4 8M22 8h5c0 5-2.1 8-6.4 8M16 19v5M11 28h10M13 24h6v4"/></svg></span><strong>Register as Participant</strong><span>Choose a category, review a segment and enter the competition.</span></a>
         <button class="choice-card" type="button" data-visitor-choice><span class="choice-visual" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"/><path d="M5.5 28c.8-5.2 4.3-8 10.5-8s9.7 2.8 10.5 8"/><path d="M24 8h5v8h-5"/></svg></span><strong>Register as Visitor</strong><span>Visit the exhibitions and experience the carnival.</span></button>
@@ -521,6 +540,8 @@
     </div>`;
 
   const eventCardMarkup = (event, index) => {
+    const registrationOpen = isRegistrationOpen(event);
+    const registrationLabel = registrationOpen ? "Register Now" : "Registration Closed";
     const paymentActions = event.paymentRequired ? `
       <div class="card-actions gaming-card-top-actions">
         <button class="ghost-button details-button" type="button">See Details</button>
@@ -529,7 +550,7 @@
       <button class="primary-button event-register gaming-register-button" type="button">Register Now · ৳${Number(event.paymentAmount).toLocaleString("en-BD")}</button>` : `
       <div class="card-actions">
         <button class="ghost-button details-button" type="button">See Details</button>
-        <button class="primary-button event-register" type="button">Register Now</button>
+        <button class="primary-button event-register${registrationOpen ? "" : " registration-closed-button"}" type="button">${registrationLabel}</button>
       </div>`;
 
     return `<article class="event-card glass-panel${event.paymentRequired ? " gaming-event-card" : ""}" data-event-slug="${escapeHtml(event.slug)}">
@@ -659,6 +680,7 @@
   };
 
   const eventDetails = (event, index) => {
+    const registrationLabel = isRegistrationOpen(event) ? "Register Now" : "Registration Closed";
     openModal(`
       <span class="modal-kicker">Event ${String(index + 1).padStart(2, "0")} · Official details</span>
       <h2>${escapeHtml(event.title)}</h2>
@@ -671,7 +693,7 @@
         ${event.paymentRequired ? `<div><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")} / ${escapeHtml(event.paymentUnit)}</strong></div>` : ""}
       </div>
       <section class="rules-panel"><h3>Rules & Guidelines</h3><ol>${event.rules.map(rule => `<li>${escapeHtml(rule)}</li>`).join("")}</ol></section>
-      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button>${event.paymentRequired ? '<button class="ghost-button" type="button" data-payment-guide>How to Pay</button>' : ""}<button class="primary-button" type="button" data-register-event>Register Now</button></div>`, `${event.title} details`, event.rules.length > 7);
+      <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button>${event.paymentRequired ? '<button class="ghost-button" type="button" data-payment-guide>How to Pay</button>' : ""}<button class="primary-button" type="button" data-register-event>${registrationLabel}</button></div>`, `${event.title} details`, event.rules.length > 7);
     modalRoot.querySelector("[data-cancel]")?.addEventListener("click", closeModal);
     modalRoot.querySelector("[data-payment-guide]")?.addEventListener("click", () => showPaymentGuide(event));
     modalRoot.querySelector("[data-register-event]")?.addEventListener("click", () => participantForm(event));
@@ -706,6 +728,11 @@
   };
 
   const participantForm = (event) => {
+    if (!isRegistrationOpen(event)) {
+      showRegistrationClosed(event);
+      return;
+    }
+
     const countChoices = Array.from({ length: event.maxMembers - event.minMembers + 1 }, (_, index) => event.minMembers + index);
     const isTeamEvent = event.maxMembers > 1;
     const isGaming = Boolean(event.paymentRequired);
