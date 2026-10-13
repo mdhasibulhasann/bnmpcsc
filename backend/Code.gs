@@ -412,7 +412,7 @@ function validateGamingPayment_(data, sheetName) {
   data.paymentMethod = "bKash";
   data.paymentPhone = paymentPhone;
   data.transactionId = transactionId;
-  data.paymentAmount = sheetName === "Valorant" ? 1000 : 200;
+  data.paymentAmount = sheetName === "Valorant" ? 500 : 200;
   data.paymentUnit = sheetName === "Valorant" ? "team" : "participant";
   data.paymentStatus = "Pending";
 }
@@ -461,7 +461,7 @@ function gamingPaymentFromRecord_(record) {
     mobile: firstMember.mobile || valueFromRecord_(record, "Member 1 Mobile"),
     memberCount: data.memberCount || valueFromRecord_(record, "Member Count"),
     paymentMethod: valueFromRecord_(record, "Payment Method") || "bKash",
-    paymentAmount: valueFromRecord_(record, "Payment Amount") || (record.sheetName === "Valorant" ? 1000 : 200),
+    paymentAmount: valueFromRecord_(record, "Payment Amount") || (record.sheetName === "Valorant" ? 500 : 200),
     paymentPhone: valueFromRecord_(record, "Payment bKash Number") || data.paymentPhone,
     transactionId: valueFromRecord_(record, "Transaction ID") || data.transactionId,
     paymentStatus: valueFromRecord_(record, "Payment Status") || "Pending",
