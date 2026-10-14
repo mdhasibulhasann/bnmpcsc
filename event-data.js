@@ -324,7 +324,7 @@ window.BNMPC_EVENTS = [
     paymentRequired: true,
     paymentAmount: 200,
     paymentUnit: "participant",
-    prize: "20,000 BDT",
+    prize: "15,000 BDT",
     rules: ["This is a solo event.", "Detailed match rules will be published later."]
   }
 ];
