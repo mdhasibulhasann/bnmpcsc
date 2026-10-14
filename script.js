@@ -573,6 +573,7 @@
       <div class="card-top"><span class="event-number">${String(index + 1).padStart(2, "0")}</span><span class="event-type">${escapeHtml(event.type)}</span></div>
       <h2>${escapeHtml(event.title)}</h2>
       <p>${escapeHtml(event.summary)}</p>
+      ${event.prize ? `<div class="event-prize-banner"><span>Prize</span><strong>${escapeHtml(event.prize)}</strong></div>` : ""}
       ${event.paymentRequired ? `<div class="gaming-fee-chip"><span>Registration fee</span><strong>৳${Number(event.paymentAmount).toLocaleString("en-BD")} / ${escapeHtml(event.paymentUnit)}</strong></div>` : ""}
       ${paymentActions}
     </article>`;

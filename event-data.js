@@ -309,6 +309,7 @@ window.BNMPC_EVENTS = [
     paymentRequired: true,
     paymentAmount: 500,
     paymentUnit: "team",
+    prize: "30,000 BDT + 1 Laptop for the Champion Team",
     rules: ["Each team must register 5 main players.", "A team may add 1 substitute player and 1 team manager.", "Detailed match rules will be published later."]
   },
   {
@@ -323,6 +324,7 @@ window.BNMPC_EVENTS = [
     paymentRequired: true,
     paymentAmount: 200,
     paymentUnit: "participant",
+    prize: "20,000 BDT",
     rules: ["This is a solo event.", "Detailed match rules will be published later."]
   }
 ];

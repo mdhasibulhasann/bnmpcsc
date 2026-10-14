@@ -919,6 +919,10 @@ a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,
    23. GAMING CARDS, PAYMENT GUIDE AND PENDING STATE
    ============================================================= */
 .gaming-event-card { min-height: 360px; border-color: rgba(255,70,65,.2); background: radial-gradient(circle at 100% 100%, rgba(237,31,36,.11), transparent 45%), var(--panel-strong); }
+.event-prize-banner { position: relative; z-index: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 11px; margin: 0 0 12px; padding: 12px 14px; overflow: hidden; border: 1px solid rgba(255,199,60,.38); border-radius: 14px; background: linear-gradient(125deg, rgba(255,186,35,.17), rgba(255,226,126,.07) 58%, rgba(255,166,0,.12)); box-shadow: inset 0 1px rgba(255,244,189,.12), 0 10px 32px rgba(166,105,0,.1); }
+.event-prize-banner::after { content: ""; position: absolute; width: 75px; height: 75px; right: -28px; top: -37px; border-radius: 50%; background: rgba(255,205,66,.2); filter: blur(16px); pointer-events: none; }
+.event-prize-banner span { position: relative; z-index: 1; display: inline-flex; align-items: center; min-height: 27px; padding: 0 9px; border: 1px solid rgba(255,213,93,.32); border-radius: 999px; color: #1b1200; background: linear-gradient(135deg, #ffe493, #d99b13); font-size: .58rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.event-prize-banner strong { position: relative; z-index: 1; color: #ffe9a6; font-size: .76rem; line-height: 1.4; text-shadow: 0 0 20px rgba(255,191,45,.15); }
 .gaming-fee-chip { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: auto 0 12px; padding: 11px 13px; border: 1px solid rgba(255,255,255,.09); border-radius: 14px; background: rgba(0,0,0,.2); }
 .gaming-fee-chip span { color: var(--muted); font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; }
 .gaming-fee-chip strong { color: #fff; font-size: .8rem; }
