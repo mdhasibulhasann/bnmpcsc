@@ -15,6 +15,7 @@
   const refreshButton = byId("organizer-refresh");
   const lockButton = byId("organizer-lock");
   const searchInput = byId("organizer-search");
+  const projectCategoryField = byId("organizer-project-category-field");
   const categorySelect = byId("organizer-category");
   const segmentSelect = byId("organizer-segment");
   const groupSelect = byId("organizer-group");
@@ -175,20 +176,26 @@
   };
 
   const populateAllFilters = () => {
-    replaceOptions(categorySelect, uniqueSorted(registrations.map(item => item.category)), "All categories");
-    updateSegmentOptions();
+    const selectedCategory = categorySelect.value;
+    categorySelect.innerHTML = `<option value="">All project categories</option>
+      <option value="Mechanical">1. Mechanical</option>
+      <option value="Non-Mechanical">2. Non-Mechanical</option>
+      <option value="IT">3. IT</option>`;
+    if (["Mechanical", "Non-Mechanical", "IT"].includes(selectedCategory)) categorySelect.value = selectedCategory;
+    replaceOptions(segmentSelect, uniqueSorted(registrations.map(item => item.segment)), "All segments");
     replaceOptions(groupSelect, uniqueSorted(registrations.map(item => item.group)), "All groups");
     replaceOptions(institutionSelect, uniqueSorted(registrations.flatMap(item => item.institutions || [])), "All institutions");
+    toggleProjectCategoryFilter();
   };
 
-  const updateSegmentOptions = () => {
-    const category = categorySelect.value;
-    const available = category ? registrations.filter(item => item.category === category) : registrations;
-    replaceOptions(segmentSelect, uniqueSorted(available.map(item => item.segment)), "All segments");
+  const toggleProjectCategoryFilter = () => {
+    const showProjectCategory = segmentSelect.value === "Project Display";
+    projectCategoryField.hidden = !showProjectCategory;
+    if (!showProjectCategory) categorySelect.value = "";
   };
 
   const registrationSearchText = item => normalize([
-    item.registrationId, item.category, item.segment, item.group, item.teamName, item.entryName,
+    item.registrationId, item.projectCategory, item.segment, item.group, item.teamName, item.entryName,
     ...(item.institutions || []),
     ...(item.members || []).flatMap(member => [member.name, member.className, member.institution, member.mobile, member.email, member.inGameNameTag, member.discordUsername])
   ].join(" "));
@@ -205,12 +212,12 @@
 
   const applyFilters = resetPage => {
     const search = normalize(searchInput.value);
-    const category = categorySelect.value;
     const segment = segmentSelect.value;
+    const category = segment === "Project Display" ? categorySelect.value : "";
     const group = groupSelect.value;
     const institution = normalize(institutionSelect.value);
     filteredRegistrations = registrations.filter(item => {
-      if (category && item.category !== category) return false;
+      if (category && item.projectCategory !== category) return false;
       if (segment && item.segment !== segment) return false;
       if (group && item.group !== group) return false;
       if (institution && !(item.institutions || []).some(value => normalize(value) === institution)) return false;
@@ -222,14 +229,15 @@
     renderTable();
   };
 
-  categorySelect.addEventListener("change", () => { updateSegmentOptions(); applyFilters(true); });
-  [segmentSelect, groupSelect, institutionSelect].forEach(select => select.addEventListener("change", () => applyFilters(true)));
+  categorySelect.addEventListener("change", () => applyFilters(true));
+  segmentSelect.addEventListener("change", () => { toggleProjectCategoryFilter(); applyFilters(true); });
+  [groupSelect, institutionSelect].forEach(select => select.addEventListener("change", () => applyFilters(true)));
   searchInput.addEventListener("input", () => applyFilters(true));
   byId("organizer-reset").addEventListener("click", () => {
     searchInput.value = "";
-    categorySelect.value = "";
-    updateSegmentOptions();
     segmentSelect.value = "";
+    categorySelect.value = "";
+    toggleProjectCategoryFilter();
     groupSelect.value = "";
     institutionSelect.value = "";
     applyFilters(true);
@@ -246,7 +254,7 @@
   };
 
   const displayStatus = item => {
-    if (item.category === "Gaming" && item.paymentStatus && item.paymentStatus !== "Not Required") return item.paymentStatus;
+    if (["Valorant", "FIFA"].includes(item.segment) && item.paymentStatus && item.paymentStatus !== "Not Required") return item.paymentStatus;
     return item.status || "New";
   };
 
@@ -256,7 +264,7 @@
     return `<tr>
       <td data-label="Date">${escapeHtml(formatDate(item.submittedAt))}</td>
       <td data-label="Registration ID"><code>${escapeHtml(item.registrationId)}</code></td>
-      <td data-label="Category">${escapeHtml(item.category)}</td>
+      <td data-label="Project Category">${escapeHtml(item.projectCategory || "—")}</td>
       <td data-label="Segment"><strong>${escapeHtml(item.segment)}</strong></td>
       <td data-label="Group">${escapeHtml(item.group || "—")}</td>
       <td data-label="Institution">${escapeHtml(institution)}</td>
@@ -306,12 +314,12 @@
     lastFocusedElement = trigger;
     byId("organizer-detail-title").textContent = item.segment || "Participant registration";
     const additionalFields = Object.entries(item.entryFields || {}).filter(([, value]) => value !== "" && value != null);
-    const hasPayment = item.category === "Gaming" || (item.paymentStatus && item.paymentStatus !== "Not Required");
+    const hasPayment = ["Valorant", "FIFA"].includes(item.segment) || (item.paymentStatus && item.paymentStatus !== "Not Required");
     modalContent.innerHTML = `
       <section class="organizer-detail-section">
         <h3>Registration</h3>
         <dl class="organizer-detail-grid">
-          ${detailItem("Registration ID", item.registrationId)}${detailItem("Submitted", formatDate(item.submittedAt))}${detailItem("Category", item.category)}${detailItem("Segment", item.segment)}${detailItem("Group", item.group)}${detailItem("Team Name", item.teamName)}${detailItem("Entry / Topic Name", item.entryName)}${detailItem("CA Reference", item.caReference)}${detailItem("Member Count", item.memberCount)}${detailItem("Status", item.status)}${item.checkInTime ? detailItem("Check-in Time", item.checkInTime) : ""}
+          ${detailItem("Registration ID", item.registrationId)}${detailItem("Submitted", formatDate(item.submittedAt))}${detailItem("Project Category", item.projectCategory)}${detailItem("Segment", item.segment)}${detailItem("Group", item.group)}${detailItem("Team Name", item.teamName)}${detailItem("Entry / Topic Name", item.entryName)}${detailItem("CA Reference", item.caReference)}${detailItem("Member Count", item.memberCount)}${detailItem("Status", item.status)}${item.checkInTime ? detailItem("Check-in Time", item.checkInTime) : ""}
           ${additionalFields.map(([key, value]) => detailItem(prettyLabel(key), Array.isArray(value) ? value.join(", ") : String(value))).join("")}
         </dl>
       </section>
