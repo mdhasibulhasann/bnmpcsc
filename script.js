@@ -236,7 +236,20 @@
   const roundedRect = (context, x, y, width, height, radius) => {
     const safeRadius = Math.min(radius, width / 2, height / 2);
     context.beginPath();
-    context.roundRect(x, y, width, height, safeRadius);
+    if (typeof context.roundRect === "function") {
+      context.roundRect(x, y, width, height, safeRadius);
+      return;
+    }
+    context.moveTo(x + safeRadius, y);
+    context.lineTo(x + width - safeRadius, y);
+    context.arcTo(x + width, y, x + width, y + safeRadius, safeRadius);
+    context.lineTo(x + width, y + height - safeRadius);
+    context.arcTo(x + width, y + height, x + width - safeRadius, y + height, safeRadius);
+    context.lineTo(x + safeRadius, y + height);
+    context.arcTo(x, y + height, x, y + height - safeRadius, safeRadius);
+    context.lineTo(x, y + safeRadius);
+    context.arcTo(x, y, x + safeRadius, y, safeRadius);
+    context.closePath();
   };
 
   const fitImage = (context, image, x, y, maxWidth, maxHeight) => {
@@ -256,8 +269,8 @@
     const registrationFor = payload.segment || "Visitor Registration";
     const teamLine = payload.teamName ? `Team: ${payload.teamName}` : "";
     const [eventLogo, clubLogo] = await Promise.all([
-      imageFrom("assets/event-logo.png").then(image => image || imageFrom("assets/event-logo.jpg")),
-      imageFrom("assets/header-logo.png").then(image => image || imageFrom("assets/club-logo.jpg"))
+      imageFrom("/assets/event-logo.png").then(image => image || imageFrom("/assets/event-logo.jpg")),
+      imageFrom("/assets/header-logo.png").then(image => image || imageFrom("/assets/club-logo.jpg"))
     ]);
 
     const background = context.createLinearGradient(0, 0, 1080, 1350);
@@ -344,6 +357,53 @@
     return canvas;
   };
 
+  const canvasToPngBlob = canvas => new Promise((resolve, reject) => {
+    if (typeof canvas.toBlob !== "function") {
+      reject(new Error("This browser cannot create the pass image."));
+      return;
+    }
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error("The pass image could not be prepared."));
+    }, "image/png");
+  });
+
+  const isEmbeddedMobileBrowser = () => /FBAN|FBAV|Instagram|Messenger|Line|; wv\)|\bwv\b/i.test(navigator.userAgent || "");
+
+  const canSharePassFile = file => Boolean(
+    navigator.share &&
+    navigator.canShare &&
+    navigator.canShare({ files: [file] })
+  );
+
+  const downloadPassBlob = (blob, filename) => {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    link.rel = "noopener";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+  };
+
+  const sharePassFile = async (file, payload) => {
+    await navigator.share({
+      files: [file],
+      title: "BNMPC National Science Carnival 2026 Entry Pass",
+      text: `${payload.registrationId} · ${payload.segment || "Visitor Registration"}`
+    });
+  };
+
+  const showPassOpenFallback = (errorBox, blob) => {
+    const objectUrl = URL.createObjectURL(blob);
+    errorBox.hidden = false;
+    errorBox.innerHTML = `The browser blocked the automatic download. <a href="${objectUrl}" target="_blank" rel="noopener">Open the pass image</a>, then save it to the device.`;
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 300000);
+  };
+
   const prepareRegistrationPass = async (modal, payload) => {
     const qrMount = modal.querySelector("[data-registration-qr]");
     const downloadButton = modal.querySelector("[data-download-pass]");
@@ -364,17 +424,27 @@
       const qrCanvas = qrMount.querySelector("canvas");
       if (!qrCanvas) throw new Error("QR canvas was not created.");
       const downloadLabel = payload.registrationType === "Visitor" ? "Download QR Pass — Required" : "Download QR Pass";
+      const passCanvas = await createPassCanvas(payload, qrCanvas, verificationUrl);
+      const passBlob = await canvasToPngBlob(passCanvas);
+      const filename = `${payload.registrationId}-BNMPC-pass.png`;
+      const passFile = typeof File === "function" ? new File([passBlob], filename, { type: "image/png" }) : null;
       downloadButton.disabled = false;
       downloadButton.textContent = downloadLabel;
       downloadButton.addEventListener("click", async () => {
         downloadButton.disabled = true;
-        downloadButton.textContent = "Creating image…";
+        downloadButton.textContent = isEmbeddedMobileBrowser() && passFile && canSharePassFile(passFile) ? "Opening save options…" : "Downloading…";
+        errorBox.hidden = true;
+        errorBox.textContent = "";
         try {
-          const passCanvas = await createPassCanvas(payload, qrCanvas, verificationUrl);
-          const link = document.createElement("a");
-          link.download = `${payload.registrationId}-BNMPC-pass.png`;
-          link.href = passCanvas.toDataURL("image/png");
-          link.click();
+          if (isEmbeddedMobileBrowser() && passFile && canSharePassFile(passFile)) {
+            await sharePassFile(passFile, payload);
+          } else {
+            downloadPassBlob(passBlob, filename);
+          }
+          downloadButton.textContent = "Pass ready — Download again";
+          await new Promise(resolve => setTimeout(resolve, 1100));
+        } catch (error) {
+          if (error?.name !== "AbortError") showPassOpenFallback(errorBox, passBlob);
         } finally {
           downloadButton.disabled = false;
           downloadButton.textContent = downloadLabel;
