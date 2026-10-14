@@ -106,7 +106,58 @@
 .organizer-member-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 0; }
 
 /* =============================================================
-   06. TABLET AND MOBILE LAYOUT
+   06. PRINT / PDF OPTIONS AND BLACK-AND-WHITE REPORT
+   ============================================================= */
+.organizer-report-card { width: min(610px, 100%); }
+.organizer-report-options { padding: 20px; }
+.organizer-report-options > p:first-child { margin: 0 0 17px; color: #b7b7c0; font-size: .8rem; line-height: 1.5; }
+.organizer-report-options fieldset { display: grid; gap: 9px; margin: 0 0 15px; padding: 15px; border: 1px solid rgba(255,255,255,.09); border-radius: 16px; }
+.organizer-report-options legend { padding: 0 7px; color: #858590; font-size: .62rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.organizer-report-options fieldset label { display: flex; align-items: center; gap: 9px; min-height: 34px; color: #e4e4e8; font-size: .78rem; cursor: pointer; }
+.organizer-report-options input[type="radio"] { accent-color: #ff3732; }
+.organizer-report-page-field > span { display: block; margin: 0 0 7px 4px; color: #858590; font-size: .61rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.organizer-report-page-field input { width: 100%; min-height: 46px; padding: 0 13px; border: 1px solid rgba(255,255,255,.1); border-radius: 13px; outline: 0; background: #15151b; color: #fff; font: inherit; font-size: .76rem; }
+.organizer-report-page-field input:focus { border-color: rgba(255,74,68,.62); box-shadow: 0 0 0 3px rgba(255,48,47,.09); }
+.organizer-report-page-field input:disabled { opacity: .45; cursor: not-allowed; }
+.organizer-report-help { margin: 11px 0 15px; color: #858590; font-size: .69rem; line-height: 1.5; }
+.organizer-report-actions { display: grid; grid-template-columns: 1fr 1.2fr; gap: 9px; margin-top: 15px; }
+.organizer-report-actions button { width: 100%; min-height: 48px; margin: 0; }
+
+.organizer-report-root { position: absolute; z-index: -9999; top: 0; left: -10000px; width: 297mm; background: #fff; color: #000; font-family: Arial, "Noto Sans Bengali", sans-serif; }
+.organizer-report-page { position: relative; width: 297mm; height: 210mm; overflow: hidden; padding: 8mm 8mm 7mm; break-after: page; page-break-after: always; background: #fff; color: #000; }
+.organizer-report-page:last-child { break-after: auto; page-break-after: auto; }
+.organizer-print-heading { margin: 0 0 4mm; padding: 0 0 3mm; border-bottom: .35mm solid #000; }
+.organizer-print-heading h1 { margin: 0; color: #000; font-size: 15pt; line-height: 1.1; letter-spacing: 0; }
+.organizer-print-heading > p { margin: 1.2mm 0 2.5mm; color: #000; font-size: 8.5pt; font-weight: 700; }
+.organizer-print-heading dl { display: grid; grid-template-columns: minmax(0, 2.5fr) repeat(3, minmax(0, .7fr)); gap: 2mm; margin: 0; }
+.organizer-print-heading dl div { min-width: 0; padding: 1.5mm 1.8mm; border: .22mm solid #999; }
+.organizer-print-heading dt { margin: 0 0 .7mm; color: #333; font-size: 5.5pt; font-weight: 700; text-transform: uppercase; }
+.organizer-print-heading dd { margin: 0; color: #000; font-size: 6.7pt; line-height: 1.25; overflow-wrap: anywhere; }
+.organizer-print-table { width: 100%; table-layout: fixed; border-collapse: collapse; color: #000; }
+.organizer-print-table th { height: 7mm; padding: 1mm 1.1mm; border: .25mm solid #000; background: #eee; color: #000; font-size: 5.7pt; font-weight: 800; line-height: 1.15; text-align: left; text-transform: uppercase; }
+.organizer-print-table td { height: 6.5mm; max-height: 6.5mm; padding: .8mm 1.1mm; border: .22mm solid #777; color: #000; font-size: 6.1pt; line-height: 1.15; vertical-align: middle; }
+.organizer-print-table td > span { display: block; max-height: 5.4mm; overflow: hidden; overflow-wrap: anywhere; }
+.organizer-print-table .print-date { width: 10%; }
+.organizer-print-table .print-id { width: 14%; }
+.organizer-print-table .print-category { width: 10%; }
+.organizer-print-table .print-segment { width: 11%; }
+.organizer-print-table .print-group { width: 5%; }
+.organizer-print-table .print-institution { width: 19%; }
+.organizer-print-table .print-lead { width: 15%; }
+.organizer-print-table .print-members { width: 6%; }
+.organizer-print-table .print-status { width: 10%; }
+.organizer-report-page > footer { position: absolute; right: 8mm; bottom: 2.6mm; color: #333; font-size: 5.7pt; }
+
+@page { size: A4 landscape; margin: 0; }
+@media print {
+  html, body.organizer-report-printing { width: 297mm; min-width: 0; margin: 0; padding: 0; background: #fff !important; }
+  body.organizer-report-printing > *:not(.organizer-report-root) { display: none !important; }
+  body.organizer-report-printing .organizer-report-root { position: static; z-index: auto; left: auto; width: 297mm; }
+  body.organizer-report-printing .organizer-report-page { box-shadow: none; }
+}
+
+/* =============================================================
+   07. TABLET AND MOBILE LAYOUT
    ============================================================= */
 @media (max-width: 1180px) {
   .organizer-filter-panel { grid-template-columns: repeat(3, 1fr); }
@@ -118,7 +169,7 @@
   .organizer-dashboard-header { top: 7px; border-radius: 19px; }
   .organizer-brand.compact span { display: none; }
   .organizer-header-actions { gap: 5px; }
-  .organizer-secondary-button { min-height: 39px; padding: 0 11px; }
+  .organizer-secondary-button { min-height: 39px; padding: 0 10px; }
   .organizer-summary { grid-template-columns: repeat(2, 1fr); }
   .organizer-summary div { padding: 14px; }
   .organizer-filter-panel { grid-template-columns: 1fr 1fr; }
@@ -141,6 +192,9 @@
   .organizer-member-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
+  .organizer-dashboard-header { flex-wrap: wrap; }
+  .organizer-header-actions { width: 100%; }
+  .organizer-header-actions .organizer-secondary-button { flex: 1; }
   .organizer-brand.compact strong { font-size: .85rem; }
   .organizer-brand.compact img { width: 39px; height: 39px; }
   .organizer-filter-panel { grid-template-columns: 1fr; }
@@ -149,4 +203,6 @@
   .organizer-modal-card { max-height: calc(100dvh - 16px); border-radius: 21px; }
   .organizer-modal-content { max-height: calc(100dvh - 102px); padding: 14px; }
   .organizer-detail-grid, .organizer-member-card dl { grid-template-columns: 1fr; }
+  .organizer-report-options { padding: 15px; }
+  .organizer-report-actions { grid-template-columns: 1fr; }
 }

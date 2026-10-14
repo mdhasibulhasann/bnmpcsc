@@ -27,8 +27,18 @@
   const dashboardError = byId("organizer-dashboard-error");
   const modal = byId("organizer-detail-modal");
   const modalContent = byId("organizer-modal-content");
+  const reportOpenButton = byId("organizer-report-open");
+  const reportModal = byId("organizer-report-modal");
+  const reportSummary = byId("organizer-report-summary");
+  const reportPagesInput = byId("organizer-report-pages");
+  const reportError = byId("organizer-report-error");
+  const reportPrintButton = byId("organizer-report-print");
+  const reportDownloadButton = byId("organizer-report-download");
+  const reportRoot = byId("organizer-report-root");
 
   const PAGE_SIZE = 40;
+  const FIRST_REPORT_PAGE_SIZE = 20;
+  const LATER_REPORT_PAGE_SIZE = 25;
   let organizerPin = "";
   let registrations = [];
   let filteredRegistrations = [];
@@ -138,6 +148,7 @@
     dashboard.hidden = true;
     accessCard.hidden = false;
     closeModal();
+    closeReportModal();
     pinInput.focus();
   };
   lockButton.addEventListener("click", lockPortal);
@@ -208,6 +219,7 @@
     byId("summary-participants").textContent = participants.toLocaleString("en-BD");
     byId("summary-institutions").textContent = institutions.toLocaleString("en-BD");
     byId("summary-segments").textContent = segments.toLocaleString("en-BD");
+    reportOpenButton.disabled = filteredRegistrations.length === 0;
   };
 
   const applyFilters = resetPage => {
@@ -301,7 +313,211 @@
   });
 
   /* ===========================================================
-     06. COMPLETE REGISTRATION DETAILS MODAL
+     06. BLACK-AND-WHITE PRINT AND DIRECT PDF REPORT
+     =========================================================== */
+  const paginateReportRows = rows => {
+    if (!rows.length) return [];
+    const pages = [rows.slice(0, FIRST_REPORT_PAGE_SIZE)];
+    for (let index = FIRST_REPORT_PAGE_SIZE; index < rows.length; index += LATER_REPORT_PAGE_SIZE) {
+      pages.push(rows.slice(index, index + LATER_REPORT_PAGE_SIZE));
+    }
+    return pages;
+  };
+
+  const reportFilterText = () => {
+    const filters = [];
+    if (searchInput.value.trim()) filters.push(`Search: ${searchInput.value.trim()}`);
+    if (segmentSelect.value) filters.push(`Segment: ${segmentSelect.value}`);
+    if (segmentSelect.value === "Project Display" && categorySelect.value) filters.push(`Project Category: ${categorySelect.value}`);
+    if (groupSelect.value) filters.push(`Group: ${groupSelect.value}`);
+    if (institutionSelect.value) filters.push(`Institution: ${institutionSelect.value}`);
+    return filters.length ? filters.join(" | ") : "All participant registrations";
+  };
+
+  const reportRowHtml = item => {
+    const institution = (item.institutions || []).join(", ") || "—";
+    const lead = item.teamName || item.leadName || "—";
+    return `<tr>
+      <td><span>${escapeHtml(formatDate(item.submittedAt))}</span></td>
+      <td><span>${escapeHtml(item.registrationId)}</span></td>
+      <td><span>${escapeHtml(item.projectCategory || "—")}</span></td>
+      <td><span>${escapeHtml(item.segment || "—")}</span></td>
+      <td><span>${escapeHtml(item.group || "—")}</span></td>
+      <td><span>${escapeHtml(institution)}</span></td>
+      <td><span>${escapeHtml(lead)}</span></td>
+      <td><span>${escapeHtml(item.memberCount || (item.members || []).length || 1)}</span></td>
+      <td><span>${escapeHtml(displayStatus(item))}</span></td>
+    </tr>`;
+  };
+
+  const reportTableHtml = rows => `<table class="organizer-print-table">
+    <colgroup><col class="print-date"><col class="print-id"><col class="print-category"><col class="print-segment"><col class="print-group"><col class="print-institution"><col class="print-lead"><col class="print-members"><col class="print-status"></colgroup>
+    <thead><tr><th>Date</th><th>Registration ID</th><th>Project Category</th><th>Segment</th><th>Group</th><th>Institution</th><th>Lead / Team</th><th>Members</th><th>Status</th></tr></thead>
+    <tbody>${rows.map(reportRowHtml).join("")}</tbody>
+  </table>`;
+
+  const reportPageHtml = (rows, pageNumber, totalPages) => {
+    const participantCount = filteredRegistrations.reduce((sum, item) => sum + (Number(item.memberCount) || (item.members || []).length || 1), 0);
+    const generatedAt = new Intl.DateTimeFormat("en-BD", {
+      dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dhaka"
+    }).format(new Date());
+    const heading = pageNumber === 1 ? `<header class="organizer-print-heading">
+      <h1>BNMPC National Science Carnival 2026</h1>
+      <p>Organizer Registration Report</p>
+      <dl>
+        <div><dt>Filters</dt><dd>${escapeHtml(reportFilterText())}</dd></div>
+        <div><dt>Registrations</dt><dd>${filteredRegistrations.length.toLocaleString("en-BD")}</dd></div>
+        <div><dt>Participants</dt><dd>${participantCount.toLocaleString("en-BD")}</dd></div>
+        <div><dt>Generated</dt><dd>${escapeHtml(generatedAt)}</dd></div>
+      </dl>
+    </header>` : "";
+    return `<section class="organizer-report-page" data-report-page="${pageNumber}">
+      ${heading}
+      ${reportTableHtml(rows)}
+      <footer>Page ${pageNumber} of ${totalPages}</footer>
+    </section>`;
+  };
+
+  const parseReportPages = (value, totalPages) => {
+    const selected = new Set();
+    const tokens = String(value || "").split(",").map(token => token.trim()).filter(Boolean);
+    if (!tokens.length) throw new Error("Enter the page numbers you want, for example 1,3-5,8.");
+    tokens.forEach(token => {
+      const single = token.match(/^(\d+)$/);
+      const range = token.match(/^(\d+)\s*-\s*(\d+)$/);
+      if (single) {
+        selected.add(Number(single[1]));
+        return;
+      }
+      if (range) {
+        const start = Number(range[1]);
+        const end = Number(range[2]);
+        if (start > end) throw new Error(`Invalid page range: ${token}.`);
+        for (let page = start; page <= end; page += 1) selected.add(page);
+        return;
+      }
+      throw new Error(`Invalid page selection: ${token}.`);
+    });
+    const pages = [...selected].sort((left, right) => left - right);
+    if (pages.some(page => page < 1 || page > totalPages)) throw new Error(`Choose pages between 1 and ${totalPages}.`);
+    return pages;
+  };
+
+  const selectedReportPages = allPages => {
+    const scope = reportModal.querySelector('input[name="organizer-report-scope"]:checked')?.value || "all";
+    const pageNumbers = scope === "custom"
+      ? parseReportPages(reportPagesInput.value, allPages.length)
+      : allPages.map((_, index) => index + 1);
+    return pageNumbers.map(pageNumber => ({ pageNumber, rows: allPages[pageNumber - 1] }));
+  };
+
+  const prepareReport = () => {
+    reportError.hidden = true;
+    const allPages = paginateReportRows(filteredRegistrations);
+    if (!allPages.length) throw new Error("There are no filtered registrations to print.");
+    const selected = selectedReportPages(allPages);
+    reportRoot.innerHTML = selected.map(page => reportPageHtml(page.rows, page.pageNumber, allPages.length)).join("");
+    reportRoot.setAttribute("aria-hidden", "false");
+    return selected;
+  };
+
+  const clearPreparedReport = () => {
+    reportRoot.innerHTML = "";
+    reportRoot.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("organizer-report-printing");
+  };
+
+  const showReportError = message => {
+    reportError.textContent = message;
+    reportError.hidden = false;
+  };
+
+  const openReportModal = () => {
+    const pages = paginateReportRows(filteredRegistrations);
+    if (!pages.length) return;
+    const participants = filteredRegistrations.reduce((sum, item) => sum + (Number(item.memberCount) || (item.members || []).length || 1), 0);
+    reportSummary.textContent = `${filteredRegistrations.length.toLocaleString("en-BD")} registrations · ${participants.toLocaleString("en-BD")} participants · ${pages.length.toLocaleString("en-BD")} printable pages`;
+    reportModal.querySelector('input[value="all"]').checked = true;
+    reportPagesInput.value = "";
+    reportPagesInput.disabled = true;
+    reportError.hidden = true;
+    reportModal.hidden = false;
+    document.body.classList.add("organizer-modal-open");
+    byId("organizer-report-close").focus();
+  };
+
+  function closeReportModal() {
+    if (reportModal.hidden) return;
+    reportModal.hidden = true;
+    if (modal.hidden) document.body.classList.remove("organizer-modal-open");
+    reportOpenButton.focus();
+  }
+
+  reportOpenButton.addEventListener("click", openReportModal);
+  byId("organizer-report-close").addEventListener("click", closeReportModal);
+  reportModal.querySelector("[data-close-organizer-report]").addEventListener("click", closeReportModal);
+  reportModal.querySelectorAll('input[name="organizer-report-scope"]').forEach(input => {
+    input.addEventListener("change", () => {
+      reportPagesInput.disabled = input.value !== "custom";
+      reportError.hidden = true;
+      if (!reportPagesInput.disabled) reportPagesInput.focus();
+    });
+  });
+
+  reportPrintButton.addEventListener("click", () => {
+    try {
+      prepareReport();
+      closeReportModal();
+      document.body.classList.add("organizer-report-printing");
+      window.addEventListener("afterprint", clearPreparedReport, { once: true });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        window.print();
+        setTimeout(clearPreparedReport, 250);
+      }));
+    } catch (error) {
+      clearPreparedReport();
+      showReportError(error.message || "The print report could not be prepared.");
+    }
+  });
+
+  reportDownloadButton.addEventListener("click", async () => {
+    const originalText = reportDownloadButton.textContent;
+    try {
+      const selected = prepareReport();
+      const html2canvas = window.html2canvas;
+      const JsPdf = window.jspdf?.jsPDF;
+      if (!html2canvas || !JsPdf) throw new Error("The PDF tool could not be loaded. Check the internet connection and try again.");
+      reportDownloadButton.disabled = true;
+      reportPrintButton.disabled = true;
+      const pdf = new JsPdf({ orientation: "landscape", unit: "mm", format: "a4", compress: true });
+      const pageElements = [...reportRoot.querySelectorAll(".organizer-report-page")];
+      for (let index = 0; index < pageElements.length; index += 1) {
+        reportDownloadButton.textContent = `Preparing ${index + 1}/${selected.length}…`;
+        const canvas = await html2canvas(pageElements[index], {
+          scale: 1.5,
+          backgroundColor: "#ffffff",
+          logging: false,
+          useCORS: true
+        });
+        if (index > 0) pdf.addPage("a4", "landscape");
+        pdf.addImage(canvas.toDataURL("image/jpeg", .94), "JPEG", 0, 0, 297, 210, undefined, "FAST");
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+      const stamp = new Date().toISOString().slice(0, 10);
+      pdf.save(`BNMPC-Registration-Report-${stamp}.pdf`);
+      closeReportModal();
+    } catch (error) {
+      showReportError(error.message || "The PDF could not be downloaded.");
+    } finally {
+      clearPreparedReport();
+      reportDownloadButton.disabled = false;
+      reportPrintButton.disabled = false;
+      reportDownloadButton.textContent = originalText;
+    }
+  });
+
+  /* ===========================================================
+     07. COMPLETE REGISTRATION DETAILS MODAL
      =========================================================== */
   const detailItem = (label, value) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "—")}</dd></div>`;
   const prettyLabel = value => String(value || "").replace(/([a-z])([A-Z])/g, "$1 $2").replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase());
@@ -338,5 +554,9 @@
   }
   byId("organizer-modal-close").addEventListener("click", closeModal);
   modal.querySelector("[data-close-organizer-modal]").addEventListener("click", closeModal);
-  document.addEventListener("keydown", event => { if (event.key === "Escape" && !modal.hidden) closeModal(); });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (!reportModal.hidden) closeReportModal();
+    else if (!modal.hidden) closeModal();
+  });
 })();
