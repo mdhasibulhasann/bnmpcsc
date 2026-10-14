@@ -195,7 +195,7 @@
   };
 
   const registrationSearchText = item => normalize([
-    item.registrationId, item.projectCategory, item.segment, item.group, item.teamName, item.entryName,
+    item.caReference, item.registrationId, item.projectCategory, item.segment, item.group, item.teamName, item.entryName,
     ...(item.institutions || []),
     ...(item.members || []).flatMap(member => [member.name, member.className, member.institution, member.mobile, member.email, member.inGameNameTag, member.discordUsername])
   ].join(" "));

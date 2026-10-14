@@ -59,7 +59,7 @@
 .organizer-table-card { overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 23px; background: rgba(13,13,18,.8); box-shadow: 0 24px 75px rgba(0,0,0,.28); }
 .organizer-table-scroll { overflow-x: auto; }
 .organizer-table { width: 100%; min-width: 1250px; border-collapse: collapse; }
-.organizer-table th { position: sticky; z-index: 2; top: 79px; padding: 13px 12px; background: #141419; color: #858590; font-size: .57rem; font-weight: 900; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
+.organizer-table th { position: sticky; z-index: 2; top: 0; padding: 13px 12px; background: #141419; color: #858590; font-size: .57rem; font-weight: 900; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
 .organizer-table td { max-width: 235px; padding: 13px 12px; border-top: 1px solid rgba(255,255,255,.065); color: #c5c5cd; font-size: .69rem; line-height: 1.42; vertical-align: middle; overflow-wrap: anywhere; }
 .organizer-table tbody tr:hover { background: rgba(255,255,255,.025); }
 .organizer-table td strong { color: #fff; }
