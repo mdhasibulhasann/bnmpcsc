@@ -1,0 +1,88 @@
+/* =============================================================
+   PHOTOGRAPHY ORGANIZER PORTAL
+   Sections are separated so future edits remain easy to locate.
+   ============================================================= */
+
+/* 01. Page shell and PIN access */
+.photography-page { color: #fff; }
+.photography-shell { width: min(1180px, calc(100% - 36px)); min-height: calc(100vh - 176px); margin: 0 auto; padding: 72px 0 64px; }
+.photography-access { width: min(560px, 100%); margin: 4vh auto 0; padding: clamp(28px, 5vw, 52px); border-radius: 32px; text-align: center; }
+.photography-access-mark { display: grid; place-items: center; width: 70px; height: 70px; margin: 0 auto 22px; border: 1px solid rgba(255,255,255,.13); border-radius: 23px; color: #fff; background: linear-gradient(145deg, rgba(255,54,48,.24), rgba(45,66,244,.18)); box-shadow: 0 18px 55px rgba(0,0,0,.32); }
+.photography-access-mark svg { width: 31px; fill: currentColor; }
+.photography-access h1 { margin: 12px 0 14px; font-size: clamp(2.2rem, 6vw, 4.1rem); line-height: .96; letter-spacing: -.06em; }
+.photography-access h1 span, .photography-dashboard-heading h1 span { color: var(--red); }
+.photography-access > p:not(.eyebrow) { max-width: 450px; margin: 0 auto; color: var(--muted); line-height: 1.65; }
+.photography-pin-form { margin-top: 28px; text-align: left; }
+.photography-pin-form > label { display: block; margin: 0 0 8px 4px; color: rgba(255,255,255,.72); font-size: .7rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.photography-pin-form > div { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.photography-pin-form input { min-width: 0; min-height: 52px; padding: 0 17px; border: 1px solid rgba(255,255,255,.13); border-radius: 15px; outline: 0; color: #fff; background: rgba(255,255,255,.055); font: inherit; }
+.photography-pin-form input:focus { border-color: rgba(255,71,65,.7); box-shadow: 0 0 0 3px rgba(255,48,47,.12); }
+.photography-pin-form button, .photography-dashboard-actions button { min-height: 52px; padding: 0 22px; border: 1px solid rgba(255,255,255,.16); border-radius: 15px; color: #fff; background: linear-gradient(135deg, #f23a32, #8f0712); font-size: .76rem; font-weight: 900; cursor: pointer; }
+.photography-pin-form button:disabled, .photography-dashboard-actions button:disabled { opacity: .6; cursor: wait; }
+.photography-message { margin: 10px 4px 0; color: #ff9692; font-size: .78rem; line-height: 1.45; }
+.photography-back-link { display: inline-block; margin-top: 23px; color: rgba(255,255,255,.64); font-size: .76rem; font-weight: 800; }
+.photography-back-link:hover { color: #fff; }
+
+/* 02. Dashboard heading and controls */
+.photography-dashboard-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 30px; }
+.photography-dashboard-heading h1 { margin: 10px 0 13px; font-size: clamp(2.75rem, 7vw, 5.8rem); line-height: .9; letter-spacing: -.065em; }
+.photography-dashboard-heading > div:first-child > p:last-child { max-width: 650px; margin: 0; color: var(--muted); line-height: 1.6; }
+.photography-dashboard-actions { display: flex; gap: 8px; flex: none; }
+.photography-dashboard-actions button { min-height: 44px; padding: 0 17px; background: rgba(255,255,255,.06); }
+.photography-dashboard-actions button:hover { background: rgba(255,255,255,.11); }
+
+/* 03. All / Mobile / DSLR filters */
+.photography-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; padding: 9px; border-radius: 20px; }
+.photography-filters { display: flex; flex-wrap: wrap; gap: 7px; }
+.photography-filters button { min-height: 43px; padding: 0 15px; border: 0; border-radius: 13px; color: var(--muted); background: transparent; font-size: .76rem; font-weight: 850; cursor: pointer; }
+.photography-filters button strong { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-left: 7px; padding: 0 6px; border-radius: 999px; color: #fff; background: rgba(255,255,255,.08); font-size: .66rem; }
+.photography-filters button.active { color: #fff; background: linear-gradient(135deg, rgba(242,58,50,.95), rgba(143,7,18,.9)); box-shadow: 0 10px 26px rgba(209,14,22,.2); }
+.photography-service-status { padding-right: 12px; color: rgba(255,255,255,.5); font-size: .7rem; font-weight: 750; }
+
+/* 04. Participant entry cards */
+.photography-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
+.photography-card { position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 280px; padding: 24px; border: 1px solid rgba(255,255,255,.1); border-radius: 25px; background: linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.025)); box-shadow: inset 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.22); }
+.photography-card::after { content: ""; position: absolute; z-index: 0; width: 150px; height: 150px; right: -80px; top: -80px; border-radius: 50%; background: var(--red); opacity: .12; filter: blur(22px); }
+.photography-card[data-category="dslr"]::after { background: var(--blue); }
+.photography-card > * { position: relative; z-index: 1; }
+.photography-card-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.photography-category { padding: 7px 10px; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; color: #ffaaa6; background: rgba(255,48,47,.1); font-size: .65rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.photography-card[data-category="dslr"] .photography-category { color: #b9c4ff; background: rgba(51,93,255,.11); }
+.photography-registration-id { color: rgba(255,255,255,.44); font-size: .66rem; font-weight: 800; }
+.photography-card h2 { margin: 26px 0 8px; font-size: clamp(1.35rem, 2vw, 1.8rem); line-height: 1.08; letter-spacing: -.035em; }
+.photography-institution { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.photography-link { display: inline-flex; align-items: center; justify-content: center; min-height: 47px; margin-top: auto; padding: 0 18px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; color: #fff; background: rgba(255,255,255,.07); font-size: .77rem; font-weight: 900; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+.photography-link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.12); }
+.photography-link[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.photography-loading, .photography-empty { display: grid; place-items: center; min-height: 260px; color: var(--muted); text-align: center; }
+.photography-empty { align-content: center; border-radius: 25px; }
+.photography-empty strong { color: #fff; font-size: 1.15rem; }
+.photography-empty span { margin-top: 7px; font-size: .8rem; }
+.dashboard-message { margin: 0 0 18px; padding: 13px 15px; border: 1px solid rgba(255,80,73,.2); border-radius: 14px; background: rgba(255,48,47,.07); }
+
+/* 05. Responsive layout */
+@media (max-width: 920px) {
+  .photography-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .photography-dashboard-heading { align-items: flex-start; }
+}
+
+@media (max-width: 720px) {
+  .photography-shell { width: min(100% - 24px, 1180px); min-height: calc(100vh - 150px); padding: 58px 0 46px; }
+  .photography-access { margin-top: 1vh; padding: 28px 20px; border-radius: 25px; }
+  .photography-dashboard-heading { display: grid; gap: 19px; }
+  .photography-dashboard-heading h1 { font-size: clamp(2.8rem, 15vw, 4.5rem); }
+  .photography-dashboard-actions { width: 100%; }
+  .photography-dashboard-actions button { flex: 1; }
+  .photography-toolbar { align-items: stretch; flex-direction: column; padding: 8px; }
+  .photography-filters { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .photography-filters button { padding: 0 8px; }
+  .photography-service-status { padding: 0 8px 5px; }
+  .photography-grid { grid-template-columns: 1fr; }
+  .photography-card { min-height: 250px; }
+}
+
+@media (max-width: 420px) {
+  .photography-pin-form > div { grid-template-columns: 1fr; }
+  .photography-pin-form button { width: 100%; }
+  .photography-filters button strong { display: none; }
+}
