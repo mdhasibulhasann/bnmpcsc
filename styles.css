@@ -913,6 +913,14 @@ a.sponsor-logo-card:hover { transform: translateY(-4px); border-color: rgba(255,
     font-size: .6rem;
     line-height: 1.25;
   }
+   .sponsor-logo-visual img[alt="Lecture Publications logo"] {
+  width: 78%;
+  height: 78%;
+  max-width: 78%;
+  max-height: 78%;
+  object-fit: contain;
+  object-position: center;
+  }
 }
 
 /* =============================================================
