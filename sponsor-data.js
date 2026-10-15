@@ -33,6 +33,12 @@ window.BNMPC_SPONSORS = {
   ],
 
   gold: [
+
+     {
+      name: "Lecture Publications",
+      logo: "assets/sponsors/gold-3.png",
+      website: "https://lecturepublicationsbd.com/"
+    },
     {
       name: "Maan Bangladesh Limited",
       logo: "assets/sponsors/gold-2.png",
