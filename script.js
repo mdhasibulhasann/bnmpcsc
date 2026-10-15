@@ -826,7 +826,10 @@
     const isGaming = Boolean(event.paymentRequired);
     const skipsClass = event.slug === "valorant" || event.slug === "fifa";
     const hasScheduleConflict = Boolean(scheduleConflicts[event.slug]);
-    const asksGroup = (event.groups.length < 4 || hasScheduleConflict) && event.slug !== "valorant";
+    const asksGroup =
+  (event.groups.length < 4 || hasScheduleConflict) &&
+  event.slug !== "valorant" &&
+  event.slug !== "fifa";
     const groupField = asksGroup ? `<div class="field full registration-group-field"><label for="registration-group">Select Group</label><select id="registration-group" name="registrationGroup" required><option value="" selected disabled>Select your group</option>${groupOptions(event.groups)}</select></div>` : "";
     const countField = isTeamEvent ? `
       <div class="field full member-count-field"><label for="member-count">Select Your Team Size</label><select id="member-count" name="memberCount" required><option value="" selected disabled>Select your team size</option>${countChoices.map(count => `<option value="${count}">${event.valorantRoster ? (count === 5 ? "5 main players" : count === 6 ? "5 main players + 1 substitute" : "5 main players + 1 substitute + 1 Team manager") : `${count} member${count > 1 ? "s" : ""}`}</option>`).join("")}</select></div>` : `<input type="hidden" id="member-count" name="memberCount" value="1">`;
