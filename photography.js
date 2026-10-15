@@ -151,7 +151,7 @@
     refreshButton.disabled = true;
     serviceStatus.textContent = "Loading secure records…";
     try {
-      const response = await requestBackend("gaming-payments-list", { pin: organizerPin, scope: "organizer" });
+      const response = await requestBackend("gaming-payments-list", { pin: organizerPin, scope: "photography" });
       if (!response?.ok || !response?.authorized) throw new Error("Organizer access expired. Lock and sign in again.");
       entries = (Array.isArray(response.payments) ? response.payments : [])
         .filter(item => String(item.segment || "").trim() === "Photography Exhibition")
