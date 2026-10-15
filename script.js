@@ -760,6 +760,9 @@
         <li>Review all information carefully and submit the payment.</li>
         <li>Save the bKash sender number and Transaction ID, then enter both in the registration form.</li>
       </ol></section>
+      <p class="payment-contact-note">
+       <strong>N.B.:</strong> When entering the <strong>${identityField}</strong> in bKash, please write it as one continuous word without any spaces. Example: <strong>TEAMALPHA</strong>
+       </p>
       <p class="payment-contact-note"><strong>Warning:</strong> Please verify all information and the payment amount before submitting. Incorrect payments are non-refundable.</p>
       <p class="payment-contact-note">Payment support: <strong>${escapeHtml(gamingPayment.contactName || "Md. Tahmid Mahir")}</strong> · ${escapeHtml(gamingPayment.contactPhone || "+880 19 0222 3848")}</p>
       <div class="modal-actions"><button class="ghost-button" type="button" data-cancel>Close</button><button class="primary-button" type="button" data-register-event>Continue to Registration</button></div>`, `${event.title} payment guide`, true);
