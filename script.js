@@ -19,6 +19,7 @@
      Visitor registration and every non-listed segment remain open.
      =========================================================== */
   const closedRegistrationSlugs = new Set([
+    "project-display",
     "physics-olympiad",
     "chemistry-olympiad",
     "mathematics-olympiad",
