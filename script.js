@@ -19,6 +19,8 @@
      Visitor registration and every non-listed segment remain open.
      =========================================================== */
   const closedRegistrationSlugs = new Set([
+    "scrapbook",
+    "photography-exhibition",
     "project-display",
     "physics-olympiad",
     "chemistry-olympiad",
