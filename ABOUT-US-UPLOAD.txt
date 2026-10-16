@@ -1,0 +1,37 @@
+ABOUT US PAGE — UPLOAD INSTRUCTIONS
+===================================
+
+Upload or replace these files in the GitHub repository root:
+
+1. about.html
+2. styles.css
+3. index.html
+4. events.html
+5. gaming.html
+6. schedule.html
+7. gallery.html
+8. participant-registration.html
+9. photography.html
+10. sponsor.html
+11. contact.html
+
+PRINCIPAL PHOTO
+---------------
+Upload the Principal's photo with this exact path and filename:
+
+assets/principal.png
+
+Recommended image:
+- PNG or JPG content saved as principal.png
+- Portrait orientation
+- 4:5 ratio
+- Recommended resolution: 1200 × 1500 px
+- Keep some space above the head
+
+Until the image is uploaded, the About Us page displays a styled placeholder.
+
+After GitHub Pages finishes publishing, open:
+
+https://3rd-bnmpcsc-carnival.online/about/
+
+If an older version appears, press Ctrl + Shift + R.
