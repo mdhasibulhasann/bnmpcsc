@@ -19,7 +19,7 @@
      Visitor registration and every non-listed segment remain open.
      =========================================================== */
   const closedRegistrationSlugs = new Set([
-    "science-olympiad",
+  
     "scrapbook",
     "photography-exhibition",
     "project-display",
