@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050407">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="description" content="Private organizer registration data portal for BNMPC National Science Carnival 2026.">
+  <title>Organizer Data Portal · BNMPC National Science Carnival 2026</title>
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/styles.css?v=home-footer-1">
+  <link rel="stylesheet" href="/organizer-data.css?v=organizer-institute-print-1">
+</head>
+<body class="organizer-page">
+  <!-- 01. Private portal background -->
+  <div class="organizer-backdrop" aria-hidden="true"><div></div></div>
+
+  <main class="organizer-shell">
+    <!-- 02. Server-verified organizer access -->
+    <section class="organizer-access-card" id="organizer-access-card" aria-labelledby="organizer-access-title">
+      <div class="organizer-brand">
+        <img src="/assets/header-logo.png" onerror="this.src='/assets/club-logo.jpg'" alt="BNMPC Science Club logo">
+        <div><strong>BNMPC Science Club</strong><span>Private organizer portal</span></div>
+      </div>
+      <span class="organizer-kicker">Restricted access</span>
+      <h1 id="organizer-access-title">Registration Data</h1>
+      <p>Enter the organizer PIN to view participant registrations from every segment.</p>
+      <form id="organizer-pin-form" class="organizer-pin-form">
+        <label for="organizer-pin">Organizer PIN</label>
+        <input id="organizer-pin" type="password" inputmode="numeric" minlength="4" maxlength="12" autocomplete="current-password" required>
+        <p class="organizer-error" id="organizer-pin-message" role="alert" hidden></p>
+        <button class="organizer-primary-button" type="submit">Unlock Portal</button>
+      </form>
+      <a class="organizer-home-link" href="/">Back to website</a>
+    </section>
+
+    <!-- 03. Dashboard; shown only after successful authentication -->
+    <section class="organizer-dashboard" id="organizer-dashboard" hidden>
+      <header class="organizer-dashboard-header">
+        <div class="organizer-brand compact">
+          <img src="/assets/header-logo.png" onerror="this.src='/assets/club-logo.jpg'" alt="">
+          <div><strong>Organizer Data</strong><span id="organizer-service-status">Secure participant records</span></div>
+        </div>
+        <div class="organizer-header-actions">
+          <button class="organizer-secondary-button" id="organizer-refresh" type="button">Refresh</button>
+          <button class="organizer-secondary-button" id="organizer-institutions-open" type="button" disabled>Institute List</button>
+          <button class="organizer-secondary-button" id="organizer-report-open" type="button" disabled>Print</button>
+          <button class="organizer-secondary-button" id="organizer-lock" type="button">Lock</button>
+        </div>
+      </header>
+
+      <!-- 04. Filtered live summary -->
+      <section class="organizer-summary" aria-label="Filtered registration summary">
+        <div><span>Registrations</span><strong id="summary-registrations">0</strong></div>
+        <div><span>Participants</span><strong id="summary-participants">0</strong></div>
+        <div><span>Institutions</span><strong id="summary-institutions">0</strong></div>
+        <div><span>Segments</span><strong id="summary-segments">0</strong></div>
+      </section>
+
+      <!-- 05. Search and classification filters -->
+      <section class="organizer-filter-panel" aria-label="Registration filters">
+        <label class="organizer-search-field">
+          <span>Search records</span>
+          <input id="organizer-search" type="search" placeholder="CA ref, ID, name, phone, email, team or institution">
+        </label>
+        <label><span>Segment</span><select id="organizer-segment"><option value="">All segments</option></select></label>
+        <label id="organizer-project-category-field" hidden><span>Project Category</span><select id="organizer-category">
+          <option value="">All project categories</option>
+          <option value="Mechanical">1. Mechanical</option>
+          <option value="Non-Mechanical">2. Non-Mechanical</option>
+          <option value="IT">3. IT</option>
+        </select></label>
+        <label><span>Group</span><select id="organizer-group"><option value="">All groups</option></select></label>
+        <label><span>Institution</span><select id="organizer-institution"><option value="">All institutions</option></select></label>
+        <button class="organizer-reset-button" id="organizer-reset" type="button">Reset filters</button>
+      </section>
+
+      <p class="organizer-error dashboard-error" id="organizer-dashboard-error" role="alert" hidden></p>
+      <div class="organizer-loading" id="organizer-loading">Loading participant registrations…</div>
+
+      <!-- 06. One row per registration -->
+      <section class="organizer-table-card" id="organizer-table-card" hidden>
+        <div class="organizer-table-scroll">
+          <table class="organizer-table">
+            <thead><tr><th>Date</th><th>Registration ID</th><th>Project Category</th><th>Segment</th><th>Group</th><th>Institution</th><th>Lead / Team</th><th>Members</th><th>Status</th><th></th></tr></thead>
+            <tbody id="organizer-table-body"></tbody>
+          </table>
+        </div>
+        <div class="organizer-pagination">
+          <span id="organizer-page-summary">0 records</span>
+          <div><button id="organizer-previous" type="button">Previous</button><span id="organizer-page-number">Page 1</span><button id="organizer-next" type="button">Next</button></div>
+        </div>
+      </section>
+      <div class="organizer-empty" id="organizer-empty" hidden><strong>No matching registrations</strong><span>Change or reset the filters to see other records.</span></div>
+    </section>
+  </main>
+
+  <!-- 07. Full registration and team member details -->
+  <div class="organizer-modal" id="organizer-detail-modal" hidden>
+    <div class="organizer-modal-backdrop" data-close-organizer-modal></div>
+    <section class="organizer-modal-card" role="dialog" aria-modal="true" aria-labelledby="organizer-detail-title">
+      <header><div><span>Registration details</span><h2 id="organizer-detail-title">Participant registration</h2></div><button id="organizer-modal-close" type="button" aria-label="Close details">×</button></header>
+      <div class="organizer-modal-content" id="organizer-modal-content"></div>
+    </section>
+  </div>
+
+  <!-- 08. Unique participant institution list -->
+  <div class="organizer-modal" id="organizer-institutions-modal" hidden>
+    <div class="organizer-modal-backdrop" data-close-organizer-institutions></div>
+    <section class="organizer-modal-card organizer-institutions-card" role="dialog" aria-modal="true" aria-labelledby="organizer-institutions-title">
+      <header>
+        <div><span>All participant segments · Visitors excluded</span><h2 id="organizer-institutions-title">Institute List</h2></div>
+        <button id="organizer-institutions-close" type="button" aria-label="Close institute list">×</button>
+      </header>
+      <div class="organizer-institutions-content">
+        <div class="organizer-institutions-summary"><span>Total unique institutes</span><strong id="organizer-institutions-total">0</strong></div>
+        <p>Capitalization and extra-space differences are combined. Short forms and full names remain separate.</p>
+        <div class="organizer-institutions-actions">
+          <button class="organizer-secondary-button" id="organizer-institutions-print" type="button">Print List</button>
+          <button class="organizer-primary-button" id="organizer-institutions-download" type="button">Download PDF</button>
+        </div>
+        <p class="organizer-error" id="organizer-institutions-error" role="alert" hidden></p>
+        <ol class="organizer-institution-list" id="organizer-institution-list"></ol>
+      </div>
+    </section>
+  </div>
+
+  <!-- 09. Filtered black-and-white print and PDF controls -->
+  <div class="organizer-modal organizer-report-modal" id="organizer-report-modal" hidden>
+    <div class="organizer-modal-backdrop" data-close-organizer-report></div>
+    <section class="organizer-modal-card organizer-report-card" role="dialog" aria-modal="true" aria-labelledby="organizer-report-title">
+      <header>
+        <div><span>Filtered registration report</span><h2 id="organizer-report-title">Print or Download PDF</h2></div>
+        <button id="organizer-report-close" type="button" aria-label="Close report options">×</button>
+      </header>
+      <div class="organizer-report-options">
+        <p id="organizer-report-summary">0 registrations</p>
+        <fieldset>
+          <legend>Select printable pages</legend>
+          <label><input type="radio" name="organizer-report-scope" value="all" checked><span>All filtered pages</span></label>
+          <label><input type="radio" name="organizer-report-scope" value="custom"><span>Custom pages</span></label>
+        </fieldset>
+        <label class="organizer-report-page-field" for="organizer-report-pages">
+          <span>Page numbers</span>
+          <input id="organizer-report-pages" type="text" inputmode="text" placeholder="Example: 1,3-5,8" disabled>
+        </label>
+        <p class="organizer-report-help">The first page contains the report summary and up to 20 records. Later pages contain up to 25 records.</p>
+        <p class="organizer-error" id="organizer-report-error" role="alert" hidden></p>
+        <div class="organizer-report-actions">
+          <button class="organizer-secondary-button" id="organizer-report-print" type="button">Print</button>
+          <button class="organizer-primary-button" id="organizer-report-download" type="button">Download PDF</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 10. Off-screen report surface; shown only while printing/exporting -->
+  <div class="organizer-report-root" id="organizer-report-root" aria-hidden="true"></div>
+
+  <script src="/config.js?v=live-4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="/organizer-data.js?v=organizer-institute-print-1"></script>
+  <script src="https://cdn.counter.dev/script.js" data-id="d47bc0b9-fb80-4392-a248-371542a888fc" data-utcoffset="6"></script>
+</body>
+</html>
