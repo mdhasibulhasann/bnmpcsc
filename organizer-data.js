@@ -35,10 +35,18 @@
   const reportPrintButton = byId("organizer-report-print");
   const reportDownloadButton = byId("organizer-report-download");
   const reportRoot = byId("organizer-report-root");
+  const institutionListButton = byId("organizer-institutions-open");
+  const institutionModal = byId("organizer-institutions-modal");
+  const institutionList = byId("organizer-institution-list");
+  const institutionTotal = byId("organizer-institutions-total");
+  const institutionPrintButton = byId("organizer-institutions-print");
+  const institutionDownloadButton = byId("organizer-institutions-download");
+  const institutionError = byId("organizer-institutions-error");
 
   const PAGE_SIZE = 40;
   const FIRST_REPORT_PAGE_SIZE = 20;
   const LATER_REPORT_PAGE_SIZE = 25;
+  const INSTITUTION_REPORT_PAGE_SIZE = 40;
   let organizerPin = "";
   let registrations = [];
   let filteredRegistrations = [];
@@ -55,6 +63,24 @@
   const normalize = value => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
   const uniqueSorted = values => [...new Set(values.map(value => String(value || "").trim()).filter(Boolean))]
     .sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" }));
+  const cleanInstitution = value => String(value || "").trim().replace(/\s+/g, " ");
+  const uniqueInstitutionNames = values => {
+    const names = new Map();
+    values.forEach(value => {
+      const displayName = cleanInstitution(value);
+      const key = normalize(displayName);
+      if (key && !names.has(key)) names.set(key, displayName);
+    });
+    return [...names.values()].sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" }));
+  };
+  const institutionValuesFor = item => [
+    ...(Array.isArray(item?.institutions) ? item.institutions : []),
+    ...(Array.isArray(item?.members) ? item.members.map(member => member?.institution) : [])
+  ].map(cleanInstitution).filter(Boolean);
+  const isVisitorRegistration = item => {
+    const type = normalize(item?.registrationType || item?.type || item?.kind);
+    return type === "visitor" || normalize(item?.segment) === "visitor";
+  };
   const formatDate = value => {
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return String(value || "—");
@@ -148,6 +174,7 @@
     dashboard.hidden = true;
     accessCard.hidden = false;
     closeModal();
+    closeInstitutionModal();
     closeReportModal();
     pinInput.focus();
   };
@@ -159,12 +186,16 @@
     tableCard.hidden = true;
     emptyState.hidden = true;
     refreshButton.disabled = true;
+    institutionListButton.disabled = true;
     try {
       const response = await requestBackend("gaming-payments-list", { pin: organizerPin, scope: "organizer" });
       if (!response?.ok || !response?.authorized) throw new Error("Organizer access expired. Lock and sign in again.");
       registrations = Array.isArray(response.payments) ? response.payments : [];
       populateAllFilters();
       applyFilters(true);
+      institutionListButton.disabled = uniqueInstitutionNames(
+        registrations.filter(item => !isVisitorRegistration(item)).flatMap(institutionValuesFor)
+      ).length === 0;
       byId("organizer-service-status").textContent = "Connected to all participant sheets";
     } catch (error) {
       dashboardError.textContent = error.message || "Participant registrations could not be loaded.";
@@ -195,7 +226,7 @@
     if (["Mechanical", "Non-Mechanical", "IT"].includes(selectedCategory)) categorySelect.value = selectedCategory;
     replaceOptions(segmentSelect, uniqueSorted(registrations.map(item => item.segment)), "All segments");
     replaceOptions(groupSelect, uniqueSorted(registrations.map(item => item.group)), "All groups");
-    replaceOptions(institutionSelect, uniqueSorted(registrations.flatMap(item => item.institutions || [])), "All institutions");
+    replaceOptions(institutionSelect, uniqueInstitutionNames(registrations.flatMap(institutionValuesFor)), "All institutions");
     toggleProjectCategoryFilter();
   };
 
@@ -213,7 +244,7 @@
 
   const updateSummary = () => {
     const participants = filteredRegistrations.reduce((sum, item) => sum + (Number(item.memberCount) || (item.members || []).length || 1), 0);
-    const institutions = uniqueSorted(filteredRegistrations.flatMap(item => item.institutions || [])).length;
+    const institutions = uniqueInstitutionNames(filteredRegistrations.flatMap(institutionValuesFor)).length;
     const segments = uniqueSorted(filteredRegistrations.map(item => item.segment)).length;
     byId("summary-registrations").textContent = filteredRegistrations.length.toLocaleString("en-BD");
     byId("summary-participants").textContent = participants.toLocaleString("en-BD");
@@ -232,7 +263,7 @@
       if (category && item.projectCategory !== category) return false;
       if (segment && item.segment !== segment) return false;
       if (group && item.group !== group) return false;
-      if (institution && !(item.institutions || []).some(value => normalize(value) === institution)) return false;
+      if (institution && !institutionValuesFor(item).some(value => normalize(value) === institution)) return false;
       if (search && !registrationSearchText(item).includes(search)) return false;
       return true;
     });
@@ -271,7 +302,7 @@
   };
 
   const rowHtml = item => {
-    const institution = (item.institutions || []).join(", ") || "—";
+    const institution = uniqueInstitutionNames(institutionValuesFor(item)).join(", ") || "—";
     const lead = item.teamName || item.leadName || "—";
     return `<tr>
       <td data-label="Date">${escapeHtml(formatDate(item.submittedAt))}</td>
@@ -335,7 +366,7 @@
   };
 
   const reportRowHtml = item => {
-    const institution = (item.institutions || []).join(", ") || "—";
+    const institution = uniqueInstitutionNames(institutionValuesFor(item)).join(", ") || "—";
     const lead = item.teamName || item.leadName || "—";
     return `<tr>
       <td><span>${escapeHtml(formatDate(item.submittedAt))}</span></td>
@@ -517,7 +548,135 @@
   });
 
   /* ===========================================================
-     07. COMPLETE REGISTRATION DETAILS MODAL
+     07. UNIQUE PARTICIPANT INSTITUTION LIST
+     =========================================================== */
+  const allParticipantInstitutions = () => uniqueInstitutionNames(
+    registrations.filter(item => !isVisitorRegistration(item)).flatMap(institutionValuesFor)
+  );
+
+  const openInstitutionModal = () => {
+    const institutions = allParticipantInstitutions();
+    institutionError.hidden = true;
+    institutionTotal.textContent = institutions.length.toLocaleString("en-BD");
+    institutionList.innerHTML = institutions.length
+      ? institutions.map(name => `<li><span>${escapeHtml(name)}</span></li>`).join("")
+      : "<li class=\"organizer-institution-empty\"><span>No participant institution was found.</span></li>";
+    institutionModal.hidden = false;
+    document.body.classList.add("organizer-modal-open");
+    byId("organizer-institutions-close").focus();
+  };
+
+  function closeInstitutionModal() {
+    if (institutionModal.hidden) return;
+    institutionModal.hidden = true;
+    if (modal.hidden && reportModal.hidden) document.body.classList.remove("organizer-modal-open");
+    institutionListButton.focus();
+  }
+
+  institutionListButton.addEventListener("click", openInstitutionModal);
+  byId("organizer-institutions-close").addEventListener("click", closeInstitutionModal);
+  institutionModal.querySelector("[data-close-organizer-institutions]").addEventListener("click", closeInstitutionModal);
+
+  const institutionReportPages = institutions => {
+    const pages = [];
+    for (let index = 0; index < institutions.length; index += INSTITUTION_REPORT_PAGE_SIZE) {
+      pages.push(institutions.slice(index, index + INSTITUTION_REPORT_PAGE_SIZE));
+    }
+    return pages;
+  };
+
+  const institutionReportPageHtml = (institutions, pageNumber, totalPages, totalInstitutions) => {
+    const startIndex = (pageNumber - 1) * INSTITUTION_REPORT_PAGE_SIZE;
+    const generatedAt = new Intl.DateTimeFormat("en-BD", {
+      dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dhaka"
+    }).format(new Date());
+    const heading = pageNumber === 1 ? `<header class="organizer-print-institution-heading">
+      <h1>BNMPC National Science Carnival 2026</h1>
+      <p>Participant Institute List</p>
+      <dl>
+        <div><dt>Total unique institutes</dt><dd>${totalInstitutions.toLocaleString("en-BD")}</dd></div>
+        <div><dt>Included records</dt><dd>All participant segments</dd></div>
+        <div><dt>Excluded records</dt><dd>Visitor registrations</dd></div>
+        <div><dt>Generated</dt><dd>${escapeHtml(generatedAt)}</dd></div>
+      </dl>
+    </header>` : "";
+    return `<section class="organizer-report-page organizer-institution-report-page" data-report-page="${pageNumber}">
+      ${heading}
+      <div class="organizer-print-institution-list">
+        ${institutions.map((name, index) => `<div><span>${startIndex + index + 1}</span><strong>${escapeHtml(name)}</strong></div>`).join("")}
+      </div>
+      <footer>Page ${pageNumber} of ${totalPages}</footer>
+    </section>`;
+  };
+
+  const prepareInstitutionReport = () => {
+    institutionError.hidden = true;
+    const institutions = allParticipantInstitutions();
+    if (!institutions.length) throw new Error("There are no participant institutes to print.");
+    const pages = institutionReportPages(institutions);
+    reportRoot.innerHTML = pages.map((page, index) => institutionReportPageHtml(page, index + 1, pages.length, institutions.length)).join("");
+    reportRoot.setAttribute("aria-hidden", "false");
+    return pages;
+  };
+
+  const showInstitutionError = message => {
+    institutionError.textContent = message;
+    institutionError.hidden = false;
+  };
+
+  institutionPrintButton.addEventListener("click", () => {
+    try {
+      prepareInstitutionReport();
+      closeInstitutionModal();
+      document.body.classList.add("organizer-report-printing");
+      window.addEventListener("afterprint", clearPreparedReport, { once: true });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        window.print();
+        setTimeout(clearPreparedReport, 250);
+      }));
+    } catch (error) {
+      clearPreparedReport();
+      showInstitutionError(error.message || "The institute list could not be prepared.");
+    }
+  });
+
+  institutionDownloadButton.addEventListener("click", async () => {
+    const originalText = institutionDownloadButton.textContent;
+    try {
+      const pages = prepareInstitutionReport();
+      const html2canvas = window.html2canvas;
+      const JsPdf = window.jspdf?.jsPDF;
+      if (!html2canvas || !JsPdf) throw new Error("The PDF tool could not be loaded. Check the internet connection and try again.");
+      institutionDownloadButton.disabled = true;
+      institutionPrintButton.disabled = true;
+      const pdf = new JsPdf({ orientation: "landscape", unit: "mm", format: "a4", compress: true });
+      const pageElements = [...reportRoot.querySelectorAll(".organizer-institution-report-page")];
+      for (let index = 0; index < pageElements.length; index += 1) {
+        institutionDownloadButton.textContent = `Preparing ${index + 1}/${pages.length}…`;
+        const canvas = await html2canvas(pageElements[index], {
+          scale: 1.5,
+          backgroundColor: "#ffffff",
+          logging: false,
+          useCORS: true
+        });
+        if (index > 0) pdf.addPage("a4", "landscape");
+        pdf.addImage(canvas.toDataURL("image/jpeg", .94), "JPEG", 0, 0, 297, 210, undefined, "FAST");
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+      const stamp = new Date().toISOString().slice(0, 10);
+      pdf.save(`BNMPC-Institute-List-${stamp}.pdf`);
+    } catch (error) {
+      showInstitutionError(error.message || "The institute PDF could not be downloaded.");
+    } finally {
+      clearPreparedReport();
+      institutionDownloadButton.disabled = false;
+      institutionPrintButton.disabled = false;
+      institutionDownloadButton.textContent = originalText;
+    }
+  });
+
+  /* ===========================================================
+     08. COMPLETE REGISTRATION DETAILS MODAL
      =========================================================== */
   const detailItem = (label, value) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "—")}</dd></div>`;
   const prettyLabel = value => String(value || "").replace(/([a-z])([A-Z])/g, "$1 $2").replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase());
@@ -557,6 +716,7 @@
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
     if (!reportModal.hidden) closeReportModal();
+    else if (!institutionModal.hidden) closeInstitutionModal();
     else if (!modal.hidden) closeModal();
   });
 })();
