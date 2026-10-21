@@ -19,7 +19,7 @@
      Visitor registration and every non-listed segment remain open.
      =========================================================== */
   const closedRegistrationSlugs = new Set([
-    "coding-contest",
+    
     "valorant",
     "fifa",
     "multimedia-presentation",
