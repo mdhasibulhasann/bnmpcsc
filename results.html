@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050407">
+  <meta name="description" content="Official prize winner list of the BNMPC National Science Carnival 2026, hosted by BNMPC Science Club.">
+  <title>Results | BNMPC National Science Carnival 2026</title>
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/styles.css?v=about-us-1">
+  <style>
+    /* =============================================================
+       RESULTS PAGE — uses the shared tokens from styles.css
+       ============================================================= */
+    .results-content { width: min(1240px, calc(100% - 36px)); }
+    .results-heading { max-width: 850px; }
+
+    .results-toolbar { position: sticky; z-index: 18; top: 104px; display: grid; gap: 12px; margin: 0 0 30px; padding: 12px; border-radius: 24px; }
+    .results-toolbar-row { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+    .results-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .results-field label { color: var(--muted); font-size: .62rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+    .results-field input, .results-field select { width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; outline: 0; background: rgba(255,255,255,.05); color: #fff; font-size: .84rem; transition: border-color .2s ease, box-shadow .2s ease; }
+    .results-field select option { background: #15151c; }
+    .results-field input::placeholder { color: #777784; }
+    .results-field input:focus, .results-field select:focus { border-color: rgba(255,74,66,.68); box-shadow: 0 0 0 4px rgba(255,48,47,.1); }
+    .results-reset { min-height: 46px; padding: 0 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.045); font-size: .78rem; font-weight: 850; cursor: pointer; transition: background .2s ease; }
+    .results-reset:hover { background: rgba(255,255,255,.1); }
+    .results-chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    .results-chips::-webkit-scrollbar { display: none; }
+    .results-chip { flex: 0 0 auto; min-height: 40px; padding: 0 16px; border: 1px solid transparent; border-radius: 13px; background: transparent; color: var(--muted); font-size: .75rem; font-weight: 850; white-space: nowrap; cursor: pointer; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+    .results-chip:hover { color: #fff; background: rgba(255,255,255,.055); }
+    .results-chip.active { color: #fff; border-color: rgba(255,255,255,.16); background: linear-gradient(135deg, rgba(243,52,47,.95), rgba(115,7,17,.9)); box-shadow: 0 9px 30px rgba(190,14,23,.2); }
+    .results-chip small { margin-left: 6px; opacity: .65; font-weight: 800; }
+
+    .results-summary { margin: 0 0 18px; color: var(--muted); font-size: .8rem; }
+    .results-summary strong { color: #fff; }
+
+    .results-section { margin-bottom: 56px; scroll-margin-top: 190px; }
+    .results-section-head { display: flex; align-items: center; gap: 13px; margin: 0 0 20px; padding: 0 3px 18px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .results-section-head h2 { margin: 0; font-size: clamp(1.7rem, 3.6vw, 2.8rem); line-height: 1; letter-spacing: -.05em; }
+    .results-section-head .category-count { margin-left: auto; }
+
+    .results-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .result-card { position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 22px; border-radius: var(--radius); transition: transform .3s ease, border-color .3s ease; }
+    .result-card::after { content: ""; position: absolute; width: 150px; height: 150px; right: -80px; bottom: -80px; border-radius: 50%; background: var(--red); opacity: .08; filter: blur(20px); pointer-events: none; }
+    .result-card:nth-child(3n+2)::after { background: var(--blue); }
+    .result-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.26); }
+    .result-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .result-group { display: inline-flex; align-items: center; min-height: 28px; padding: 0 11px; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(255,255,255,.05); color: #ff8c88; font-size: .62rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; white-space: nowrap; }
+    .result-track { color: var(--muted); font-size: .64rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; text-align: right; }
+    .result-card h3 { margin: 0 0 16px; font-size: 1.3rem; line-height: 1.15; letter-spacing: -.03em; }
+    .podium { position: relative; z-index: 1; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .podium li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 11px 12px; border: 1px solid rgba(255,255,255,.07); border-radius: 15px; background: rgba(255,255,255,.035); }
+    .podium li.is-first { border-color: rgba(255,205,66,.3); background: linear-gradient(125deg, rgba(255,186,35,.12), rgba(255,255,255,.03)); }
+    .medal { display: inline-grid; place-items: center; min-width: 40px; height: 26px; padding: 0 8px; border-radius: 999px; font-size: .6rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: #1b1200; background: linear-gradient(135deg, #ffe493, #d99b13); }
+    .medal.m2 { color: #14141a; background: linear-gradient(135deg, #f1f1f6, #a4a4b2); }
+    .medal.m3 { color: #1c0d02; background: linear-gradient(135deg, #f0b588, #b06a35); }
+    .medal.mx { color: #fff; background: linear-gradient(135deg, #335dff, #111a6c); }
+    .podium-body { min-width: 0; }
+    .podium-name { display: block; color: #fff; font-size: .84rem; font-weight: 800; line-height: 1.4; overflow-wrap: anywhere; }
+    .podium-team { display: inline-block; margin-bottom: 2px; color: #ffd0ce; font-size: .66rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    .podium-inst { display: block; margin-top: 3px; color: var(--muted); font-size: .72rem; line-height: 1.4; }
+    .podium-inst.is-host { color: #ff9a95; }
+    .podium li.is-empty .podium-name { color: #777784; font-weight: 700; }
+    .results-empty { display: none; place-items: center; min-height: 300px; padding: 35px; border-radius: 30px; text-align: center; }
+    .results-empty.show { display: grid; }
+    .results-empty h2 { margin: 0 0 8px; font-size: 1.8rem; letter-spacing: -.04em; }
+    .results-empty p { margin: 0; color: var(--muted); }
+    .results-note { margin: 10px 0 0; color: #777784; font-size: .72rem; line-height: 1.55; }
+
+    @media (max-width: 980px) {
+      .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .results-toolbar-row { grid-template-columns: 1fr 1fr; }
+      .results-toolbar-row .results-field:first-child { grid-column: 1 / -1; }
+      .results-reset { grid-column: 1 / -1; }
+    }
+    @media (max-width: 720px) {
+      .results-toolbar { position: static; border-radius: 20px; }
+      .results-grid { grid-template-columns: 1fr; }
+      .results-section { scroll-margin-top: 90px; }
+      .results-section-head { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body class="inner-page results-page">
+  <div class="page-backdrop" aria-hidden="true"></div>
+
+  <!-- 01. Shared top navigation (Results added) -->
+  <header class="site-header inner-header glass-panel">
+    <a class="brand" href="/" aria-label="BNMPC Science Club home">
+      <span class="club-logo-wrap upload-image-slot" data-image-slot><img src="/assets/header-logo.png" data-fallback-src="/assets/club-logo.jpg" alt="BNMPC Science Club logo" data-upload-image><span class="asset-placeholder" aria-hidden="true">SC</span></span>
+      <span class="brand-copy"><strong class="brand-full">BNMPC Science Club</strong><strong class="brand-short">BNMPC SC</strong></span>
+    </a>
+    <div class="header-actions">
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-menu-toggle><span></span><span></span><span></span><b class="sr-only">Menu</b></button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
+        <a href="/events/">Events</a>
+        <a href="/gaming/">Gaming</a>
+        <a href="/schedule/">Schedule</a>
+        <a href="/results.html" class="active" aria-current="page">Results</a>
+        <a href="/gallery/">Gallery</a>
+        <a href="/sponsor/">Sponsor</a>
+        <a href="/about/">About Us</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+      <button class="register-trigger primary-button header-register" type="button" data-register-trigger>Register</button>
+    </div>
+  </header>
+
+  <!-- 02. Results content -->
+  <main class="page-content results-content">
+    <section class="page-heading results-heading">
+      <p class="eyebrow">BNMPC National Science Carnival 2026</p>
+      <h1>Prize <span>Winners</span></h1>
+      <p>The official prize winner list, arranged event by event. Use the filters to jump to an event, a group or an institution.</p>
+    </section>
+
+    <section class="results-toolbar glass-panel" aria-label="Result filters">
+      <div class="results-toolbar-row">
+        <div class="results-field">
+          <label for="f-search">Search name or institution</label>
+          <input id="f-search" type="search" placeholder="e.g. Notre Dame, Sakib, Smart Irrigation" autocomplete="off">
+        </div>
+        <div class="results-field">
+          <label for="f-event">Event</label>
+          <select id="f-event"></select>
+        </div>
+        <div class="results-field">
+          <label for="f-group">Group</label>
+          <select id="f-group"></select>
+        </div>
+        <button class="results-reset" type="button" id="f-reset">Reset</button>
+      </div>
+      <div class="results-chips" id="f-categories" role="tablist" aria-label="Event category"></div>
+    </section>
+
+    <p class="results-summary" id="results-summary" aria-live="polite"></p>
+    <div id="results-root"></div>
+    <div class="results-empty glass-panel" id="results-empty">
+      <div><h2>No result found</h2><p>Try a different event, group or search word.</p></div>
+    </div>
+    <p class="results-note">Groups: B, C and D are the individual and team competition groups. Group A to D project showcase entries are listed by their own class or track.</p>
+  </main>
+
+  <!-- 03. Shared footer -->
+  <footer class="site-footer home-footer">
+    <div class="footer-main">
+      <a class="footer-brand" href="/">
+        <span class="footer-brand-logo"><img src="/assets/header-logo.png" alt=""></span>
+        <span><strong>BNMPC Science Club</strong><small>BNMPC National Science Carnival 2026</small></span>
+      </a>
+      <nav class="footer-links" aria-label="Footer navigation"><a href="/events/">Events</a><a href="/gaming/">Gaming</a><a href="/schedule/">Schedule</a><a href="/results.html">Results</a><a href="/gallery/">Gallery</a><a href="/sponsor/">Sponsor</a><a href="/about/">About Us</a><a href="/contact/">Contact</a></nav>
+      <div class="footer-social-links"><a href="https://www.facebook.com/bnmpc.science.club" target="_blank" rel="noreferrer">Facebook</a><a href="https://www.instagram.com/bnmpcscienceclub" target="_blank" rel="noreferrer">Instagram</a></div>
+    </div>
+    <section class="footer-location" aria-labelledby="footer-location-title">
+      <div class="footer-location-copy">
+        <span class="footer-location-kicker">Event venue</span>
+        <h3 id="footer-location-title">BNMPC Main College Gate</h3>
+        <p>1205 Ganaktuli Rd, Dhaka 1205, Bangladesh</p>
+        <p class="footer-gate-notice"><strong>Entry Notice:</strong> All visitors and participants must enter through the College Gate.</p>
+        <a class="footer-map-link" href="https://maps.app.goo.gl/GBQm9aQ3aVUGLVbS7" target="_blank" rel="noreferrer">Open in Google Maps</a>
+      </div>
+      <div class="footer-map-frame">
+        <iframe src="https://www.google.com/maps?q=23.7319352,90.3710441&amp;z=19&amp;output=embed" title="BNMPC Main College Gate location" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+    </section>
+    <div class="footer-bottom">
+      <span>© 2026 BNMPC Science Club. All Rights Reserved.</span>
+      <div class="developer-credit"><span>Developed by</span><a class="developer-logo-box upload-image-slot" href="https://mdhasibulhasan.site/" target="_blank" rel="noreferrer" aria-label="Visit the developer website" data-image-slot><img src="/assets/developer-logo.png" alt="MD. Hasibul Hasan" data-upload-image><span class="asset-placeholder" aria-hidden="true">Logo</span></a></div>
+    </div>
+  </footer>
+
+  <div id="modal-root"></div>
+  <script src="/config.js?v=live-4"></script>
+  <script src="/script.js?v=about-us-1"></script>
+
+  <!-- 04. Result data and filter logic -->
+  <script>
+  (function () {
+    "use strict";
+
+    var HOST = "BNMPC";
+    var B = "BNMPC";
+
+    /* ---- Data helpers -------------------------------------------------
+       r(inst, "Name 1, Name 2", "Team name (optional)")  -> one placing
+       e(category, event, group, track, [first, second, third])
+       Empty/unannounced placings are null.
+       ------------------------------------------------------------------ */
+    function r(inst, names, team) { return { inst: inst, names: names, team: team || "" }; }
+    function e(cat, name, group, track, places, labels) {
+      return { cat: cat, name: name, group: group, track: track || "", places: places, labels: labels || null };
+    }
+
+    var OLY = "Olympiad", COMP = "Competition", CREA = "Creative", GAME = "Gaming", PROJ = "Project Showcase";
+    var CATS = [OLY, COMP, CREA, GAME, PROJ];
+
+    var DATA = [
+      /* ---------- Olympiads ---------- */
+      e(OLY, "Physics Olympiad", "C", "", [r(B, "Farhan Toha"), r(B, "SM Shahriar Hossain"), r(B, "Afia Anjum Raisa")]),
+      e(OLY, "Physics Olympiad", "D", "", [r("NDC", "Shakib Ahmed"), r(B, "Maliha Tasneem"), r("NDC", "Madhurja Ahmed")]),
+      e(OLY, "Chemistry Olympiad", "C", "", [r("Holy Cross Girls High School", "Somriddhy Roy"), r("Heed International School", "Umme Salma Reasha"), r(B, "Najiba Tahsin")]),
+      e(OLY, "Chemistry Olympiad", "D", "", [r("Notre Dame College", "MD. Sahil Hasan"), r("St. Joseph Higher Secondary School", "Tashrik Raiyan Twaha"), r(B, "MD. Rashidul Hasan Fahim")]),
+      e(OLY, "Math Olympiad", "B", "", [r("Chetona Model Academy", "Aayush Al Akram"), r(B, "Fardin Ahmed"), r(B, "Fiaz Rahman Ayaan")]),
+      e(OLY, "Math Olympiad", "C", "", [r(B, "Farhan Toha"), r(B, "Ruyaida Rahman"), r("Holy Cross Girls High School", "Zarin Tasnim Rodela")]),
+      e(OLY, "Math Olympiad", "D", "", [r("Notre Dame College", "Sakib Ahmed"), r("Dhaka College", "Azmain Islam"), r("Notre Dame College", "Masrur Ibtida")]),
+      e(OLY, "Biology Olympiad", "C", "", [r("Dhanmondi Kamrunnesa Govt. Girls High School", "Sumaiya Islam"), r("Chetona Model Academy", "Arisha Zaheen Sylvy"), r("Bindubashini Govt. Boys High School, Tangail", "Atif Islam Samin")]),
+      e(OLY, "Biology Olympiad", "D", "", [r(B, "Maliha Tasneem"), r("Notre Dame College", "Sakib Ahmed"), r("St. Joseph Higher Secondary School", "Adnan Chowdhury")]),
+      e(OLY, "IT Olympiad", "B", "", [r("Chetona Model Academy", "Aayush Al Akram"), r("Navy Anchorage School and College Dhaka", "Tahmid Siddique"), null]),
+      e(OLY, "IT Olympiad", "D", "", [r(B, "Sujoy Basak"), r("Notre Dame College", "Sakib Ahmed"), r("Dhaka Residential Model College", "Arif Mahfuz")]),
+      e(OLY, "GK Olympiad", "B", "", [r(B, "Rudba Rashid Proteeti"), r(B, "Rufaida Saqin"), r(B, "Fiaz Rahman Ayaan")]),
+      e(OLY, "GK Olympiad", "C", "", [r("Nirjhor Cantt. Public School & College", "Musa Al Zarif"), r(B, "Jaynab Haque Zaara"), r(B, "Nabiha Faiza")]),
+      e(OLY, "GK Olympiad", "D", "", [r("DMRC", "Anamul Haque Safi"), r("Major General Mahmudul Hasan Adarsha College", "Alif Islam Samin"), r("Notre Dame College", "Sakib Ahmed")]),
+      e(OLY, "Science Olympiad", "B", "", [r("Viquarunnisa Noon School", "Anha Binta Alam Jara"), r(B, "Ahnaf Azmayeen Islam"), r("BMARPC", "Joylalita Madhab Krishna")]),
+
+      /* ---------- Competitions ---------- */
+      e(COMP, "Extempore Speech", "C", "", [r(B, "Mohima Karim"), r("Viquarunnisa Noon School", "Aysha Siddika"), r("Chetona Model Academy", "Tahmid Hossain Raj")]),
+      e(COMP, "Extempore Speech", "D", "", [r(B, "Nazifa Tafannun"), r("Viquarunnisa Noon College", "Tasmia Anjom"), r("Shaheed Anwar Girls College", "Subah")]),
+      e(COMP, "Case Solving", "C", "", [r("Chetona Model Academy", "Sheikh Morium Sporsho"), r("Chetona Model Academy", "Arisha Zaheen Sylvy"), r(B, "Mohammad Maharus Islam")]),
+      e(COMP, "Case Solving", "D", "", [r("BAF Shaheen College, Dhaka", "Riad Arafin Nabil"), r("St. Joseph Higher Secondary School", "Sonchoy Kumar Paul"), r(B, "Mintaka Subha Rahman")]),
+      e(COMP, "Multimedia Presentation", "C", "", [r("BISC", "Omar Bin Masud"), r(B, "Nabiha Sumaiya, Hafsa"), null]),
+      e(COMP, "Multimedia Presentation", "D", "", [r(B, "Maisha Hossain, Atia"), r("DMRC", "Redwan Islam, Abdullah Patwary"), r(B, "Nuhat Habib, Abiha Tasnim")]),
+      e(COMP, "Sudoku", "B", "", [r("Viquarunnisa School and College", "Anha Binta Alam Jara"), r("Mohammadpur Preparatory School and College", "Nashrah Rahman"), r("Willies Little Flower School and College", "MD. Tahran Irtisham Prottarpan")]),
+      e(COMP, "Sudoku", "C", "", [r(B, "Nabiha Faiza"), r("IHSB", "Miftahul Zannat Jumana"), r("Sunnydale", "Zunayna Mahreen")]),
+      e(COMP, "Sudoku", "D", "", [r("Birshreshtha Noor Mohammad Public College", "Mahfuza Maha"), r("Engineering University School and College", "Mahima Hossain"), r("Dhaka College", "Ajmain Islam")]),
+      e(COMP, "Sci-fi Story", "Open", "", [r(B, "Mintaka Subha Rahman"), r("St. Joseph Higher Secondary School", "Srijit Biswas Nihon"), r(B, "Arindom Dey")]),
+      e(COMP, "Team Based Quiz", "Open", "", [r("Notre Dame College", "Omar Islam, Hossain Mohammad Tahmid"), r("DMRC", "Ridwan Islam, Abdullah Patowary"), r(B, "Porombrot Mojumdar, Naimul Hasan Safi")]),
+      e(COMP, "Rubik's Cube", "Open", "", [r("St. Joseph Higher Secondary School", "Rupantor Soha"), r(B, "Soumil Karmoker"), r("MPSC", "Someen Alam")]),
+      e(COMP, "Marvel & DC Quiz", "Open", "", [r("BISC, Nirjhor", "Mahmud Smaim Maheeb"), r("DMRC", "MD. Azmayeen Fayak"), r("BMARPC", "Sadman Alam Jiham")]),
+      e(COMP, "Movie & Series Quiz", "Open", "", [r("MPSC", "Shaad Ibne Atik"), r("Sunnydale", "Zunayna Mahreen"), r(B, "Tashkilur Rahman Taseen")]),
+
+      /* ---------- Creative ---------- */
+      e(CREA, "Wall Magazine", "B", "", [r(B, "Kotha Moni, Raita Binte Ripon, Mushtika Jahan Muntaha"), r(B, "Adrita Barua, Rayeesa Jahan"), r("Viquarunnisa Noon School and College", "Zuharin Tasnim Zaha, Zumaira Rahman Mathi, Soyaiba")]),
+      e(CREA, "Wall Magazine", "C", "", [r("Adamjee Cantonment", "Tahrir Yousuf, Hasant Rashedul Gani, Ayub Rahman"), r(B, "Sumaiya Islam Nabiha, Hafsa Tabassum"), r(B, "Sajneen Fatema Chowdhury Athira, Athira Unmilita Arsha, Radiyah Khan")]),
+      e(CREA, "Wall Magazine", "D", "", [r(B, "Tasnim Khandaker Soha, Lanisa Awal Nayla"), r("Khilgaon Model College", "Maria Islam Jannat, Israt Jahan Sadia, Sora Akter Noor"), r("Daffodil International College", "Nourin Rafa")]),
+      e(CREA, "Scrapbook", "B", "", [r("Shaheed Anwar Girls School and College", "Humaira Habub Erina"), r("Chetona Model Academy", "Sneha Paray Prokiti"), r("Udayan Uchcha Madhyomik Bidyalaya", "Nusaiba Binte Solaimon")]),
+      e(CREA, "Scrapbook", "C", "", [r("Holy Cross Girls High School", "Zarin Tasnim Rodela"), r("Botomoli Home Girls High School", "Fahmida Tasnuva"), r(B, "Maria Rahman Simin")]),
+      e(CREA, "Scrapbook", "D", "", [r("Rajuk Uttara Model College", "Mahjabin Mahboob Drishi"), r("Birshreshtha Noor Mohammad Public College", "Sumaiya Saifee"), r("Viquarunnisa Noon School & College", "Nusrath Mehrun Mahima")]),
+      e(CREA, "DSLR Photography Exhibition", "Open", "", [r("DMRC", "Dewan Mazedul Mahim"), r("Nirjhor Cantt. Public", "Syed Fasiul Lisan"), r("Dhaka Commerce College", "Al Mahmud Abrar")]),
+      e(CREA, "Mobile Photography Exhibition", "Open", "", [r("A.K School and College", "Kazi Arham Ahmed"), r("BMARPC", "Samiul Alom"), r(B, "Mahathir Ali Abdullah")]),
+      e(CREA, "RoboSoccer", "Open", "", [r("Manarat Dhaka International School & College", "MD. Raian Islam Alif, Kazi Abud Darda Farhan, Ahnaf Akif Bin Hayat", "Red Roc"), r("BAF Shaheen College, Kurmitola", "Anas Bhuiyan", "Future Innovator"), null], ["1st", "2nd", "3rd"]),
+
+      /* ---------- Gaming ---------- */
+      e(GAME, "FIFA", "Open", "", [r("IUT", "Ahnaf Rafid Aurin"), r(B, "Ahnaf Bin Ashek"), r(B, "Safeer Zaman")], ["Champion", "1st Runner-up", "2nd Runner-up"]),
+      e(GAME, "Valorant", "Open", "", [r("", "Shihab Ahmed Saikot, Taswaf Islam Zami, Feeda Bennor, Mahdi Tanzim, Imtiaz Islam Shuvo", "Red Vipers"), r("", "Md. Shadik Amin Nehal, Rakibuzzaman Mahdi, Radowal Islam, Mehran Hossain Mihir, Uzzayer", "Trashbag Crows")], ["Champion", "Runner-up"]),
+
+      /* ---------- Project Showcase: Group A ---------- */
+      e(PROJ, "Smart Irrigation", "A", "Class-3 (BV)", [r(B, "Abdullah-As-Safir, Miqdam Matin, MD. Sadaf Hossain")], ["1st"]),
+      e(PROJ, "Solar Assisted Public Transport System With Energy Storage", "A", "Class-3 (BV)", [r(B, "MD. Tanvir Rashid, MD. Tamim Islam Saad, Shefaul Haque Shahriar")], ["2nd"]),
+      e(PROJ, "Save the Water", "A", "Class-3 (BV)", [r(B, "Wasifa Karim, Ramshe Subha Al Islam, Tazkia Ibrahim Parsha")], ["3rd"]),
+      e(PROJ, "Water Cycle", "A", "Class-4 (BV)", [r(B, "Junayed Hasan Shuaib, Aswad Mashrafi, Kaji Jarif")], ["1st"]),
+      e(PROJ, "Rainbow Maker", "A", "Class-4 (BV)", [r(B, "Tahiatul Jannat Mahira, Tasnim Sara, Nafisa Akter")], ["2nd"]),
+      e(PROJ, "Working Bridge", "A", "Class-4 (BV)", [r(B, "Junayed Hossain, Zuhair Hossain, Tamzid Hasan")], ["3rd"]),
+      e(PROJ, "Hydraulic System", "A", "Class-5 (BV)", [r(B, "Abu Atif Hriddo, Saifan Al Ariz, Abdullah Al Ariz")], ["1st"]),
+      e(PROJ, "Rain Shield Clothes Protector", "A", "Class-5 (BV)", [r(B, "Towhidul Islam, Faiyaz-Al-Zabir, Zariful Islam Rafin")], ["2nd"]),
+      e(PROJ, "Solar Power and Wind Power", "A", "Class-5 (BV)", [r(B, "MD. Ohi, Jabir Ahsan, Ahnaf Ibrahim")], ["3rd"]),
+      e(PROJ, "Rain Detector", "A", "Class-3 (EV)", [r(B, "Sheikh Abdullah Al Ahil, Abdur Rahman As Sudais, Rizwan Rashid")], ["1st"]),
+      e(PROJ, "Water Level Indicator", "A", "Class-3 (EV)", [r(B, "Zahra Maliyat Manha, Jawad Al Araf, Ahiyan Nehan")], ["2nd"]),
+      e(PROJ, "Water Dispenser", "A", "Class-3 (EV)", [r(B, "Mohammad Azmayeen Zarif, Shakhawat Hossain Sahir, Abdullah Mustasim Talikder")], ["3rd"]),
+      e(PROJ, "Hydroelectricity", "A", "Class-4 (EV)", [r(B, "Jahra Ajrin, Salvia Sanji, Zahra Mahmud Tuba")], ["1st"]),
+      e(PROJ, "Rain Water Harvesting", "A", "Class-4 (EV)", [r(B, "Mohammad Al-Atif Hossain, Safwan Islam, Mohammad Shadab Adiyat Arosh")], ["2nd"]),
+      e(PROJ, "Smart Rain Sensing Watering System", "A", "Class-4 (EV)", [r(B, "Faizan Rashid, Rayan Rashid, MD. Ruhail Zain")], ["3rd"]),
+      e(PROJ, "Energy Garden", "A", "Class-5 (EV)", [r(B, "Shah Maheer Ramim, Abdullah Al Zahin, Muhammad Afif Aman")], ["1st"]),
+      e(PROJ, "Renewable Energy", "A", "Class-5 (EV)", [r(B, "Amin Shakir, Al Zafir, Araf Arefin")], ["2nd"]),
+      e(PROJ, "Greenhouse Effect", "A", "Class-5 (EV)", [r(B, "Najat Mohammad Nahian, Arup Roy, MD. Zayan Abdullah")], ["3rd"]),
+
+      /* ---------- Project Showcase: Group B ---------- */
+      e(PROJ, "Human Detector Robot", "B", "Internal · Mechanical", [r(B, "Daiyan Abrar, Nahiyan Ariz, Tousiful Islam")], ["1st"]),
+      e(PROJ, "Smart Irrigation & Soil Mearer", "B", "Internal · Mechanical", [r(B, "Rayyan Zaharyr, Yardar Hossain, Anas Ibrahim")], ["2nd"]),
+      e(PROJ, "Smart Dustbin", "B", "Internal · Mechanical", [r(B, "Taqif Tazwar, Zayman Rahman, Labeeb Ubaidullah")], ["3rd"]),
+      e(PROJ, "Eco Energy Production", "B", "Internal · Non-Mechanical", [r(B, "Febeha Delwar, Aminta Mahsin, Zinat Tasnim")], ["1st"]),
+      e(PROJ, "Hydroponic Farming", "B", "Internal · Non-Mechanical", [r(B, "Debosmita Snyal, Shoili Maitra, Aradhya Baral")], ["2nd"]),
+      e(PROJ, "Eco Friendly City", "B", "Internal · Non-Mechanical", [r(B, "Sawsan Nawme, Mukarrima Tasnia, Tasfia Saba")], ["3rd"]),
+      e(PROJ, "Shimanto-1", "B", "Internal · IT", [r(B, "Sk Tahasin Noor Anjum, Rafiad Ayaz, Sabir Al Yemha")], ["1st"]),
+      e(PROJ, "AI Based Diagnosis of Disease", "B", "Internal · IT", [r(B, "Mahareen Kahn, Syeda Ruqaiya Safiya, Moumita Mahjebin")], ["2nd"]),
+      e(PROJ, "Nova Terra", "B", "Internal · IT", [r(B, "Afia Anjum, Arisa Chowdhuri, Marjana Alam")], ["3rd"]),
+      e(PROJ, "Trash Trooper", "B", "External · Mechanical", [r("Rainforest School", "Md. Uzair Hasan, Tabassum Begum Sharika, Md Mushfiq Hossain")], ["1st"]),
+      e(PROJ, "Lifesphere", "B", "External · Mechanical", [r("BMARPC", "Faiyan Bin Iqbal")], ["2nd"]),
+      e(PROJ, "Robotic Car", "B", "External · Mechanical", [r("Adamjee Cantonment Jolshiri", "Shahriyar Israf, Nirob Hasan, Md. Mayaz Tashrif")], ["3rd"]),
+      e(PROJ, "Rain Water Harvenstin", "B", "External · Non-Mechanical", [r("Willies Little Flower", "Sajiya Sharmin, Gonngoon Misra, Mabashara Khushbu")], ["1st"]),
+      e(PROJ, "Green City", "B", "External · Non-Mechanical", [r("Azimpur Govt Girls High School", "Duha Jannat, Sheikh Nirjanata, Sayma Sultana")], ["2nd"]),
+      e(PROJ, "Sustainable Village of Bangladesh", "B", "External · Non-Mechanical", [r("Azimpur Govt Girls High School", "Shamsunnahar, Albira Islam, Miftahul Jannat")], ["3rd"]),
+      e(PROJ, "Smart Glass", "B", "External · IT", [r("Adamjee Cantonment Jolshiri", "Md. Jihad Khan, Towki Tahmid Taha, Md Asif Bin Awal")], ["1st"]),
+      e(PROJ, "River Cleaning Robot", "B", "External · IT", [r("Mohammadpur Preparatory School & College", "Mehrab Mohammad Rafsan, Ahnaf Bin Zaman")], ["2nd"]),
+      e(PROJ, "Auto Sense Living", "B", "External · IT", [r("Adamjee Jolshiri", "Safwan Sabahan, Kazi Abdullah, Mahmudur Rahman")], ["3rd"]),
+
+      /* ---------- Project Showcase: Group C ---------- */
+      e(PROJ, "Aquashield", "C", "Internal · Mechanical", [r(B, "Saniad Rahman, Sikander Ashwas Hossain")], ["1st"]),
+      e(PROJ, "The Adjutor", "C", "Internal · Mechanical", [r(B, "Majedul Islam, Farhan Rashid, Zarin Anzum")], ["2nd"]),
+      e(PROJ, "Project NAGNACOOL", "C", "Internal · Mechanical", [r(B, "Samiu Rahman Rafid, KM Ibrahim Khalil, Shahaporan Saki")], ["3rd"]),
+      e(PROJ, "Bio-Degradable Plastic", "C", "Internal · Non-Mechanical", [r(B, "Kotha Sarker, Saiara Hassan, Arisha Halder")], ["1st"]),
+      e(PROJ, "Carbon Air Purification Model", "C", "Internal · Non-Mechanical", [r(B, "Mahamuda Akter Mim, Sabrin Sarwar, Israt Jahan Eti")], ["2nd"]),
+      e(PROJ, "Earthquake Prevention Infrastructure", "C", "Internal · Non-Mechanical", [r(B, "Naila Samiha, Mohima Karim, Humaira Sauda")], ["3rd"]),
+      e(PROJ, "AI Powered Environment Cleaning Robot", "C", "Internal · IT", [r(B, "Md. Masfudor Rahman, Sabit Hasan, Kashfiq Kamal Bhuiyan")], ["1st"]),
+      e(PROJ, "Cosmic Odyssay - 3D Solar System", "C", "Internal · IT", [r(B, "Faizun Ohee, Md. Rezwan Ahmed")], ["2nd"]),
+      e(PROJ, "Zero City", "C", "Internal · IT", [r(B, "Lenat Karim, Numa Namira Raina, Tashfia Zaman")], ["3rd"]),
+      e(PROJ, "Econova City 2050", "C", "External · Mechanical", [r("Viquarunnisa Noon School", "Jannatun Nawar, Arifa Khanom")], ["1st"]),
+      e(PROJ, "Intelligent Classroom Safety & Morning System", "C", "External · Mechanical", [r("Adamjee Jolshiri", "Hasin Ishrak Srijon, Junaed Ahamed, MD. Ayub Rahman")], ["2nd"]),
+      e(PROJ, "Hydro Electric Power Model", "C", "External · Mechanical", [r("Azimpur Govt. Girls School and College", "Lamia Rashid, Ahona Sarker, Amena Khatun")], ["3rd"]),
+      e(PROJ, "Harmony", "C", "External · Non-Mechanical", [r("Engineering University School & College", "Samia Kabir, Jannatul Ferdous Momo, Umma Sarwar Jahan Shasha")], ["1st"]),
+      e(PROJ, "From Eggshell to Bone", "C", "External · Non-Mechanical", [r("BAF Shaheen College, Kurmitola", "MD. Tamim Hasan, Raiyan Anwar, MD. Tahmid Hasan")], ["2nd"]),
+      e(PROJ, "Infrastructure Made From Recycle Plastic", "C", "External · Non-Mechanical", [r("Mohammadpur Preparatory School & College", "Raidah Noshala, Nakia Najmin, Zaiyan Ferdous")], ["3rd"]),
+      e(PROJ, "Borewell Rescue Robot", "C", "External · IT", [r("Botnix Ideal School and College", "Soumaditto Karmaker")], ["1st"]),
+
+      /* ---------- Project Showcase: Group D ---------- */
+      e(PROJ, "Eco Vision", "D", "Internal · Mechanical", [r(B, "Atia Nayeem, Sumaya Akter, Md. Minhajul Abedin")], ["1st"]),
+      e(PROJ, "Automatic Fire Robot", "D", "Internal · Mechanical", [r(B, "Nujhat Nargis, Marzia Jannat, Tashfia")], ["2nd"]),
+      e(PROJ, "Protirodh Biokit", "D", "Internal · Mechanical", [r(B, "K.M. Faisal Shahriar, Zarif Ahmed, Sharik Bin Shibli")], ["3rd"]),
+      e(PROJ, "Artificial Pancreas", "D", "Internal · Non-Mechanical", [r(B, "Md. Zahidul Islam, Md Raiyan Hasan")], ["1st"]),
+      e(PROJ, "The Effects of Artificial Elements on Plant's Growth", "D", "Internal · Non-Mechanical", [r(B, "Labiba Tasnia Sarah, Ainoon Zaria")], ["2nd"]),
+      e(PROJ, "Earthquake & War Resistant Building", "D", "Internal · Non-Mechanical", [r(B, "Laiba Samiha, Sadia Masum Ahona, Faruz Nawal")], ["3rd"]),
+      e(PROJ, "AI Powered Military Defence System & Robo Simulation", "D", "Internal · IT", [r(B, "Tafsirul Islam")], ["1st"]),
+      e(PROJ, "Smart Krishi Buddhimotta", "D", "Internal · IT", [r(B, "Elma Tabassum Nuha, Raiyan Bin Monir")], ["2nd"]),
+      e(PROJ, "Scientific Nexus", "D", "Internal · IT", [r(B, "Ensetar Hossain Esam, Abrar Bin Shamin, Zubaier Hawlader")], ["3rd"]),
+      e(PROJ, "Eco Pulse: A Change for Development", "D", "External · Mechanical", [r("BMARPC", "Ahnaf Bin Ahsraf Nabil, Md Ashfaq Jahin, Ridwan Hasan Sadi")], ["1st"]),
+      e(PROJ, "A3P5 Nemesis (Team Akash Pathabo)", "D", "External · Mechanical", [r("Private A Level", "Safwan Sadad")], ["2nd"]),
+      e(PROJ, "Laser Security System", "D", "External · Mechanical", [r("Mohammadpur Central College", "Ahmad Nazib, Ibne Mahnai")], ["3rd"]),
+      e(PROJ, "Micro Algae", "D", "External · Non-Mechanical", [r("DMRC", "Md. Zahidul Hasan, Md. Mujahidul Islam, Md. Noyon Islam")], ["1st"]),
+      e(PROJ, "ResQMe", "D", "External · Non-Mechanical", [r("Monipur College", "Zyma Mumtaz, Al-Forkan Khan, Tasfia Rahman")], ["2nd"]),
+      e(PROJ, "Hexa Scout", "D", "External · Non-Mechanical", [r("Nitjhor Cantt Public College", "Mahdin Islam, Al-Mahmud")], ["3rd"]),
+      e(PROJ, "Novis-X", "D", "External · IT", [r("St. Joseph", "Kazim Nahian, Nandan Raj Mozumdar, Kazi Adil Ibn Saiful Swarno")], ["1st"]),
+      e(PROJ, "AutoDub", "D", "External · IT", [r("DMRC", "Amanullah Aman Hawlader, Abdullah Rain, Hasib Ahmed Sabir")], ["2nd"]),
+      e(PROJ, "Autoignis", "D", "External · IT", [r("DMRC", "Wakil Islam Jynam, Nabira Skhawat")], ["3rd"])
+    ];
+
+    /* ---- Normalisation: default labels, ids --------------------------- */
+    var DEFAULT_LABELS = ["1st", "2nd", "3rd"];
+    DATA.forEach(function (ev, i) {
+      ev.id = i;
+      ev.labels = ev.labels || DEFAULT_LABELS;
+      // Project entries are one placing per card; pad nothing. Competitions always show 3 slots.
+      if (ev.cat !== PROJ) {
+        while (ev.places.length < ev.labels.length) ev.places.push(null);
+      }
+    });
+
+    /* ---- State and DOM ------------------------------------------------ */
+    var state = { q: "", event: "all", group: "all", cat: "all" };
+    var $ = function (id) { return document.getElementById(id); };
+    var root = $("results-root"), emptyBox = $("results-empty"), summary = $("results-summary");
+    var selEvent = $("f-event"), selGroup = $("f-group"), search = $("f-search"), chips = $("f-categories");
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function norm(s) { return String(s).toLowerCase(); }
+
+    function matches(ev) {
+      if (state.cat !== "all" && ev.cat !== state.cat) return false;
+      if (state.event === "__proj") { if (ev.cat !== PROJ) return false; }
+      else if (state.event !== "all" && ev.name !== state.event) return false;
+      if (state.group !== "all" && ev.group !== state.group) return false;
+      if (state.q) {
+        var hay = norm(ev.name + " " + ev.track + " " + ev.places.map(function (p) {
+          return p ? p.inst + " " + p.names + " " + p.team : "";
+        }).join(" "));
+        var terms = norm(state.q).split(/\s+/).filter(Boolean);
+        for (var i = 0; i < terms.length; i++) if (hay.indexOf(terms[i]) === -1) return false;
+      }
+      return true;
+    }
+
+    /* ---- Build controls ----------------------------------------------- */
+    function buildControls() {
+      var evNames = {};
+      CATS.forEach(function (c) {
+        var group = DATA.filter(function (d) { return d.cat === c; });
+        var seen = {}, list = [];
+        group.forEach(function (d) { if (!seen[d.name]) { seen[d.name] = 1; list.push(d.name); } });
+        evNames[c] = list;
+      });
+
+      var html = '<option value="all">All events</option>';
+      CATS.forEach(function (c) {
+        if (c === PROJ) return; // thousands of project names would clutter the list; search covers them
+        html += '<optgroup label="' + esc(c === OLY ? "Olympiads" : c === COMP ? "Competitions" : c) + '">';
+        evNames[c].forEach(function (n) { html += '<option value="' + esc(n) + '">' + esc(n) + "</option>"; });
+        html += "</optgroup>";
+      });
+      html += '<optgroup label="Project Showcase"><option value="__proj">All projects</option></optgroup>';
+      selEvent.innerHTML = html;
+
+      selGroup.innerHTML =
+        '<option value="all">All groups</option>' +
+        '<option value="A">Group A</option><option value="B">Group B</option>' +
+        '<option value="C">Group C</option><option value="D">Group D</option>' +
+        '<option value="Open">Open (no group)</option>';
+
+      var counts = { all: DATA.length };
+      CATS.forEach(function (c) { counts[c] = DATA.filter(function (d) { return d.cat === c; }).length; });
+      var ch = '<button type="button" class="results-chip active" data-cat="all">All<small>' + counts.all + "</small></button>";
+      CATS.forEach(function (c) {
+        ch += '<button type="button" class="results-chip" data-cat="' + esc(c) + '">' + esc(c) + "<small>" + counts[c] + "</small></button>";
+      });
+      chips.innerHTML = ch;
+    }
+
+    /* ---- Render ------------------------------------------------------- */
+    function medalClass(label, idx) {
+      if (/champion/i.test(label) || label === "1st") return "";
+      if (label === "2nd" || /runner-up/i.test(label) && idx === 1) return " m2";
+      if (label === "3rd" || idx === 2) return " m3";
+      return " mx";
+    }
+    function medalShort(label) {
+      if (/^champion$/i.test(label)) return "Champ";
+      if (/1st runner/i.test(label)) return "1st RU";
+      if (/2nd runner/i.test(label)) return "2nd RU";
+      if (/^runner-up$/i.test(label)) return "Runner-up";
+      return label;
+    }
+
+    function cardHTML(ev) {
+      var tag = ev.group === "Open" ? "Open" : "Group " + ev.group;
+      var rows = ev.places.map(function (p, i) {
+        var label = ev.labels[i] || ev.labels[ev.labels.length - 1];
+        var cls = medalClass(label, i);
+        if (!p) {
+          return '<li class="is-empty"><span class="medal' + cls + '">' + esc(medalShort(label)) + '</span><div class="podium-body"><span class="podium-name">Not awarded</span></div></li>';
+        }
+        var host = norm(p.inst) === norm(HOST) || /birshreshtha noor mohammad/i.test(p.inst);
+        return '<li class="' + (i === 0 ? "is-first" : "") + '"><span class="medal' + cls + '">' + esc(medalShort(label)) + '</span><div class="podium-body">' +
+          (p.team ? '<span class="podium-team">' + esc(p.team) + "</span>" : "") +
+          '<span class="podium-name">' + esc(p.names) + "</span>" +
+          (p.inst ? '<span class="podium-inst' + (host ? " is-host" : "") + '">' + esc(p.inst) + "</span>" : "") +
+          "</div></li>";
+      }).join("");
+      return '<article class="result-card glass-panel"><div class="result-card-top"><span class="result-group">' + esc(tag) + "</span>" +
+        (ev.track ? '<span class="result-track">' + esc(ev.track) + "</span>" : "") + "</div>" +
+        "<h3>" + esc(ev.name) + '</h3><ul class="podium">' + rows + "</ul></article>";
+    }
+
+    function render() {
+      var list = DATA.filter(matches);
+
+      var out = "", total = 0, seenCats = 0;
+      CATS.forEach(function (c) {
+        var items = list.filter(function (d) { return d.cat === c; });
+        if (!items.length) return;
+        seenCats++; total += items.length;
+        var label = c === OLY ? "Olympiads" : c === COMP ? "Competitions" : c;
+        out += '<section class="results-section" id="sec-' + c.toLowerCase().replace(/\s+/g, "-") + '">' +
+          '<div class="results-section-head"><span class="category-number">' + String(seenCats).padStart(2, "0") + "</span><h2>" + esc(label) + '</h2><span class="category-count">' + items.length + (items.length === 1 ? " entry" : " entries") + "</span></div>" +
+          '<div class="results-grid">' + items.map(cardHTML).join("") + "</div></section>";
+      });
+      root.innerHTML = out;
+      emptyBox.classList.toggle("show", total === 0);
+      summary.innerHTML = total ? "Showing <strong>" + total + "</strong> of " + DATA.length + " result cards" : "";
+    }
+
+    /* ---- Events ------------------------------------------------------- */
+    var timer;
+    search.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { state.q = search.value.trim(); render(); }, 120);
+    });
+    selEvent.addEventListener("change", function () { state.event = selEvent.value; render(); });
+    selGroup.addEventListener("change", function () { state.group = selGroup.value; render(); });
+    chips.addEventListener("click", function (evt) {
+      var btn = evt.target.closest(".results-chip");
+      if (!btn) return;
+      state.cat = btn.getAttribute("data-cat");
+      Array.prototype.forEach.call(chips.children, function (b) { b.classList.toggle("active", b === btn); });
+      render();
+    });
+    $("f-reset").addEventListener("click", function () {
+      state = { q: "", event: "all", group: "all", cat: "all" };
+      search.value = ""; selEvent.value = "all"; selGroup.value = "all";
+      Array.prototype.forEach.call(chips.children, function (b) { b.classList.toggle("active", b.getAttribute("data-cat") === "all"); });
+      render();
+    });
+
+    buildControls();
+    render();
+  })();
+  </script>
+</body>
+</html>
