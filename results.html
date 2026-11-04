@@ -21,7 +21,9 @@
     .results-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .results-field label { color: var(--muted); font-size: .62rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
     .results-field input, .results-field select { width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; outline: 0; background: rgba(255,255,255,.05); color: #fff; font-size: .84rem; transition: border-color .2s ease, box-shadow .2s ease; }
-    .results-field select option { background: #15151c; }
+    .results-field select { color-scheme: dark; }
+    .results-field select option { background: #15151c; color: #f8f8fb; }
+    .results-field select optgroup { background: #101016; color: #ff8c88; font-style: normal; font-weight: 900; }
     .results-field input::placeholder { color: #777784; }
     .results-field input:focus, .results-field select:focus { border-color: rgba(255,74,66,.68); box-shadow: 0 0 0 4px rgba(255,48,47,.1); }
     .results-reset { min-height: 46px; padding: 0 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.045); font-size: .78rem; font-weight: 850; cursor: pointer; transition: background .2s ease; }
