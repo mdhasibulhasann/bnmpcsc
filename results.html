@@ -17,8 +17,9 @@
     .results-heading { max-width: 850px; }
 
     .results-toolbar { position: sticky; z-index: 18; top: 104px; display: grid; gap: 12px; margin: 0 0 30px; padding: 12px; border-radius: 24px; }
-    .results-toolbar-row { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+    .results-toolbar-row { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
     .results-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .results-field[hidden] { display: none; }
     .results-field label { color: var(--muted); font-size: .62rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
     .results-field input, .results-field select { width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; outline: 0; background: rgba(255,255,255,.05); color: #fff; font-size: .84rem; transition: border-color .2s ease, box-shadow .2s ease; }
     .results-field select { color-scheme: dark; }
@@ -131,6 +132,10 @@
         <div class="results-field">
           <label for="f-group">Group</label>
           <select id="f-group"></select>
+        </div>
+        <div class="results-field" id="f-ptype-wrap" hidden>
+          <label for="f-ptype" id="f-ptype-label">Project category</label>
+          <select id="f-ptype"></select>
         </div>
         <button class="results-reset" type="button" id="f-reset">Reset</button>
       </div>
@@ -331,6 +336,8 @@
     DATA.forEach(function (ev, i) {
       ev.id = i;
       ev.labels = ev.labels || DEFAULT_LABELS;
+      // Project category: Group A uses its class (e.g. "Class-3 (BV)"); B/C/D use Mechanical / Non-Mechanical / IT
+      ev.ptype = ev.cat === PROJ ? (ev.group === "A" ? ev.track : ev.track.split(" · ").pop()) : "";
       // Project entries are one placing per card; pad nothing. Competitions always show 3 slots.
       if (ev.cat !== PROJ) {
         while (ev.places.length < ev.labels.length) ev.places.push(null);
@@ -338,10 +345,11 @@
     });
 
     /* ---- State and DOM ------------------------------------------------ */
-    var state = { q: "", event: "all", group: "all", cat: "all" };
+    var state = { q: "", event: "all", group: "all", ptype: "all", cat: "all" };
     var $ = function (id) { return document.getElementById(id); };
     var root = $("results-root"), emptyBox = $("results-empty"), summary = $("results-summary");
     var selEvent = $("f-event"), selGroup = $("f-group"), search = $("f-search"), chips = $("f-categories");
+    var ptypeWrap = $("f-ptype-wrap"), selPtype = $("f-ptype"), ptypeLabel = $("f-ptype-label");
 
     function esc(s) {
       return String(s).replace(/[&<>"']/g, function (c) {
@@ -355,6 +363,7 @@
       if (state.event === "__proj") { if (ev.cat !== PROJ) return false; }
       else if (state.event !== "all" && ev.name !== state.event) return false;
       if (state.group !== "all" && ev.group !== state.group) return false;
+      if (state.ptype !== "all" && ev.ptype !== state.ptype) return false;
       if (state.q) {
         var hay = norm(ev.name + " " + ev.track + " " + ev.places.map(function (p) {
           return p ? p.inst + " " + p.names + " " + p.team : "";
@@ -398,6 +407,23 @@
         ch += '<button type="button" class="results-chip" data-cat="' + esc(c) + '">' + esc(c) + "<small>" + counts[c] + "</small></button>";
       });
       chips.innerHTML = ch;
+    }
+
+    /* The project-category filter only appears once Group A, B, C or D is chosen */
+    function updatePtype() {
+      var g = state.group;
+      state.ptype = "all";
+      if (["A", "B", "C", "D"].indexOf(g) === -1) { ptypeWrap.hidden = true; selPtype.innerHTML = ""; return; }
+      var types = [];
+      DATA.forEach(function (d) {
+        if (d.cat === PROJ && d.group === g && d.ptype && types.indexOf(d.ptype) === -1) types.push(d.ptype);
+      });
+      ptypeLabel.textContent = g === "A" ? "Project class" : "Project category";
+      var html = '<option value="all">' + (g === "A" ? "All classes" : "All categories") + "</option>";
+      types.forEach(function (t) { html += '<option value="' + esc(t) + '">' + esc(t) + "</option>"; });
+      selPtype.innerHTML = html;
+      selPtype.value = "all";
+      ptypeWrap.hidden = false;
     }
 
     /* ---- Render ------------------------------------------------------- */
@@ -460,7 +486,8 @@
       timer = setTimeout(function () { state.q = search.value.trim(); render(); }, 120);
     });
     selEvent.addEventListener("change", function () { state.event = selEvent.value; render(); });
-    selGroup.addEventListener("change", function () { state.group = selGroup.value; render(); });
+    selGroup.addEventListener("change", function () { state.group = selGroup.value; updatePtype(); render(); });
+    selPtype.addEventListener("change", function () { state.ptype = selPtype.value; render(); });
     chips.addEventListener("click", function (evt) {
       var btn = evt.target.closest(".results-chip");
       if (!btn) return;
@@ -469,8 +496,9 @@
       render();
     });
     $("f-reset").addEventListener("click", function () {
-      state = { q: "", event: "all", group: "all", cat: "all" };
+      state = { q: "", event: "all", group: "all", ptype: "all", cat: "all" };
       search.value = ""; selEvent.value = "all"; selGroup.value = "all";
+      updatePtype();
       Array.prototype.forEach.call(chips.children, function (b) { b.classList.toggle("active", b.getAttribute("data-cat") === "all"); });
       render();
     });
